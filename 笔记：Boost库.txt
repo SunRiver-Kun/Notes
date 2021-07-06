@@ -1,0 +1,342 @@
+-----------------------------
+VS使用boost：
+1. 属性-> VC++目录 -> 包含目录 : 添加D:\boost_1_75_0
+2. 属性-> VC++目录 -> 库目录 : 添加D:\boost_1_75_0\libs
+-----------------------------
+using namespace boost;
+1.时间：
+<boost/timer.hpp> 
+{
+	class timer
+	{
+		// 建立对象时自动开始计时
+	};
+}
+
+<boost/progress.hpp> 
+{
+	class progress_timer
+	{
+		~progress_timer() //自动cout过去的时间
+	}; 
+	class progress_display // cout个进度条
+	{
+		operator ++()
+	};
+}
+
+#define BOOST_DATE_TIME_SOURCE
+#include<boost/date_time/gregorian/gregorian.hpp>
+{
+	 namespace boost::gregorian
+	 {
+		class date {...};
+		class date_period{...} // 左闭右开的日期区间
+		class years、months、days(date_duration){...}
+		class date_iterator{...}
+		tm to_tm(data d);
+		date date_from_tm(tm t);
+	 }
+}
+
+//#define BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG  在之前定义此宏可使精度达到纳秒
+#include<boost/date_time/posix_time/posix_time.hpp>
+{
+	namespace boost::posix_time //在gregorian的基础上提供高精度的时间处理
+	{
+		class time_duration{...}  //时间段
+		class ptime{...} //时间点
+		class date_period{...} //时间区间
+		class time_iterator{...}
+		class second_clock(秒的精度)/microsec_clock(毫秒精度){
+			ptime local_time();
+			ptime universal_time();
+		}	
+		ptime time_from_string(string str) //"2021-2-15 21:05:00"
+		ptime from_iso_string(string str) //"20210215T210500"
+		tm to_tm(ptime time);
+	}
+}
+
+2.智能指针
+#include<boost/smart_ptr.hpp>
+{
+	namespace boost
+	{
+		scoped_ptr、scoped_array //和unique_ptr 很像
+		shared_ptr、share_array、weak_ptr
+		intrusive_ptr
+	
+	}
+}
+
+3.内存池
+pool
+
+4.utility
+#include<boost/utility.hpp>
+{
+	
+#include <boost/utility/base_from_member.hpp>
+#include <boost/utility/binary.hpp>
+#include <boost/utility/identity_type.hpp>  //可以区分出函数的类型
+
+#include <boost/core/addressof.hpp>
+#include <boost/core/enable_if.hpp> 
+#include <boost/core/checked_delete.hpp>
+#include <boost/core/noncopyable.hpp>  //类继承这个就无法拷贝和赋值， class A:boost::noncopyable
+
+}
+
+4.assgin
+#include<boost/assign.hpp>
+方便容器的输入。
+
+5.tribool
+#include<boost/tribool.hpp>
+#include<boost/logic/tribool_io.hpp> //cout时需要
+// BOOST_TRIBOOL_THIRD_STATE(unknown) 用unknown 代替 indeterminate
+注：如果返回值可能是无效的可以用 optional<bool> 代替
+
+6.operators
+#include<boost/opetators.hpp>
+{struct:
+	equality_comparable == : != 相等，大部分find算法
+	less_than_comparable < : >、<=、>=
+	addable += : +
+	subtractable -= : -
+	multipliable *= : *
+	dividable /= : /
+	modable %= : %
+	xorable ^= : ^
+	andable &= : &	
+	orable  |= : |
+	incrementable ++ : ++(int)后置
+	decrementable -- : --(int)
+	equivalent < : == 等价，!(a<b)&&!(a>b)，set、map的操作
+
+	//注：下面两个operator*+返回值是指针
+	dereferenceable * : -> 
+	indexable + : [] 
+
+	//整合,基类链
+	totally_ordered ==,< : !=、>、<=、>=  //全套比较,可用于标准容器算法了
+	additive +=、-= : +、- //全套加减
+	multiplicative *=、/= : *、/ //全套乘除 
+	arithmetic +=、-=、*=、/= : +、-、*、/  //全套加减乘除
+	unit_stoppable ++、-- : ++(int)、--(int) //全套++--
+
+}
+
+7.uuids
+#include<boost/uuid/uuid.hpp>
+#include<boost/uuid/uuid_generators.hpp>
+#include<boost/uuid/uuid_io.hpp>
+
+8.sha1算法，压缩任意长度文本为20字节的唯一标识
+#include<boost/uuid/detail/sha1.hpp>
+class sha1
+{
+public:
+    typedef unsigned int(digest_type)[5];
+public:
+    sha1();
+
+    void reset();
+	//给予信息
+    void process_byte(unsigned char byte);
+    void process_block(void const* bytes_begin, void const* bytes_end); //其实还是unsigned char*
+    void process_bytes(void const* buffer, std::size_t byte_count);
+	//得到信息,参数是 int(&)[5]
+    void get_digest(digest_type& digest);
+    unsigned char get_version() const;
+};
+
+9.文本处理
+格式处理：lexical_cast ,format  
+ #include<boost/lexical_cast.hpp>
+ #include<boost/format.hpp>
+{
+lexical_cast : 异常bad_lexical_cast继承于bad_cast, 注意字符串转数字时只能出现数字，小数点和e/E 
+lexical_cast<string>(0xF);//"15" lexical_cast<double>("1.2E3");
+std::cout << boost::format("%05d - %10.6f = %x")%a%b%c; //%1% %2% 通用的占位格式
+}
+字符串处理：
+#include<boost/algorithm/string.hpp>
+{ //i不区分大小写  _copy返回副本不动原  _if需要个谓语函数(bool)
+	转换与比较函数：to_upper、to_lower、starts_with、ends_with、contains、equals、all、lexicographical_compare(a[i]<b[i])
+	比较仿函数：is_equal、is_less、is_not_greater("01")('1')、is_any_of、is_punct(是否为标点符号)、is_graph(是否为图形字符)、is_space、is_alnum、is_digit、is_cntrl、is_lower
+	修剪函数: trim_left、trim_right、trim 默认删除空格
+	查找、替换、删除函数：find_first、find_last、find_nth、find_head、find_tail //find/replace/erase  + replace/erase_all   
+	find_all、split 反 join
+	find/split_iterator
+	{
+		// find_iterator->split_iterator  make_find_iterator->make_split_iterator
+		typedef boost::find_iterator<std::string::iterator> string_find_iterator;
+		std::string str("123||456||789");
+		for (string_find_iterator pos = boost::make_find_iterator(str, boost::first_finder("123", boost::is_equal())), end; pos != end; ++pos) {...}
+	}
+}
+分词器：tokenizer
+#include<boost/tokenizer.hpp>
+{
+	tok+="12313";
+	tok.assign(str,sep);
+
+	std::string str("Link raise the master-word.");
+	boost::tokenizer<> tok(str);
+	for (auto& v : tok){...} //boost::print(tok)
+
+	//对于CSV以，隔开的  escaped_list_separator
+	std::string str = "id,100,name,\"SunRiver\"";
+	boost::escaped_list_separator<char> sep; //(转移字符，分隔符，引号字符)
+	boost::tokenizer< boost::escaped_list_separator<char>> tok(str, sep);
+
+	//固定长度，基于偏移量而非分隔符  offset_separator
+	std::string str = "2233344445";
+	int offsets[] = { 2,3,4 }; //分3个长度分别为2,3,4的词
+	boost::offset_separator sep(offsets, offsets + 3);
+	boost::tokenizer< boost::offset_separator> tok(str, sep);
+
+	//对于wstring
+	boost::char_separator<wchar_t> sep(L" ");
+	boost::tokenizer< boost::char_separator<wchar_t>, std::wstring::const_iterator, std::wstring> tok(str, sep);
+}
+正则：xpressive
+#include<boost/xpressive/xpressive.hpp>
+{
+	using namespace boost::xpressive;
+	cregex reg = cregex::compile(R"(\d*)");
+	bool is_match = regex_match("456415", reg);
+
+	basic_regex<BidiIter>
+	{
+		static basic_regex<BidiIter> compile(InputRange const& pat); //生成唯一的
+		regex_id_type regex_id() const; //唯一id
+		std::size_t mark_count() const; //匹配的子表达式的个数，即()的对数
+	}
+	typedef basic_regex<std::string::const_iterator> sregex;
+	typedef basic_regex<const char*> cregex; 
+
+	match_results<BidiIter>
+	{
+		size_type size() const;
+		bool empty() const;
+		template<typename Sub> const_reference operator[]<(const Sub& index) const;
+	}
+	typedef match_results<std::string::const_iterator> smatch;
+	typedef match_results<const char*> cmatch;
+
+	sub_match<BidiIter> : public std::pair<BidiIter,BidiIter>
+	{
+		string_type str() const;
+		difference_type length() const;
+		bool operator!() const;
+		int compare(string_type const&) const;
+		bool matched;
+	}
+
+	regex_iterator<BidiIter>
+	{
+		operator*->
+		++,++(int)
+	} typedef s、c...
+	
+	regex_token_iterator<BidiIter>
+	{ //构造最后一个参数为-1时表分隔符
+		operator*->
+		++,++(int)
+	} typedef s、c...
+
+	bool regex_match(String,basic_regex const& re)
+	bool regex_match(String,match_results& what,basic_regex const& re);
+
+--C++标准库中的正则
+#include <regex>
+regex r(R"(/d+)");	//wregex
+cmatch result;	//cmath：char  smatch：string
+//regex_search	子串匹配即可
+//regex_replace	替换$1,$2...
+bool ok = regex_match("123str456sxx789", result,r);	完全匹配
+//sregex_iterator(str.cbegin(), str.cend(),re,flag=default),end;	for(;i!=end;++i) cout << i->str(0) << i->str(1) ...
+//sregex_token_iterator(str.cbegin(), str.cend(),re,sub),end;	for(;i!=end;++i) cout << i->str()
+
+正则表达式笔记：Regular Expression
+特殊字符： .^$()*+?{}[]\|
+. 表示除了\n的任意单字符
+^ 匹配行的开头
+$ 匹配行的结尾
+()嵌套正则表达式（子表达式） 		([[:w:]]+)	([[:d:]]+)		组，会保留下来的
+* 前面的元素可以重复任意多次(n>=0)
++ 前面的元素可以重复一次或多次(n>0)
+? 前面的元素可以重复0次或1次(n=0,1)
+*?尽量少地重复任意多次
++?尽量少地重复一次或多次
+??尽可能地重复0/1次
+{}指定元素重复的次数{n}{n,}{,n}{m,n}  m<=x<=n
+[]定义范围，表示里面的一个字符,在里面可以不使用转移字符,例如：[abc] [0-9] [\w] [+]		[^xxx]不匹配之一
+\ 转移字符, \"表示" , C++11中的 R"(...)"来减少转移字符的数量 R"(\d)" == \\d
+| 或，匹配两侧字符串之一
+str\b：空白字符左边的字符串		--\bstr：空白字符右边的字符串
+
+replace：$num	表示子正则表达式()，$0是整个串，$1开始是子串
+
+注：中文时，wstring+wregex
+
+判断（写在正则前面）
+(?:...)  匹配而不捕获该匹配的字符串
+(?=...)  ...的内容出现才匹配  同(?<=...) 
+(?!...)  ...的内容不出现才匹配
+
+常用的：
+\d(数字) \w(字母/汉字/俄语/日语等/下划线/数字) \s(空白字符，空格/制表符/换行等)  \b
+\D(非数字)\W	  \S       \D
+
+数字：
+^-?\d*$ : 任意数字
+^-?\d{n}$  : 任意n位的数字
+^[1-9]\d*|0$ : 非负整数(前面加个-就是非正)
+^(-?\d+)(\.\d+)$ : 浮点数
+^[1-9]\d*\.\d*|0\.\d*[1-9]\d*$ : 正浮点数(前面加-就是负)
+字符：
+^[\u4e00-\u9fa5]+$ : 汉字
+^[A-Za-z0-9]+$ : 英文或字母 alnum
+^[A-Za-z]+$ : 任意英文
+^for : 以for开头
+end$ : 以end结尾
+
+}
+
+10.断言
+#include<boost/assert.hpp>
+
+11.单元测试
+BOOST_WARN/CHECK/REQUIRE_EQUAL/
+WARN: 不影响运行，不增加错误
+CHECK:不影响运行，增加错误
+REQUIRE:失败终止运行，增加错误
+
+最小的单元测试
+#include<boost/test/minimal.hpp>
+{
+int test_main( int argc, char* argv[] ){...}; //我们自己写 
+cerr<<...
+#define BOOST_CHECK(exp)       
+#define BOOST_ERROR( msg_ )         
+cerr<<... 失败退出
+#define BOOST_REQUIRE(exp)     
+#define BOOST_FAIL( msg_ )    
+}
+
+UTF(unit_task_framework)
+#include<boost/test/unit_test.hpp>
+
+12.容器
+array,ref_array(存T*)
+dynamic_bitset: 有vector<bool>的动态增加、有bitset位运算支持，不提供迭代器，小端法存储
+bimap : 双向映射map
+circular_buffer ： 循环缓冲区，长度固定
+circular_buffer_space_optimized : 长度不固定的缓冲区
+property_tree 多个属性值的树形数据，可以处理xml,ini,json,info等配置
+宏：
+BOOST_BINARY(010101) //二进制

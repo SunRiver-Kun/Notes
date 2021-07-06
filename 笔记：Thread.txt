@@ -1,0 +1,83 @@
+一个进程包含多个线程，线程共享进程的数据。进程包含大量资源，而线程只包含运行所需的极少数资源。
+相关概念：
+-进程：OS中能拥有资源和独立运行的基本单位，包含一个或多个线程，独立的运行环境(内存空间)
+-线程：进程中执行运算的最小单元，是操作系统执行处理机制的基本单位，线程共享一片内存空间，每个含单独的栈来存储本地数据。
+-多线程：解决多任务同时执行的需求，合理使用CPU资源。多线程的运行是根据CPU切换完成，如何切换由CPU决定，因此多线程运行具有不确定性。
+  -使用多线程的优缺点：
+	优点：
+	1）适当的提高程序的执行效率（多个线程同时执行）。
+	2）适当的提高了资源利用率（CPU、内存等）。
+	缺点：
+	1）占用一定的内存空间。
+	2）线程越多CPU的调度开销越大。
+	3）程序的复杂度会上升。
+-线程池：基本思想还是一种对象池的思想，开辟一块内存空间，里面存放了众多(未死亡)的线程，池中线程执行调度由池管理器来处理。当有线程任务时，从池中取一个，执行完成后线程对象归池，这样可以避免反复创建线程对象所带来的性能开销，节省了系统的
+-线程安全：多个线程访问互斥体锁定的共享变量时，只有单个线程访问，其他休眠直到访问结束，从而保证安全性。（单访问机制）
+-阻塞(Blocking)：休眠，只有完成相关任务时才被唤醒，继续运行。例如：用户输入
+-可重入性(Reentrancy)：多个线程并行访问时，即使不按照调用顺序重叠运行代码，也必须保证结果
+-线程优先级：高优先的线程先运行，CPU会自动根据需要升降优先级
+-堆区域、数据区域、代码区域       每个线程(寄存器区域、栈区域)   --线程内部寄存器区域不共享，栈区域与其他线程共享
+
+线程类：
+#include <QtCore/QtCore>
+QAtomicInt：提供Integer 上与平台无关的Atomic运算
+QAtomicPointer：提供指针上Atomic运算的模版函数
+QFuture：显示异步运行结果，函数传播等  ASYNC
+QFutureSynchronizer：简化QFuture的同步
+QFutureWatcher：使用信号和槽，允许QFuture监听
+
+QMutex：互斥，锁定让线程依次访问全局变量。 METHOD：lock()、unlock()
+QMutexLocker：建lock，析unlock。创建个局部变量  QMutexLocker locker(QMutex*)   //一般mutable QMutex为类成员
+QSemaphore：一般的Count互斥体类，可管理多个按号码识别的资源（不需要QMutex） METHOD:  accept 自动等待、release
+QReadWriteLock：控制读写操作，多线程频繁访问时比QMutex更合适。
+QReadLock、QWriteLock：加/解锁的读、写类
+
+QRunnable：正在运行的所有对象的父类，定义了虚函数  run()
+// QObject：moveToThread(QThread*)、thread()    
+QThread：线程	SIGNAL：started()、finished()    METHOD：start()、exit()/quit()、wait/sleep、static create
+QThreadData：线程数据
+QThreadPool：线程池
+QThreadStorage：提供每个线程存储区域的类
+QWaitCondition：确认线程间同步的类的状态值，可唤醒线程。与互斥连用。 METHOD：
+	mutex.lock();
+	QWaitCondition.wait(QMutex*)使线程待机直到mutex解锁
+	mutex.unlock();
+
+//进程通信：TCP/IP、内存共享、D-Bus(Unix/Linux)、QProcess(非Windows CE)
+QTcpServer、QTcpSocket、QUdpSocket、QSslSocket、QLocalSocket、QNetwork等
+QSharedMemory：访问应用程序和进程间的共享内存区域   METHOD：lock()、unlock()、attach()、isAttached()、create(size)、detach()
+QSystemSemaphore：访问系统共同资源实现进程间的通信，多进程   METHOD：acquire()、release()
+QtDBus
+QProcess：可以启动别的exe！   METHOD：start(program, args)
+
+#include <QtConcurrent/QtConcurrent>
+QtConcurrent：不使用互斥体、读-写锁、等待条件和信号量等低级线程。根据进程数自动调整线程数，用于扩展在多核系统运行的Qt应用程序。
+包含用于处理并行列表的API，包括：共享内存(Shared-memory)系统的MapReduce、FilterReduce，以及映射基于GUI应用程序中异步计算的类。
+METHOD：map、filter、run、 在原本的修改
+mapped、filtered、 返回修改后的
+mappedReduced、filteredReduced  返回简化的修改后的
+
+注意事项：
+1.多线程访问共享变量时，要先进行同步。
+2.主线程需要线程事件循环，直到其他的线程都退出才退出。
+3.connect(thread,SIGNAL(finished()),work,SLOT(deleteLater))  线程结束后自动销毁work的内存，或者create时 QThread::yieldCurrentThread();
+4.默认构建的QThread的run里有exec()，会一直运行直到exit/quit/stop。而  static create的话相对于自己写run
+5.在主线程中运行大计算量的工作可能遭到阻塞(卡死)，这时可以考虑用线程了
+6.GUI控件只能创建在GUI线程中！不过可以使用在GUI线程中创建的控件。
+7.需要移动到子线程中处理的模块类，创建的对象的时候不能指定父对象。
+8.connect连接时应该在同意线程。
+
+补充：
+connect连接枚举：
+Qt::AutoConnection：同线程direct、其他线程queue
+Qt::DirectConnection：发生信号事件时，槽立即响应.。槽函数在发送者所在线程执行。
+Qt::QueuedConnection：槽函数在接受者所在线程执行。
+Qt::BlockingQueuedConnection：和queue一样，但返回槽时，线程被阻塞
+
+线程通常都有五种状态，创建、就绪、运行、阻塞和死亡：
+
+第一是创建状态。在生成线程对象，并没有调用该对象的start方法，这是线程处于创建状态。
+第二是就绪状态。当调用了线程对象的start方法之后，该线程就进入了就绪状态，但是此时线程调度程序还没有把该线程设置为当前线程，此时处于就绪状态。在线程运行之后，从等待或者睡眠中回来之后，也会处于就绪状态。
+第三是运行状态。线程调度程序将处于就绪状态的线程设置为当前线程，此时线程就进入了运行状态，开始运行run函数当中的代码。
+第四是阻塞状态。线程正在运行的时候，被暂停，通常是为了等待某个事件的发生(比如说某项资源就绪)之后再继续运行。sleep，suspend，wait等方法都可以导致线程阻塞。
+第五是死亡状态。如果一个线程的run方法执行结束或者调用stop方法后，该线程就会死亡。对于已经死亡的线程，无法再使用start方法令其进入就绪。

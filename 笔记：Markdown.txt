@@ -1,0 +1,127 @@
+1.建立大框框，里面可直接换行
+、、、
+
+、、、
+
+2.换行方式有两种：一种是留一行空行，另一种是两个以上空格结尾加回车
+
+3.# 开头可以变标题（加黑），加多会变小
+
+
+4. **  ** 把内容变黑体
+
+5.* * 把内容变斜体
+
+6. _**  **_ 把内容变黑斜体
+以上*与_可互用 
+
+7. 
+注脚[^1]
+[^1]: 这是注脚
+
+注释
+Markdown将文本转换为 HTML。
+*[HTML]:   超文本标记语言
+
+8. [内容](http) 超链接
+
+9.<kbd>  </kbd>  把内容装在个小框框里
+
+10. `TOC`加红 
+
+11.
+==标记文本==
+
+~~删除文本~~
+
+> 引用文本
+
+上下标
+H~2~O 
+2^10^
+
+
+12. 建立表格
+
+123 | 456
+----- | ---- 
+789 | 1011
+
+| 第一列       | 第二列         | 第三列        |
+|:-----------:| -------------:|:-------------|
+| 第一列文本居中 | 第二列文本居右  | 第三列文本居左 |
+
+13. 表格里的 ' ' 、“”、-- 会对应中文的
+
+14. 自定义表格
+Name
+: sunriver
+
+15. UML图
+
+序列图
+```mermaid
+sequenceDiagram
+张三 ->> 李四: 你好！李四, 最近怎么样?
+李四-->>王五: 你最近怎么样，王五？
+李四--x 张三: 我很好，谢谢!
+李四-x 王五: 我很好，谢谢!
+Note right of 王五: 李四想了很长时间, 文字太长了<br/>不适合放在一行.
+
+李四-->>张三: 打量着王五...
+张三->>王五: 很好... 王五, 你怎么样?
+
+->> 实线
+-->>虚线
+--x 虚线+x
+Note right of name: 注释
+```
+流程图
+```mermaid
+graph LR
+A[长方形] -- 链接 --> B((圆))
+A --> C(圆角长方形)
+B --> D{菱形}
+C --> D
+
+-- 无向线
+--> A指向B的有向线
+[长方体]  ((圆))  (圆角长方形)  {棱形}
+```
+16. FLowchart流程图
+
+```mermaid
+flowchat
+st=>start: 开始
+e=>end: 结束
+op=>operation: 我的操作
+cond=>condition: 确认？
+
+st->op->cond
+cond(yes)->e
+cond(no)->op
+```
+
+17. 标题
+@[TOC](...)
+
+18.字体设置
+<font color=#999AAA >  ... </font>
+
+19.一条线
+<hr style=" border:solid; width:100px; height:1px;" color=#000000 size=1">
+
+功能快捷键
+撤销：Ctrl/Command + Z
+重做：Ctrl/Command + Y
+加粗：Ctrl/Command + B 	** **
+斜体：Ctrl/Command + I 	* *
+标题：Ctrl/Command + Shift + H 	 #
+无序列表：Ctrl/Command + Shift + U	- 123
+有序列表：Ctrl/Command + Shift + O  	1. 456
+检查列表：Ctrl/Command + Shift + C	- [ ] 678
+插入代码：Ctrl/Command + Shift + K	、、、	、、、
+插入链接：Ctrl/Command + Shift + L	[name](http)
+插入图片：Ctrl/Command + Shift + G	
+查找：Ctrl/Command + F
+替换：Ctrl/Command + G

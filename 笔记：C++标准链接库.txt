@@ -1,0 +1,517 @@
+ core 核心, CRT C runtime library(part of the C standard library), declarations 声明, implementation 实现,deprecated 被弃用
+<vadefs.h> //为第一个一定被包含的头文件，包含了很多一些基于系统的调整
+{
+	_ADDRESSOF(v) // 宏,返回地址
+	using uintptr_t = unsigned __int64(64位系统) || unsigned int(其他)
+	using va_list =   System::ArgIterator va_list() || char* 
+         
+}
+<yvals_core.h> //这里是处理c++版本的，声明增加了什么，弃用了什么，以及一些错误提示，CXX17表示是支持c++17标准
+<yvals.h> //里面有一些关于运行时的宏，也有报错处理，debug时的宏定义
+{
+	宏：__PURE_APPDOMAIN_GLOBAL 全局定义域
+	宏函数：
+		#define _STL_REPORT_ERROR(mesg) 	// 在运行时弹出错误窗口，显示信息
+		#define _STL_VERIFY(cond, mesg)	//如果 cond 为假就	_STL_REPORT_ERROR(mesg);		
+		#define _STL_ASSERT(cond, mesg)	//如果定义有 _DEBUG 就和上面那个一样，不然就是 _Analysis_assume_(cond)
+		#define _STL_INTERNAL_CHECK(cond, mesg)  //要使用要在文件一开始就  #define _ENABLE_STL_INTERNAL_CHECK , 然后它就变为了 _STL_VERIFY(cond, "STL internal check: " mesg)
+		#define _WARNING_MESSAGE(NUMBER, MESSAGE)  //注意，NUMBER与MESSAGE都必须是 "常字符串"
+	try-catch块的宏:
+	#if _HAS_EXCEPTIONS
+		#define _TRY_BEGIN	try {
+	    #define _CATCH(x)	} catch (x) {
+	    #define _CATCH_ALL	} catch (...) {
+		#define _CATCH_END	}
+		#define _RAISE(x)	throw x
+		#define _RERAISE	throw
+		#define _THROW(x)	throw x 或者是其他的一些
+}
+<xkeycheck.h> // 关键字(其实也是宏)检查, CXX17必须在之前定义
+<cassert>
+{
+	<yvals.h>
+	<assert.h>
+	{
+		assert( bool )
+	}
+}
+<sal.h> // _IN_之类的
+{
+
+}
+<vcruntime.h> //一些十分有用的宏定义
+{
+	包含有宏：_CRT_BEGIN_C_HEADER, _CRT_END_C_HEADER, _HAS_EXCEPTIONS
+	这行的宏最后的一个_可去掉：     _CRT_STRINGIZE_(x) 	//x->"x"，简单加个"",不运行x的内容
+				 _CRT_WIDE_(s) 	//给s加个L, s->Ls ,一般s为字符串, "hello" -> L"hello" 变wchar_t
+				 _CRT_CONCATENATE_(a,b)	 // 把a,b连起来  ("hello"," world")->"hello world"   (123,456)->123456
+				 _CRT_UNPARENTHESIZE_(...)	 // 表示 __VA_ARGS__
+	宏：__crt_countof(_Array) //得到数组长度
+
+	弃用时使用的宏：
+		_CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))
+		_CRT_INSECURE_DEPRECATE(_Replacement)
+	typedef: size_t(uint/u__int64), ptrdiff_t(int/__int64), intptr_t(int/__int64), __vcrt_bool, wchar_t, NULL
+}
+<corecrt.h>
+{
+	c++: template<bool _Enable, typename _Ty> struct  _CrtEnableIf; //_Enable为false直接报错，为true时 typedef _Ty _Type;
+	using __crt_bool = bool(C++)、char(mid)、_Bool(C)
+
+	#define  _ACRTIMP __declspec(dllimport)
+	__declspec(dllexport)
+}
+<corecrt_malloc.h>
+{
+	malloc,free,aligned之类的与内存分配有关
+}
+<corecrt_search.h>  //或者 <search.h>
+{ // b:binary   l:line
+	bsearch_s、qsort_s、_lfind_s、_lsearch_s
+}
+<corecrt_wstdlib.h>
+{ //虽然用<string>里的to_string(...)更方便就是了
+	!!!!数字与宽字符串直接的转换!!!!
+	_itow_s、wcstol ...
+}
+<crtdefs.h> //#include <vcruntime.h>  #include <corecrt.h>  以及一些define
+<xstddef>//很常见的一些函数
+{  //auto y = plus<_Ty>()(a,b);  <-->  plus<_Ty> fn;  auto y = fn(a,b);，无除(divide)
+   // auto fn  = less<>{}  //自动比较
+	一些仿函数：plus、minus、multiplies、equal_to、not_equal_to、greater、less、greater_equal、less_equal
+	模版函数： addressof   传入一个参数,返回参数地址
+			   _Unfancy    把传入的参数转换为指针再返回
+	一些模版具体化宏函数：具体自己看吧,真缝合怪, 有关__cdecl、__clrcall、__fastcall、__stdcall、__vectorcall，以及 const、volatile、const volatile
+}
+<xtr1common> //类型处理与判断
+{
+	enable_if<true,_Ty>::type
+	template<class _Ty,_Ty _Val> struct  integral_constant  //整型_常量, 结构体,常用作判断 _Ty value
+	template<class _Ty1,class _Ty2> struct  is_same //两类型是否一样  bool value
+	template<class _Ty> struct  _Is_integral // 是否是整形的 bool value（[unsigned]char(wchar_t/char16_t/char32_t) short int long llong）,value
+	template<class _Ty> struct  _Is_floating_point //是否为浮点数 bool value (float/double/long double)
+	template<class _Ty> struct  is_arithmetic //bool value = !(_Is_integral||_Is_floating_point)
+
+	template<bool _Test,class _Ty = void> struct  enable_if  //只有成立时才有 type
+	template<bool _Test,class _Ty1,class _Ty2> struct  conditional // type = _Test?_Ty1:_Ty2
+	template<class _Ty> struct  remove_const、remove_volatile、remove_cv // type
+	template<class _Ty> struct  remove_reference //type
+
+	remove_reference<_Types>(args)...
+}
+<type_traits> //算是对上面的<xtr1common>的有力补充
+{
+	!各种各样的判断! is_; // bool B =  std::is_abstract<_Ty>::value 或者  bool B =   std::is_abstract_v<_Ty>
+	sizeof...(_Vals); //可变参数长度
+	_Conjunction<bool,class,class...>::type //第一个错误类型，或最后一个类型
+	_Disjunction<bool,class,class...>::type //第一个正确类型，或最后一个类型
+	可在后面加_t: add_const、add_volatile、_Add_reference、add_lvalue_reference、add_rvalue_reference、remove_extent、remove_pointer、_Add_pointer等
+}
+<stdlib.h>
+{
+	<corecrt.h>
+	<corecrt_malloc.h>
+	<corecrt_search.h>
+	<corecrt_wstdlib.h>
+	<limits.h>
+	
+	#define __max(a,b) (((a) > (b)) ? (a) : (b))
+	#define __min(a,b) (((a) < (b)) ? (a) : (b))
+	
+	_swab( char* _Buf1,char* _Buf2, int _SizeInBytes); //"ABCD"->"BADC"，不会加'\0'，不要乱用
+	
+	#define EXIT_SUCCESS 0
+	#define EXIT_FAILURE 1
+	exit(int),quick_exit(int),abort(void),
+	
+	#define _WRITE_ABORT_MSG  0x1 // debug only, has no effect in release 
+	#define _CALL_REPORTFAULT 0x2
+	_set_abort_behavior( unsigned int _Flags, unsigned int _Mask );
+
+	//先 onexit 后 atexit
+	_onexit(_onexit_t _Func);
+	atexit(void (__cdecl*)(void));
+
+	 at_quick_exit(void (__cdecl*)(void));
+
+	一些math的补充
+	!!!!字符串与其他类型的相互转换!!!!，strtof、_itoa_s、_atoflt_l...
+
+	_makepath_s、_splitpath等对文件路径处理有帮助的函数
+	 getenv/putenv, 为buffers缓冲区使用
+	 system(const char*) // "cls"  "pause"
+
+} 
+<cstdlib>
+{
+	<yvals_core.h> //上文
+    <stdlib.h>
+	<math.h>
+	基本没加入新东西
+}
+<stdio.h>
+{
+	<corecrt.h>
+	<corecrt_wstdio.h>
+	
+	FILE的全部函数，以及EOF、SEEK_CUR、SEEK_END、SEEK_SET等宏
+	对了，还有关于临时文件的函数也在那_tempnam、tmpfile...
+	以及 lock、unlock FILE的
+}
+<cstdio>
+{
+	<stdio.h>
+	只是把上面库里的函数加入std
+}
+<utility>
+{	#include <xstddef>  #include <iosfwd>  #include <type_traits>
+	void swap(a,b) //基于 std::move 的交换，高效
+	max
+	min
+	pair 的定义
+	tuple_size and tuple_element
+}
+<xiosbase>
+{
+
+    <xlocale> ...
+    <system_error> ...
+	<share.h> -> <corecrt_share.h>
+	{ //deny拒绝
+		#define _SH_DENYRW      0x10    // deny read/write mode
+		#define _SH_DENYWR      0x20    // deny write mode
+		#define _SH_DENYRD      0x30    // deny read mode
+		#define _SH_DENYNO      0x40    // deny none mode
+		#define _SH_SECURE      0x80    // secure mode
+	}
+	熟悉的showbase、showpoint、showpos之类的 
+	读取时的标签：goodbit、eofbit 、 failbit、 badbit
+	文件处理的：in、out、ate、app、trunc、_Nocreate、_Noreplace、binary   beg、cur、end
+	以及一些 set、get来处理这些标签
+}
+<corecrt_math.h>(核心) -> <math.h> -> <cmath>(封装，加强) //注：要使用M_PI等，需在之前 #define _USE_MATH_DEFINES
+<iostream>  //没错，iostream隐形包含了很多头文件（半壁江山）
+{ namespace std{
+	<istream>
+	{
+		<ostream>
+		{
+			<ios>
+			{ 继承了<iosbase>
+				<xlocnum>
+				{
+					 <climits>
+					 {  <yvals.h> //里面有一些关于运行时的宏，也有报错处理，debug时的宏定义,本文上面写有	
+						<limits.h>		
+						{
+							<vcruntime.h>//一些有用的宏定义
+							各个类型的最大最小值的宏： INT_MIN、INT_MAX 之类的  
+						}
+					 }
+					 <cmath>
+					 {  <yvals.h>   <cstdlib>
+						定义一些基本数学函数
+						<xtgmath.h> #include 
+						{	<cstdlib>  <xtr1common>  <yvals.h>
+							调整和补充一些数学函数
+						}			 
+					 }
+					 <cstdio>...
+					 <cstdlib>...
+					 <streambuf>
+					 {
+						<xiosbase> //基本的一些标签，上面写有
+						一些控制缓存区有关的函数
+					 }
+					 _Find_elem(array,target)， 把字符串转换为double/float  _Stodx_v2、_Stofx_v2
+				}
+				fill(ch)、clear()、narrow(_Elem _Ch, char _Dflt = '\0')、widen(char _Byte)、、、、、、
+			}
+			<<、put(ch)、flush()、seekp(...)、tellp()、swap(basic_ostream&)
+		}		
+		各种 operator>>(...){...}
+		get(...),getline(...),peek(),putback(ch),unget(),seekg(pos),tellg(),sync(),read(*ptr,count),readsome(*ptr,count)
+	}
+	cin,cout,cerr,clog. wcin,wcout,wcerr,wlog
+}}
+<xiosfwd>  using ios = basic_ios<char, char_traits<char>>;  等
+<csignal> //终止处理
+{
+#include <yvals.h>  #include <signal.h>
+
+raise(信号)
+signal(信号,void(*fn)(int))
+信号：
+#define SIGINT          2   // interrupt  程序终止
+#define SIGILL          4   // illegal instruction - invalid function image  非法指令
+#define SIGFPE          8   // floating point exception  非法运算
+#define SIGSEGV         11  // segment violation  非法访问内存
+#define SIGTERM         15  // Software termination signal from kill  发送到程序的终止请求
+#define SIGBREAK        21  // Ctrl-Break sequence  快捷键的终止
+#define SIGABRT         22  // abnormal termination triggered by abort call  abort的非常规终止
+}
+1. 常见预处理命令，不用加 ；
+//C++17
+#if __has_include(<charconv>)    //判断是否include过一个头文件
+//只编译一次,可根据判断是否定义宏  
+#if defined(_MSC_VER) 
+  #pragma once
+#endif  来判断编译器是否支持
+
+#pragma once
+
+ //改变结构体/类的字节对齐
+ #pragma pack(push,[identified],n) // n =1,2,4,8(_CRT_PACKING) ; 栈存储，只有n时是改变当前值
+ #pragma pack(show)
+ #pragma pack(pop,[identified])
+
+ //禁止警告
+ #pragma warning(push,_STL_WARNING_LEVEL)
+ #pragma warning(disable: _STL_DISABLED_WARNINGS)  // #pragma warning(disable: num)
+ _STL_DISABLE_CLANG_WARNINGS
+ namespace std{...} //等价于  _STD_BEGIN ... _STD_END
+ _STL_RESTORE_CLANG_WARNINGS
+ #pragma waring(pop)
+
+ //暂时取消宏
+ #pragma push_macro("new") // 添加宏到缓存
+ #undef new //C++关键词也是宏，在<xkeycheck>里可以看见，C4005表示关键词错误
+ #pragma pop_macro("new") //从缓存里加载宏，并移除
+
+ //显示(错误)信息
+ #pragma message("message")  //在错误列表里，以警告来显示信息
+ #error MESSABG   //不用加""和; ，在编译期间判断，一般与#ifdef连用，例如： 
+  #ifdef ABC
+        #error 我要把这行的东西打印处理！！
+  #endif
+
+//关于lib
+#pragma comment(lib,"XXX.lib") //写在.h的开头，指明实现在XXX.lib，之后正常写.h即可
+
+//改变栈大小
+#pragma comment(linker,"/STACK:10240,10240")
+
+//弃用
+#define _CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))
+#define _CRT_INSECURE_DEPRECATE(_Replacement) .../
+CRT_DEPRECATE_TEXT("This function is deprecated") void fn(); //使用例子
+
+//改变浮点精度
+#pragma float_control(precise, off, push)
+_Ty fn(...){
+#pragma loop(ivdep)
+}
+#pragma float_control(pop)
+
+2.__attribute(aligned(n)),让所作用的数据成员对齐在n字节的自然边界上；如果结构中有成员的长度大于n，则按照最大成员的长度来对齐；
+  __attribute((packed)),取消结构在编译过程中的优化对齐,按照实际占用字节数进行对齐
+
+3.无法对浮点型使用':'来指定所占大小
+4.打印char的地址: cout<< (void*)&c <<endl;  //&a的类型是char*
+
+6.特性：[标识符],未找到会报错，标识符只有字母、数字、下划线(_)组成，不能以数字打头
+7.属性：#define _NODISCARD [[nodiscard]]，未找到只是警告
+
+其他常见宏：
+#define __FILE__  地址/当前文件名
+#define __LINE__  当前行数
+
+ #define _INLINE_VAR = 空 或 inline 
+
+ #define _STD_BEGIN namespace std{
+ #define _STD_END }
+ 
+ #define _CRT_BEGIN_C_HEADER __pragma(pack(push,8)) extern "C"{  //注： __pragma(...) == #pragma ...
+ #define _CRT_END_C_HEADER } __pragma(pack(pop))
+ 
+ #define _EXTERN_C extern "C"{
+ #define _END_EXTERN_C }
+
+ #define RC_INVOKED // 被调用(invoked)  rc是贝尔实验室操作系统的10版Unix和9版Unix的命令行解释器,C语言是UNIX的开发者开发的,C++也是贝尔工作室在C的基础上开发的
+ 
+#define _CLASS_DEFINE_CV(CLASS) //这里是分别对Class宏对于的模版进行4个特化	CLASS(_EMPTY_ARGUMENT) \CLASS(const) \CLASS(volatile) \CLASS(const volatile)
+
+ #define _STD ::std::
+ #define __cplusplus 199711L //用来判断是否是c++
+
+ #define _TRY_IO_BEGIN try{
+ #define _CATCH_IO_END 	} catch (...) { _Myios::setstate(ios_base::badbit, true); }
+
+8.类型名可以和函数名一样. 如 using value_type = _Ty 与 constexpr operator value_type() const noexcept  
+9. 上面的value_type是依赖名称而不是类型，要作为类型需要  typename value_type 指明它是类型
+10.非函数非类模版
+	template<bool _Test,class _Ty1,class _Ty2>
+	using conditional_t = typename conditional<_Test, _Ty1, _Ty2>::type; //模版依赖名称->类型
+	
+	template<class _Ty,class _Uty>
+	_INLINE_VAR constexpr bool is_same_v = is_same<_Ty, _Uty>::value; //相当于建了个临时对象,可内联全局与静态变量c++17
+11. sizeof...(_Vargs) //表示可变参数的个数
+	sizeof...(_Args) //一样的
+12. template<typename _Ty, _Ty _Size> 中_Size必须是常量(const,constexpr,123,"")
+13. __declspec(参数)
+{	//编译器指令
+	1.novtable : 使类不生成虚函数表，但类不能生成实例！主要运用于接口，纯虚类。  class __declspec(novtable) A{...} 
+	2.align(num): 数据对齐最小值，而#pragma pack定义的是最大值。  __declspec(align(32)) struct Str1{...}
+	3.allocate("segname")声明一个已经分配了数据段的一个数据项。它和#pragma 的code_seg， const_seg, data_seg,section,init_seg配合使用，segname必须有这些东东声明。
+	4.deprecated("说明") 说明一个函数，类型，或别的标识符在新的版本或未来版本中不再支持，你不应该用这个函数或类型。它和#pragma deprecated作用一样。
+	5.dllimport 和dllexport  显式的定义dll接口给调用它的exe或dll文件，用 dllexport定义的函数不再需要（.def）文件声明这些函数接口了。注意：若在dll中定义了模板类那它已经隐式的进行了这两种声明，我们只需在 调用的时候实例化即可
+	{
+		在常规dll中
+		class __declspec(dllexport) A{...}
+		在客户端中声明
+		#import comment(lib, "**.lib")
+		class __declspec(dllimportt) A{...} //__declspec(dllimportt)可省
+		
+		在模版dll中
+		template<typename _Ty> class B{...}
+		在客户端中，直接用
+		int main(){ B b; }
+	}
+	6.jitintrinsic 标记一个函数或元素为64位公共语言运行时。
+	7.naked  只对函数有用，使编译器不产生寄存器保存代码，无法在函数内使用内联函数，常用于写设备驱动程序
+	8.restrict 只对函数有用，表明返回的指针是唯一的，未被使用的  __declspec(restrict) int* fn(){...}
+	9.noalias 只对函数有用，表示函数只使用传入的参数/宏，而不使用全局变量
+	10.noinline、noreturn、nothrow 用于函数
+	11.selectany  可在.h文件中初始化一个全局变量而不是只能放在.cpp中。即被多次包含也只是定义一次 
+	{ // .h 中
+		class A
+		{
+			private:
+			static int a;
+		}
+		__declspec(selectany) int A::a = 0;
+	}
+	12.thread 声明一个线程本地变量。后面必须是全局变量或静态变量，不可用于局部变量。
+	13.uuid("编号") 用于编译器关联一个GUID到一个有uuid属性的类或结构的声明或者定义。struct __declspec(uuid("10086")) A;
+}
+14.属性[[ ]]、特性[]
+ #define _NODISCARD [[nodiscard]] //表示不会被弃用
+ [[no_unique_address]]  //用于模版      template <class _In, class _Fun> struct in_fun_result {  [[no_unique_address]] _In in; ...}
+[[carries_dependency]] 让编译期跳过不必要的内存栅栏指令
+[[noreturn]] 函数不会返回
+[[deprecated]] 函数将弃用的警告
+[[fallthrough]]，用在switch中提示可以直接落下去，不需要break，让编译期忽略警告
+[[nodiscard]] ：表示修饰的内容不能被忽略，可用于修饰函数，标明返回值一定要被处理
+[[maybe_unused]] ：提示编译器修饰的内容可能暂时没有使用，避免产生警告
+
+--- 模版对照表 ---	T t(arg)     							
+形\实	int	int&	int&&	int*	cm int*	cm int	cm int&	cm int&&		arg_type
+T	int	int	int	int*	cm int*	int	int	int		值类型，只有指针有cm									
+T&	int	int	\	int*	cm int*	cm int	cm int	cm int		左引用，值也可有cm
+T&&	int&	int&	int	int*&	cm int*&	cm int&	cm int&	cm int		全引用，lvalue or rvalue，值也可有cm
+
+T t(arg)总结： T同arg_type，T&无引用，T&&右值无引其他&
+注意：int&& arg = move(a)，实际上arg是int&，因为 rvalue不能出现在 = 左边！不过可以用()来构建，不过真正传递还是用 static_cast好
+------------------
+附录：
+一些通用(不用包含任何库)的宏：
+	 __FILE__ 文件位置，字符串             
+	 __LINE__  行数，long
+	 __TIME__ 时间，字符串(例"22:00:00")
+	 __DATE__  日期，字符串(例如"Feb 18 2021")	
+	 __FUNCTION__函数名，字符串 
+<conio.h>
+{ //读取键盘
+	int  _kbhit()  //判断是否按下键盘
+	int  _getch()  //返回按下的值，注：↑↓←→要获取两次
+		//在_kbhit()之前使用，等待按下键盘，并把_kbhit()的结果设为真
+		//在_kbhit()之后使用，直接获取键值，并重置_kbhit()的结果为假
+}
+<algorithm>
+{
+<xmemory>{
+#include <cstdint> <cstdlib> <limits> <new> <xatomic.h>
+#include <xutility> {#include <climits> <cstdlib> <cstring> <utility>}}
+
+//遍历
+_Fn for_each(_InIt _First, _InIt _Last, _Fn _Func)
+_InIt for_each_n(_InIt _First, const _Diff _Count_raw, _Fn _Func)
+
+//查找
+_InIt find_if_not(_InIt _First, const _InIt _Last, _Pr _Pred)
+_FwdIt adjacent_find(const _FwdIt _First, _FwdIt _Last, _Pr _Pred) //当_Pred(*_UFirst, *_UNext)==true时，返回匹配的First
+_Iter_diff_t<_InIt> count_if(_InIt _First, _InIt _Last, _Pr _Pred)
+pair<_InIt1, _InIt2> mismatch(_InIt1 _First1, const _InIt1 _Last1, _InIt2 _First2, _Pr _Pred) //返回第一个不匹配的  {_UFirst1,_UFirst2}或者是{_ULast1,...}
+_FwdIt partition_point(_FwdIt _First, _FwdIt _Last, _Pr _Pred) // 利用二分法查找 beginning of false partition in [_First, _Last)
+_FwdItHaystack search(_FwdItHaystack _First1, _FwdItHaystack _Last1, const _FwdItPat _First2,const _FwdItPat _Last2, _Pr _Pred)  // find first [_First1, _Last1) satisfying _Pred(1,2)
+_FwdIt search_n(const _FwdIt _First, _FwdIt _Last, const _Diff _Count_raw, const _Ty& _Val, _Pr _Pred)
+ _FwdIt1 find_end(_FwdIt1 _First1, const _FwdIt1 _Last1, const _FwdIt2 _First2, const _FwdIt2 _Last2, _Pr _Pred)
+_FwdIt1 find_first_of(_FwdIt1 _First1, const _FwdIt1 _Last1, const _FwdIt2 _First2, const _FwdIt2 _Last2, _Pr _Pred)
+_FwdIt upper_bound(_FwdIt _First, _FwdIt _Last, const _Ty& _Val)  // find first element that _Val is before
+_FwdIt lower_bound(_FwdIt _First, _FwdIt _Last, const _Ty& _Val) 
+pair<_FwdIt, _FwdIt> equal_range(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, _Pr _Pred)   // find range equivalent to _Val
+bool binary_search(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, _Pr _Pred)
+_FwdIt max_element(_FwdIt _First, _FwdIt _Last)
+_FwdIt min_element(_FwdIt _First, _FwdIt _Last)
+pair<_FwdIt, _FwdIt> minmax_element(_FwdIt _First, _FwdIt _Last)
+
+//判断
+bool all_of(_InIt _First, _InIt _Last, _Pr _Pred)
+bool any_of(const _InIt _First, const _InIt _Last, _Pr _Pred)
+bool none_of(const _InIt _First, const _InIt _Last, _Pr _Pred)
+bool is_partitioned(const _InIt _First, const _InIt _Last, _Pr _Pred) // 是否[_First, _Last)只有连续的一段满足_Pred
+bool _Equal_rev_pred_unchecked(_InIt1 _First1, _InIt2 _First2, const _InIt2 _Last2, _Pr _Pred)
+bool includes(_InIt1 _First1, _InIt1 _Last1, _InIt2 _First2, _InIt2 _Last2, _Pr _Pred) // test if every element in sorted [_First2, _Last2) is in sorted [_First1, _Last1)
+
+//复制	注：这里的_InIt与_OutIt应该同一种迭代器？
+_OutIt copy_if(_InIt _First, _InIt _Last, _OutIt _Dest, _Pr _Pred)
+pair<_OutIt1, _OutIt2> partition_copy(_InIt _First, _InIt _Last, _OutIt1 _Dest_true, _OutIt2 _Dest_false, _Pr _Pred) // copy true partition to _Dest_true, false to _Dest_false
+_OutIt replace_copy(_InIt _First, _InIt _Last, _OutIt _Dest, const _Ty& _Oldval, const _Ty& _Newval) // copy replacing each matching _Oldval with _Newval
+_OutIt replace_copy_if(_InIt _First, _InIt _Last, _OutIt _Dest, _Pr _Pred, const _Ty& _Val)
+_OutIt remove_copy(_InIt _First, _InIt _Last, _OutIt _Dest, const _Ty& _Val) //除了Val外复制
+_OutIt remove_copy_if(_InIt _First, _InIt _Last, _OutIt _Dest, _Pr _Pred)
+_OutIt unique_copy(_InIt _First, _InIt _Last, _OutIt _Dest, _Pr _Pred)
+_OutIt reverse_copy(_BidIt _First, _BidIt _Last, _OutIt _Dest) //反向复制
+_OutIt merge(_InIt1 _First1, _InIt1 _Last1, _InIt2 _First2, _InIt2 _Last2, _OutIt _Dest, _Pr _Pred) //合并
+
+//移除
+_FwdIt remove(_FwdIt _First, const _FwdIt _Last, const _Ty& _Val)
+ _FwdIt remove_if(_FwdIt _First, const _FwdIt _Last, _Pr _Pred)
+_FwdIt unique(_FwdIt _First, _FwdIt _Last, _Pr _Pred)
+
+//排序(<search.h>里也有点)
+void sort(const _RanIt _First, const _RanIt _Last, _Pr _Pred)
+void stable_sort(const _BidIt _First, const _BidIt _Last, _Pr _Pred) // sort preserving order of equivalents
+void partial_sort(_RanIt _First, _RanIt _Mid, _RanIt _Last, _Pr _Pred)  // order [_First, _Last) up to _Mid
+
+//交换+转换	bool _Pred(auto&& a, auto&& b)
+_FwdIt2 swap_ranges(const _FwdIt1 _First1, const _FwdIt1 _Last1, _FwdIt2 _First2) // swap [_First1, _Last1) with [_First2, ...)
+_OutIt transform(const _InIt _First, const _InIt _Last, _OutIt _Dest, _Fn _Func) // *_UDest = _Func(*_UFirst);
+_OutIt transform(const _InIt1 _First1, const _InIt1 _Last1, const _InIt2 _First2, _OutIt _Dest, _Fn _Func) // transform [_First1, _Last1) and [_First2, ...) with _Func
+void replace(const _FwdIt _First, const _FwdIt _Last, const _Ty& _Oldval, const _Ty& _Newval) // replace each matching _Oldval with _Newval
+void replace_if(const _FwdIt _First, const _FwdIt _Last, _Pr _Pred, const _Ty& _Val)
+void generate(_FwdIt _First, _FwdIt _Last, _Fn _Func)  // replace [_First, _Last) with _Func()
+_OutIt generate_n(_OutIt _Dest, const _Diff _Count_raw, _Fn _Func)
+
+//其他
+const _Ty& clamp(const _Ty& _Val, const _Ty& _Min_val, const _Ty& _Max_val, _Pr _Pred) // returns _Val constrained to [_Min_val, _Max_val]
+const _Ty& clamp(const _Ty& _Val, const _Ty& _Min_val, const _Ty& _Max_val, _Pr _Pred) // returns _Val constrained to [_Min_val, _Max_val]
+}
+<numeric>
+{#include <xutility>  <yvals_core.h>  <limits>
+不可交互和累加的：
+_Ty accumulate(const _InIt _First, const _InIt _Last, _Ty _Val, _Fn _Reduce_op = plus<>{}) 
+// _Val = _op(_Val,*it++)
+_Ty inner_product(_InIt1 _First1, _InIt1 _Last1, _InIt2 _First2, _Ty _Val, _BinOp1 _Reduce_op=plus<>{}, _BinOp2 _Transform_op= multiplies<>{}) 
+// _Val = _Reduce_op(_Val,_Transform_op(*it1++,*it2++))
+_OutIt partial_sum(const _InIt _First, const _InIt _Last, _OutIt _Dest, _BinOp _Reduce_op=plus<>{})
+// *_Dest++ = _Reduce_op(*it,*++it)
+可交互和累加的：move
+reduce：accumulate  	// _Val = _op(move(_Val),*it++)
+transform_reduce：inner_product
+exclusive_scan：partial_sum
+}
+
+c++17:
+constexpr函数有如下限制：可以用在Lambda
+函数体不能包含汇编语句、goto语句、label、try块、静态变量、线程局部存储、没有初始化的普通变量，不能动态分配内存，不能有new delete等，不能虚函数。
+
+<charconv>  from_chars, to_chars
+std::optional<int>  -- if(o)  *o
+std::any  存储任意单值
+std::apply(fn,tuple/pair)   展开tuple/pair传给fn
+std::make_from_tuple<类名>(std::move(tuple));
+string_view  来string&
+as_const   C++17使用as_const可以将左值转成const类型
+file_system  --大部分文件操作
+std:visit([](auto x){return x.type()},variant&)

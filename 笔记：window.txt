@@ -1,0 +1,112 @@
+LPCWSTR : CONST WCHAR*
+LPCSTR : CONST CHAR*
+LPWSTR ：WCHAR*
+LPSTR : CHAR*
+
+WORD : unsigned short
+DWORD : unsigned long
+WPARAM : unsigned int
+LPARAM : unsigned long
+
+XXX_PTR : 其实是XXX的类型
+PXXX_PTR : XXX的指针类型
+PROC : process 被定义为了回调函数类型
+
+Project Setting: 
+路径：
+$(SolutionDir)：sln的位置    
+$(ProjectDir)：(工作目录)项目路径，Task文件夹，默认路径,不用加\
+$(Configuration)：Dubug或Release文件夹，单独用指在Task文件夹里的D|R文件夹   
+$(TargetPath)：目标文件位置，不用加\，/xx.exe
+$(ProjectName)：项目名
+
+指定文件夹位置时，在(调试/工作目录)下找，否则在(常规/输出目录)下找
+
+----------播放声音------------
+
+#include<wtypes.h>
+#include<mmsystem.h>
+#pragma comment(lib,"winmm.lib")  //要播放音乐必须先，加载多媒体设备库
+
+1. sndPlaySound(LPCWSTR pszSound, UINT fuSound)
+选项fuSound：
+pszSound字符串，音频地址
+fdwSound | fuSound的选项
+
+SND_ASYNC	在播放的同时执行后面语句
+SND_LOOP	一直播放声音，直到下次调用这个函数	
+SND_MEMORY	把声音数据载入内存
+SND_NODEFAULT	指播放声音失败，不播放默认声音
+SND_NOSTOP	不停止当前播放的声音
+SND_SYNC	播放完声音再执行后面的语句
+
+2.蜂鸣
+BOOL WINAPI Beep(
+  __in  DWORD dwFreq,    //频率
+  __in  DWORD dwDuration //持续时间);
+
+3.系统消息音
+BOOL WINAPI MessageBeep(__in UINT uType);  //MB_OK
+
+4.播放任意格式声音
+mciSendString(L"open C:\\Users\\Administrator.SUNRIVER\\Desktop\\ding.wav", NULL, 0, 0);
+mciSendString(L"play C:\\Users\\Administrator.SUNRIVER\\Desktop\\ding.wav", NULL, 0, 0);
+
+5.PlaySound(L"C:\\Users\\Administrator.SUNRIVER\\Desktop\\ding.wav", 0, SND_SYNC);
+
+-----------------文件管理---------------------
+文件：<fileapi>
+1.创建文件夹
+//lpPathName默认创建在工作目录。可以是L"./resource" 其中./可省略
+//  /一个可以  \\要两个
+CreateDirectory( LPCWSTR lpPathName,  LPSECURITY_ATTRIBUTES lpSecurityAttributes)
+
+------------------窗体设置----------------------
+窗体：
+//<WinUser.h> 提供函数声明，常量，宏
+HDC hdc = GetDC(hWnd)	ReleaseDC(hWnd, hdc);
+HINSTANCE  hInstance：当前应用程序的实例句柄
+HWND  hWnd：窗体句柄
+HANDLE  设备句柄   HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+INT  nCmdShow：打开窗体的方法  SW_ 
+LPWSTR    lpCmdLine：控制台命令行
+UINT  meg：消息  WM_
+MessageBox返回 IDYES 等
+--------------------------------------------------
+TextOut( HDC hdc, int x, int y, LPCWSTR lpString, int c);  //c表示lpString长度，注意不含'\0'
+
+SetConsoleTitle("俄罗斯方块");  //设置标题
+---------------------------------------------------
+的len不要带'\0'的 lstrlenW(str)  ,多输幻影
+其他读入字符串的len要，__crt_countof(str);
+wsprintf : 格式化输入到字符串数组 
+
+------------------控制台-------------------------
+<consoleapi.h>
+主要是读写，与模式设置
+<consoleapi2.h>
+{
+HANDLE CreateConsoleScreenBuffer //创建缓冲区
+BOOL FillConsoleOutputCharacter  //填充字符
+BOOL FlushConsoleInputBuffer (HANDLE hConsoleInput ); //刷新缓冲区
+BOOL GetConsoleCursorInfo(HANDLE, _Out_ PCONSOLE_CURSOR_INFO);  //得到控制台光标信息
+BOOL SetConsoleCursorInfo(HANDLE, PCONSOLE_CURSOR_INFO);  //设置控制台光标信息
+BOOL GetConsoleScreenBufferInfo(HANDLE, PCONSOLE_SCREEN_BUFFER_INFO)  //得到缓冲区信息
+BOOL SetConsoleScreenBufferSize(HANDLE, COORE) //设置缓冲区大小
+BOOL SetConsoleCursorPosition(HANDLE, COORE) //设置光标位置
+
+COORE GetLargestConsoleWindowSize(HANDLE)  //得到最大化
+...
+
+}
+<consoleapi3.h>
+{
+GetCurrentConsoleFont
+GetConsoleSelectionInfo
+GetConsoleHistoryInfo
+GetConsoleDisplayMode
+SetConsoleDisplayMode
+HWND GetConsoleWindow
+AddConsoleAlias
+...
+}

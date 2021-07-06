@@ -1,0 +1,496 @@
+参考网址：https://github.com/JokerJohn/QT/blob/master/QT%E7%AC%94%E8%AE%B0%E5%90%88%E9%9B%86.md
+1.日期，时间
+QDate、QTime、QDateTime
+d  1~31			M  1~12			    yy  00~99
+dd  01~31		MM 01~12		    yyyy  2021
+ddd  Mon~Sun		MMM Jan~Dec
+dddd  Monday~Sunday 	MMMM January~December
+
+AP  AM/PM	h  0~23		m  0~59		s  0~59		z  0~999
+ap  am/pm 	hh  00~23	mm  00~59	ss  00~59		zzz  000~999
+
+2.QString
+#pragma execution_character_set("utf-8")
+QString("%1 %2").arg( a ).arg( b )
+QString::fromUtf8("")
+QString::number(num)
+
+3.namespace Qt{  //全局常量enum
+enum Key{ KEY_XX   }// KEY_XX | KEY_XX ，| 可改为+
+enum  GlobalColor{...}
+}
+
+4.setWindowTiltle(QString)  //设置Widget的标题
+ setCentralWidget(textEdit);  //设置位于中心的控件
+
+5.<br>、\n、\r\n 换行
+
+6.自定义控件############################
+配置Designer：
+1.添加 .h 到
+include(){return "MyWidgets/xxx.h";}
+D:\Qt\Qt5.14.2\5.14.2\msvc2017_64\include\MyWidgets
+2.添加 Release 的dll 到
+D:\Qt\Qt5.14.2\5.14.2\msvc2017_64\plugins\designer
+
+配置VS项目：
+1. 添加现有项—— .h 和 .lib
+2.Debug模式下复制Debug的dll到.exe目录下，Release模式下复制Release的dll到.exe目录下
+
+全部成功后，就可以像一般的控件一样使用了！
+-----------------------------------------------------
+VS使用自定义lib：
+1. 新建空项目，设置生成 lib或dll 。
+2. 添加现有项，头文件和源文件
+3. 生成，复制得到的 lib/dll 到一个 文件夹如：现有项下的lib     如果需要加宏，在属性C/C++预处理器里添加 _CRT_SECURE_NO_WARNINGS
+
+4. 新建控制台应用程序
+5. 属性-> C/C++ -> 附加包含目录 ： 添加现有项的头文件的目录
+6. 属性-> 链接器 -> 常规 -> 附加库目录：添加生成的lib的目录
+7. 属性-> 链接器 -> 输入 -> 附加依赖项：添加 xxx.lib
+8. #include <头文件>
+注意：少包含头文件也会导致无法运行！！
+-----------------------------------------------------
+7.路径
+/   ：在根目录下找，VS好像没反应
+./  ：在工作目录下找(默认)，当前目录
+../ ：在sln目录下找，父级目录
+在.exe目录下的文件(默认)："../Debug/xxx.txt"
+
+8. QString  QDir::currentPath()   //返回的是工作目录
+
+9.数据类型
+基本：bool、qint8、quin8、qint16、quin16、qint32、quin32、qint64、quin64、float、double、const char*
+类：QVariant、QCursor、QColor、QPalette、QEasingCurve、QKeySequence、QMargins、QRect、QMatrix、QPiont、
+       QVector234D、QTransform、QRegion、    QRegExp、QRegularExpression、QUrl
+容器：QHash<K,T>、QMap<K,T>、QPair<T1,T2>、QList<T>、QLinkedList<T>、QVector<T>、QStack<T>、QQueue<T>、
+          QSet<T>,QMultiMap/Set/Hash
+字符串类：QChar、QString、QLatin1Char(ASCII)、QLatin1String、QLocale(多语言)、
+	QStringList(存储)、QStringMatcher(匹配)、QStringRef(包装)、QTextBoundaryFinder(全匹配)、
+	QFile、QTextStream(与QFile配合)、QByteArray、QByteArrayMatcher
+
+10.数学函数
+qBound(min,value,max)   //在min~max之间
+qAbs(T value)
+qint  qRound(value)  //四舍五入
+qMax、qMin(const T&,const T&)
+bool qFuzzyCompare(float/double,float/double)  //比较两浮点数是否相同
+bool qFuzzyIsNull( float/double Value )  //判断浮点数是否为0
+
+11.调试等信息处理
+qDebug(const char*msg,...);
+qWarning(const char*msg,...);
+qCritical(const char*msg,...);
+qFatal(const char*msg,...);  //自动abort，自定义时也应调用abort
+qInstallMsgHandler( void(*fn)(QtMsgType,const char*) )  //自定义上面四种信息的处理
+
+enum的调试，使支持qDebug()<<
+Q_DECLARE_METATYPE(QRadioTuner::State)
+Q_MEDIA_ENUM_DEBUG(QRadioTuner, State)
+
+12.Event
+-重写paintEvent、mousePressEvent等函数
+-重写event，重新分配具体事件，switch( e->type() ) paintEvent() return true;   else return QWiget::event(e)
+-重写eventFilter并在其他控件上-- installEventFilter  removeEventFilter -- 安装时组件同线程，运行时也是同线程，if(boj==xxx){...return ture/false;}  else return return QMainWindow::eventFilter(obj, event);
+-调用 QCoreApplication::instance 安装多个全局事件过滤器，可以看见disabled组件上的事件，只能用在主线程
+-重写QCoreApplication::notify，分配 QObject->event，忽视线程（因为只有一个）
+-注意：成功处理要返回true，否则应该返回父类的对应函数。
+
+13. 使用QDialog::exec()实现应用程序级别的模态对话框，强制互动，同时循环直到exit()
+      使用QDialog::open()实现窗口级别的模态对话框，非强制互动
+      使用QDialog::show()实现非模态对话框，显于父类
+
+14.任何对象树中的 QObject对象 delete 的时候，如果这个对象有 parent，则自动将其从 parent 的children()列表中删除；
+如果有孩子，则自动 delete 每一个孩子。Qt 保证没有QObject会被 delete 两次，这是由析构顺序决定的。
+尽量在构造的时候就指定 parent 对象，并且大胆在堆上创建。
+
+15.拖动 QDrag
+或者
+if( event->button() & Qt::LeftButton )  m_dragPoint = event->globalPos() - frameGeometry().topLeft();  //mousePressEvent()
+move(event->globalPos() - m_dragPoint);   //mouseMoveEvent
+drawPixmap  //paintEvent
+
+16.文件系统：请使用 / 作为分隔符
+QIODevice：所有 I/O 设备类的父类，提供了字节块读写的通用操作以及基本接口；  ENUM：Text文本格式读取、ReadOnly、WriteOnly、ReadWrite、Append
+QFileDevice：Qt5新增加的类，提供了有关文件操作的通用实现。
+QAbstractSocket：所有套接字类的父类；
+
+-随机访问设备：seek  访问任意位置任意次数
+QFlie：访问本地文件或者嵌入资源；  开/关/刷文件   	METHOD：构函(filename)、open(QFile:: | )、atEnd()、readLine、read、writeLine、write
+  -QDataStream 二进制读写QFile    METHOD：<<、>>、flush()、close()
+  - QTextStream  文本读写QFile       METHOD:   <<、>>、flush()、close()、  QTextStream::readLine()   QTextStream::readAll()、setCodec("UTF-8")默认Unicode
+  -QFileInfo获取文件信息，文件名/目录等   METHOD：baseName()、suffix()、isDir()、isExecutable()、  static bool exists(const QString &file);、
+QTemporaryFile：创建和访问本地文件系统的临时文件；
+QBuffer：读写QbyteArray, 内存文件；
+
+-顺序访问设备：只能从头到尾读一遍
+QProcess：运行外部程序，处理进程间通讯；
+QTcpSocket：TCP协议网络数据传输；流通信
+QUdpSocket：传输 UDP 报文；报文通信
+QSslSocket：使用 SSL/TLS 传输数据；
+
+《QtMultimedia》
+ #include <QtMultimedia/QtMultimedia>
+注：保存的文件默认在“文档”的相应位置里
+-多媒体：
+QMediaPlayer：多媒体播放器，mp3、mp4，
+ METHOD：setMedia( QUrl(...) )、setVolume(int)、setVideoOutput(*)、play()、
+QMediaPlayList：多媒体播放列表，METHOD：构函(QMediaPlayer*)、addMedia、setCurrentIndex
+QMediaContent：播放设置，一般从QUrl加载数据。
+QMediaRecorder：录制视频数据
+
+-音频组件：QUrl::fromLocalFile("./xxx.mp3")   QUrl("http://xxx/x/xx.mp3")，高频率时要注意
+QAudioRecorder：录音，  METHOD：setEncodingSettings、SetOutputLocation("xx.amr")、record()
+QAudioEncoderSettings：QAudioRecorder的相关设置  METHOD：setCodec("audio/amr")  setQuality
+QAudioDecorder：解码器，	SIGNAL:	bufferReady()	METHOD：setAudioFormat、setSourceFilename
+QAudioFormat：音频格式
+QAudioProbe：播放并录制样品时的数据监听   SIGNAL:  audioBufferProbed(QAudioBuffer)   METHOD: setSource(QAudioRecorder)
+QAudioDeviceInfo：音频设备的相关信息
+//低层音频数据的处理和录制
+QAudioInput：push，使用QIODevice直接输入。
+QAudioOutput：pull处理QIODevice::read()的数据，提供高出延迟音频回放，可用VoIP协议，播放与录音
+QSoundEffect：可播放低层音效，wav等
+QSound：播放wav格式文件
+
+-视频组件：
+QVideoWiget：显示组件，让 QMediaPlayer，setParent与setVideoOutput后，show
+QGraphicsVideoItem：显示组件，让QGraphicsScene->addItem(*)
+QVideoFrame：QMediaPlayer和QCamera处理的视频帧数据
+QVideoProbe：视频帧的检测，可实现回放，QCamera类输入的视频数据流等
+QVideoSurfaceFormat：用于指定显示视频数据的表面的流格式
+
+-照相机组件：可实现网络、移动设备、嵌入式照相机，高分辨率时要注意
+#include <QtMultimediaWidgets/QtMultimediaWidgets>
+QCamera：照相机设备的接口  	METHOD：setViewfinder(*)、setViewfinderSettings、start()、searchAndLock()、unlock()
+QCameraViewfinder：取景器，及通过照相机查看视频的区域  METHOD: show()
+QCameraImageCapture：截图，METHOD：构函(camera)，capture()
+QCameraExposure：曝光接口
+QCameraFocusZone：照相机自动聚焦的区域信息
+QCameraFocus：聚焦、放大等
+QCameraImageCapture：媒体录像
+QCameraImageProcess：照相机图像处理，白平衡(white balance)、对比度(contrast)、饱和度(saturation)、锐化(sharpen)、去噪(denosing)等
+QImagmeEncoderSettings：图像编码器设置
+
+-收音机组件：RDS(Radio Data System)  tuner(调谐器)   frequency(频率)  muted(禁音的)
+QRadioTuner：播放器 	SIGNAL：frequencyChanged(int)  stereoStatusChanged()   METHOD：isBandSupported(频宽支持)、setBand(频宽)、setFrequency、setVolume
+QRadioData：RDS的接口，当收音机数据改变时会发生信号
+
+《QtOpenGl》用OpenGL的硬盘加速，减少CPU资源  OpenGL ES 轻量级     pro:   QT += opengl  
+#include <QtOpenGL/QtOpenGL>
+QGLWidget：继承与QWidget(可用QPainter)，可绘2D/3D
+QGLFormat：可设置Double/Single/Depth buffer，RGBA等OpenGL渲染内容模式
+QGLContext：封装OpenGL渲染内容的类，可setFormat
+<GL.h>  一堆函数以及对应的GL_宏
+------GL的线程：
+-双缓存交互数据：
+主线程：doneCurrent() -> moveToThread()
+通知(Notify)切换线程，抓取(Grab)上下文
+交换线程：makeCurrent() -> swapBuffer() -> doneCurrent() -> moveToThread( qApp->thread() ) //切换至主线程 
+
+-线程上传纹理(Texture)：
+Texture可以使用大量图片，QGLWidget的主GUI线程构成图画，其他线程上传纹理。支持bindTexture()
+
+-线程使用QPainter在QGlWidget上绘图：Qt4.8、OpenGL2.0以上版本
+QGLWidget只能在主GUI线程上创建，从主线程Release OpenGL的上下文时，必须 doneCurrent(），其他线程在绘制前必须moveToThread()
+若要改变控件大小，主线程会将改变大小的事件通知给QGLWidget
+------------
+《QtSvg》可缩放矢量图 Scalable Vector Graphics	 pro:   QT += svg  #include <QtSvg/QtSvg>
+QGraphicsSvgItem：通过图像渲染基于XML的SVG文件
+QSvgGenerator：使用SVG绘图的绘图设备
+QSvgRenderer：在绘图设备上绘制SVG文件
+QSvgWidget：在控件上显示SVG文件的XML内容
+
+15.控制台
+instance()  返回QCoreApplication实例指针
+arguments()  //返回参数  QStringList，第一个参数为exe的绝对路径
+
+输入：
+QTextStream qin(stdin);   qin>>port
+QDataStream
+cin >> xxx;
+scanf("%d",int);
+
+输出:
+qDebug() << xxx;  //自动换行
+printf("");   //不用加换行也可输出
+//下面必须加换行才能输出，对了endl不一样
+QTextStream qout(stdout);   qout << port<<endl;
+QDataStream
+std::cout << ""  <<std::endl;
+
+控件：
+
+《按钮》
+QcommandLinkButton  命令链接按钮
+QCheckBox  复选框，可改为单选口√
+QPushButton  普通按钮
+QRadioButton  圆圈按钮
+QComboBox  单击按钮，可从弹出的选项中选一个
+
+《显示》
+QProgressBar  进度条  METHOD：setInvertedAppearance(bool)反向
+QLineEdit  单行文本框控件	SIGNAL：textChanged(QString)
+QTextEdit  多行文本框控件
+QListWidget  列表控件 	METHOD: addItems
+QFontComboBox  字体选择	SIGNAL：currentIndexChanged(int)   setFontFilters(QFontComBox:: )
+QLCDNumber  LCD风格数字控件（手表风格） METHOD：setSegmentStyle(QLCDNumber::Filled)
+QLabel  显示文本或图片，以及GIF
+
+《绘画》
+QImage  图片控件
+QPixmap  像素图控件
+QPainter  绘画  ->QPen(线条)，QBrush(填充)   QPainter用于QWidget时只能在paintEvent内用。构函/begin使active
+QPainterPath  绘画路径   METHOD: moveTo(相对坐标变化)
+QPen、QBrush：线条、填充
+QLinearGradient、QRadialGradient、QConicalGradient：渐变，给Brush用   pos:0.0~1.0  angle:0.0~360.0
+QTransform：转换，QPainter.setTransform；  METHOD:  translate(dx,dy)、rotate、scale...
+
+《辅助显示》
+QTabWidget  Tab控件  切换界面  SIANGL：currentChanged(int)  从0开始编号
+QTabBar 和上面功能相识
+QFocusFrame  专注框   METHOD：setWidget(QWidget)   setAutoFillBackground(bool)
+QSizeGrip  可拖动改变parent窗口
+QProgressBar  进度条
+QDesktopWidget  用一个显卡访问多个虚拟的桌面画面的控件
+
+《QGraphics》
+     — x
+  /  |      左手系……
+ z    y
+基本：
+QGraphicsView：可视视图，滚动条    METHOD：mapToScene、render、setViewport(new QGLWiget(QGLFormat(QGL::SampleBuffers)))
+QGraphicsScene：整个界面，包含多个Item   METHOD：ItemAt、addXXX、render
+QGraphicsItem：QGraphicsRectItem、QGraphicsEllipseItem、QGraphicsTextItem、自定义
+布局：QGraphicsLinearLayout 水平/垂直、QGraphicsProxyLayout 坐标、QGraphicsItemGroup
+转换：QGraphicsTransform
+特效：QGraphicsEffect->Blur(模糊)、DropShadow(阴影)、Colorize(色调)、Opacity(透明,默0.7)   用在view或item，去掉时可以setGraphicsEffect个临时变量
+动画：QGraphicsItemAnimation
+基类：QGraphicsObject、QGraphicsWidget、QGraphicsLayout->QGraphicsLayoutItem
+
+《QAnimation》
+QState(状态) --addTransition--> QSignalTransition(转换方式) -- addAnimation 
+		                 --> QParallelAnimationGroup、QSequentialAnimationGroup
+--> QAbstractAnimation(实现) |
+		                 --> QVariantAnimation(抽) --> QPropertyAnimation (QWidget*,"property")
+QAnimation的start，当动画完成时自动delete； Group默认不delete，可以自己设置；
+QStateMachine：继承QState，负责转换状态，在Transition中Animation只是附带的，转换是一瞬间的
+QPropertyAnimation：也可以直接使用，	SIGNAL: finished()	 METHOD：setDuration、setStartValue、setEndValue    
+QEasingCurve：动画进行时的快慢曲线，常用：InQuad(a↑)、OutQuad(a↓)、InOutQuad(a↑↓)
+
+《对话框》
+QDialog  基类
+QInputDialog  ::getInt,Double,Text,Item
+QColorDialog  ::getColor
+QFileDialog  ::getExistingDirectory,OpenFileName,SaveFileName
+QFontDialog  ::getFont
+QMessageBox  ::information   <br>、\n、<\r\n>换行，setWindowTiltle
+QProgressDialog
+QPrintDialog：
+QPrintPreviewDialog：
+QPageSetupDialog
+METHOD：setText、setInformativeText、setDetailedText(会多个detail按钮)、setStandardButtons、setDefaultButton
+堆区的 dialog->setAttribute( Qt::WA_DeleteOnClose ) 或者 建立在栈区，  .exec()
+
+《工具/菜单栏》
+QToolBox  工具栏
+QToolButton  可快速访问的按钮控件
+QMenu  菜单栏
+
+《滚动条/滑块》
+//自动调整Label控件大小为图片大小
+QScrollArea  绑定其他控件的自动滚动条  METHOD: setWidget( QWidget* ) , setGeometry(...),show()
+QScrollBar  水平/垂直滚动条
+QSlider  水平与垂直滑块
+
+QDial  仪表盘 	METHOD：setNotchesVisible(bool)显示刻度	 
+QDoublespinBox   ↑↓选数值框	METHOD：setPrefix(QString)前缀
+QSpinBox  ↑↓选数值框   METHOD：setSuffix(QString)后缀	
+
+《日期/时间》
+QDateEdit  编辑或显示日期的控件
+QTimeEdit  编辑或显示时间的控件
+QDatetime 编辑或显示日期和时间的控件
+QCalendarWidget  以日历形式显示用户选择的日期(以月为单位)的控件
+
+《组》
+QButtonGroup  按钮组
+QGroupBox  相同类型组
+QSplitter  分割控件
+QSplitterHandle  分割处理
+QStackedWidget  可使多个控件同时出现
+
+《布局》：可以根据窗口的大小而改变布局内控件的大小与位置，但 setGeometry(x,y,w,h)不能
+->addWidget(Widget*)    setLayout(Layout*)	注：Widget的parent要设为主窗体！
+注：Layout一般不要设置parent
+QHBoxLayout  水平布局控件
+QVBoxLayout  垂直布局控件
+QBoxLayout  水平或垂直布局控件
+QGridLayout  网格布局控件
+
+QHBoxLayout* layout = new QHBoxLayout();
+QVBoxLayout* vlayout = new QVBoxLayout();
+vlayout->addLayout(layout);
+layout->addWidget(...)	//layout无法->setGeometry
+this->setLayout(vlayout);
+vlayout->setGeometry(rect());	//先绑定后set
+
+《模型/视图》
+QStringListModel    保存QString数据类型的单一数据列表
+QStandarItemModel   通过树形视图提供读取任意数据    METHOD：index，setHeaderData、setVerticalHeaderItem， 数据setData
+QFileSystemModel  提供文件系统的文件和目录信息 
+QSqlQueryModel  通过模型类存储数据库信息
+QSqltableModel
+QSqlRelationalTabelModel
+
+QColumnView  基于模型(Model)/视图(View)的列视图控件
+QListView  列表形态的视图控件
+QTableView  基于模型/视图的表格视图控件   
+QTreeView  基于模型/视图的树形视图控件
+QUndoView  将撤销栈(Undo stack)的内容显示并输出到列表控件的控件
+
+《SQL》	#include <QtSql/QtSql>
+QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");	 //("QSQLITE", "QMYSQL", "QMYSQL3", "QODBC", "QODBC3", "QPSQL", "QPSQL7")
+db.setHostName(host);			//服务器名	
+db.setDatabaseName(database);		//数据库名	
+db.setUserName(user);			//用户名	
+db.setPassword(password);			//密码		
+bool ok = db.open();
+
+view = new QTableView(this);
+static QSqlQueryModel* model = new QSqlQueryModel;
+model->setQuery(cmd);
+view->setModel(model);
+view->show();
+
+《代理》：将保存或映射到模型的数据描绘到视图控件或进行处理，支持Qt4.4以上版本
+QStyledItemDelegate：可定义选项列表风格，如图标、Paint绘图
+QItemDelegate：提供在模型/视图上处理数据的功能
+
+《映射》
+QDataWidgetMapper  连接控件和模型数据的映射类控件
+QMacNativeWidget  将Qt控件添加到Cocoa各级结构方法的控件
+QMacCocoaViewContainer  打包(Wrapping)Cocoa视图类的Moc OS X的控件
+
+《基类》
+QWidget  所有控件的基类 ，里面有vitual Event ， METHOD: rect()、setGeometry
+QAbstractButton  	SINAL：pressed()、released()、clicked()
+QAbstractScrollArea
+QAbstractSlider	SINAL：valueChanged(int)
+QAbstractSpinBox  	SINAL：valueChanged(int||double)
+QAbstractItemModel
+QAbstractItemView	 METHOD:  setModel(Model*)  setRootIndex(model->index(QDir::currentPath()))
+QAbstractItemDelegate
+QAbstractSocket
+QDialog
+QFrame
+QIODevice
+QFileDevice
+
+
+《其他》
+menuBar()  默认的菜单栏
+ui.xxxx
+
+《宏》
+Q_OBJECT  声明/决定一些meta函数
+
+Q_SIGNALS: 信号声明，同 signals 
+访问修饰符 Q_SLOTS: 槽声明，同 slots
+
+SINGAL、SLOT ：表示信号和槽
+Q_NULLPTR：空指针
+
+Q_UNUSED(形参)：相对于省略该形参，调用时不传该形参也可
+
+Q_PROPERTY(类型  函数名  READ  函数名R  WRITE  函数名W)  
+类型  函数名R() const;
+void 函数名W(类型);
+
+Q_INTERFACES(QMediaBindableInterface)  声明接口
+
+enum XXX   
+Q_ENUM(XXX) 声明枚举
+Q_DECLARE_FLAGS(XXXS,XXX)  typedef  QFlags<XXX> XXXS  
+Q_FLAG(XXXS)
+----------------------------------------------------------------------------------------------------------
+通用SIGNAL： 
+triggered()、pressed()、released()、clicked()、、、、、、、、、、、、、、、、、、、、、、、、、、、、、
+
+通用SLOT：
+close()、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、
+
+通用METHOD：setGeometry(x,t,w,h)  setFixedSize(w,h)   rect()  size()
+---------------------------------------------------------------------------------------------------------
+常见问题：
+1. 双击ui时能弹出窗口，但很快就未知错误
+解决：右键 -> 打开方式 -> 添加 -> 在D:\Qt\Qt5.14.2\5.14.2\msvc2017_64\bin里添加designer.exe -> 设置其为默认值
+
+2. 智能提示错误，无法识别类型
+解决：右键ui，编译，重启sln
+
+3.找不到QtMsbuild
+解决：可以把文件夹直接复制过去，也可以改变系统环境变量
+
+4.中文乱码，无法加载中文路径
+在.cpp 里  #pragma execution_character_set("utf-8")
+
+5.在QtDesigner中添加的控件 ui.不出来？
+在Vs中，右键编译 .ui文件 ，然后右键解决方案，重新扫描解决方案
+
+6.添加现有项并不能直接使用……点不出来啊
+
+7.QPainter只能在PainterEvent中使用，begin与end配对，或都不用。
+保留在Widget上的不会绘画不会保留，可以通过绘在一个pixmap上，再绘制pixmap的方法累计绘制
+
+8.QTextStream 无法建立，判断文件是否打开……
+
+9.QFile(filename)、bool ok = file.open(QFile::ReadWrite)
+
+10.无法使用QtMultimedia? 项目属性->Qt Project Settings -> Qt Modules中添加 multimedia
+
+11.发布
+在桌面建个Task文件夹，把Release下的.exe以及工作目录下用到的文件复制过来，CMD运行 windeployqt.exe
+CMD  ->  D:/Qt/Qt5.14.2/5.14.2/msvc2017_64/bin/windeployqt.exe ./DeskTop/Task/Task.exe
+
+12.GUI要在主线程（构函）中赋值，不能直接=。
+
+13.layout不用声明parent，但GUI需要。layout->addWidget()	layout->addLayout()
+----------------------------------------------------------------------------------------------------------
+Transform：变化矩阵
+{{a1,b1,c1},           {  x1 x2 x3 ...
+ {a2,b2,c2},      *       y1 y2 y3 ...	
+ {a3,b3,c3}}              z1 z2 z3 ...}
+
+{ x1 y1 z1         { a1   a2   a3   
+  x2 y2 z2    *      b1  b2   b3  -> 上面的矩阵transposed
+  x3 y3 z3            c1   c2   c3  }
+  ...   ...   ...}
+
+缩放 scale
+{{Sx,0,0},     
+ {0,Sy,0},      x = x*Sx , y = y*Sy , z = z*Sz
+ {0,0,Sz=1}}
+
+剪切  shearing
+{{1,Sy=1,Sz=0},     
+ {0,1,0},         ->  x = x + y*Sy + z*Sz   其他轴不变”拉伸“x轴
+ {0,0,Sz=1}}
+
+旋转  rotation  右手螺旋
+2D(绕z)
+{{cosθ,-sinθ,0},     
+ {sinθ,cosθ,0},            x' = rcos(θ+ψ) = rcosθcosψ - rsinθsinψ = cosθx -  sinθy
+ {0,0,1}}		y' = rsin(θ+ψ) = rsinθcosψ + rcosθsinψ = sinθx +  cosθy
+绕x
+{{1,0,0},
+ {0,cosθ,-sinθ}
+ {0,sinθ,consθ}}
+绕y
+{{cosθ,0,-sinθ},
+ {0,1,0}
+ {sinθ,0,cosθ}}
+
+位移  translation
+{{1,0,xt},     
+ {0,1,yt},	->  x = x+xt , y = y+yt        
+ {0,0,1}}
