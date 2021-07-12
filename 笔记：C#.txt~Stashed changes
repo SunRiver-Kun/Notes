@@ -1,7 +1,0 @@
-1.比较char[]与string
-bool ok = str.Equal(new string(char*))   //注意char[]不需要'\0'结尾！
-2.启动外部程序
-using System.Diagnostics;
-Process proc = new Process();
-proc.StartInfo.FileName = "BuiltGame.exe";
-proc.Start();  

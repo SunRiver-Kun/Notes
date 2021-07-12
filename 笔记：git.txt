@@ -1,6 +1,8 @@
 git-brash command: TAB补全
 
 git
+加速：
+1.镜像	https://github.com.cnpmjs.org/x
 
 第一次使用：
 git config --global user.name "SunRiver-NEU"
@@ -19,7 +21,8 @@ git commit-m "HelloWorld"
 //git commit -a -m "..."	直接一步到位
 
 //git pull	可能需要先同步下数据
-git remote add  origin https://github.com/SunRiver-NEU/sollyz.git
+ssh：git@github.com:SunRiver-NEU/Notes.git
+git remote add  origin https://github.com/SunRiver-NEU/sollyz.git	Notes.git
 git push [-u] origin <local_branch>	// -u  也上传从local_branch的支流
 git push --set-upstream origin sollyz (新分支)
 git push 
