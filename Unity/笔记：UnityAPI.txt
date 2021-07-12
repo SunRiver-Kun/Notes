@@ -1,0 +1,152 @@
+--核心
+Application{	
+	Quit()
+}
+
+Mathf{
+	float Clamp(value, min, max)	--返回[min,max]之间的值
+	float Lerp(a, b, time)		-- time[0~1]，按time插值
+	float PingPong(t, max)	--摇摆t的值，且不大于max，也不小于0
+	bool Approximately(a, b)	-- a==b，是否十分接近
+	float DeltaAngle(a, b)		--计算两个角度间的夹角？	
+	Ceil、Round(a)		--取整，System.Convert.ToInt32(a) , (int)
+	Epsilon(很小的常量)、Infinity(正无穷)、NegativeInfinity(负无穷)、PI、Deg2Rad、Rad2Deg
+}
+
+Random{
+	Range(a,b)	-- [a,b)
+ 	
+	 --functions
+	 float Choose (float[] probs) {
+
+        float total = 0;
+
+        foreach (float elem in probs) {
+            total += elem;
+        }
+
+        float randomPoint = Random.value * total;
+
+        for (int i= 0; i < probs.Length; i++) {
+            if (randomPoint < probs[i]) {
+                return i;
+            }
+            else {
+                randomPoint -= probs[i];
+            }
+        }
+        return probs.Length - 1;
+    }
+}
+
+UnityEngine.SceneManagement{
+	SceneManager{
+		LoadScene(index)   --从0开始编号，bulid Settings最上面改
+	}
+}
+
+ComponentSystem{
+
+}
+
+Unity.Scene.SceneSystem{
+	--SubScene
+	LoadScene(SceneGUID)
+	UnLoadScene(SceneGUID)
+}
+
+Entities{
+
+}
+
+--动画
+Animation{	
+
+}
+
+--音/视频
+AudioPlayer、AudioSource、VideoPlayer
+
+--物理
+Physics{		
+	bool RayCast( pos, direction[,out hitobjs], distance[, layout] )	--check colliseder
+}
+
+Rigidbody{
+	SetDensity(float density)	--设置密度
+	AddForce(Vector3 force, mode = ForceMode.Force)	--添加力
+	AddTorque(Vector3 torque, mode = ForceMode.Force)	--添加力(转/扭)矩
+	Sleep()	--强制让刚体睡眠至少一帧
+	velocity(速度)、mass(质量,一般为0.1-10)、drag(摩擦力)
+	
+}
+
+Transform{
+	LookAt(Transform target, Vector3 worldUp)
+	Vector3D TransformDirection( xxx.forward/right/up )
+	position、eulerAngles、forward、right、up、rotation(四元素)}
+
+Quaternion{
+	Euler(0, angleDegrees, 0)	--按°来旋转，左手螺旋
+}
+
+XXX Constraint{
+	Aim	//旋转
+	Look At	//简化的旋转，对于摄像机，镜头始终指向forward，即它的Z轴
+	Parent	//位移和旋转，有惯性？不灵活！
+	Position、Rotation、Scale	//单个
+--先加Look At，后加Postion，实现镜头跟踪物体。反之会出现剧烈抖动！    注：Move Up/Down等不改变组件的添加顺序！
+--Active：激活约束，即Lock and Active
+--Zero：重置偏移量等
+--XXX Rest：静止时（权为0时）
+--XXX Offset：运动时
+--Freeze XXX：对与position是启用，对于Rotation是禁用
+}
+
+
+
+--输入/控制
+Input{
+	bool GetButton(string)		bool GetKey(KeyCode)		bool GetMouseButton()
+	bool GetButtonDown(string)		bool GetKeyDown(KeyCode)		bool GetMouseButtonDown()
+	bool GetButtonUp(string)		bool GetKeyUp(KeyCode)		bool GetMouseButtonUp()
+	float GetAxis("Horizontal" or "Vertical")  //float
+	mousePosition
+}
+
+CharacterController{		不是很好用……
+	CollisionFlags Move(Vector3 motion)	--不考虑重力，返回碰撞到的碰撞器
+	SimpleMove(Vector3 speed)	--以 m/s 的速度移动(初速度)，自动添加重力
+	isGrounded	--最后一次移动后，是否碰到地面
+	velocity、slopeLimit、stepOffset(将影响刚体的下落速度！)
+	、radius、height、center
+}
+
+--时间
+Time{
+	  deltaTime	--帧之间的间隔
+}
+
+--绘制/GUI
+GUI{	--坐标系采用屏幕坐标系（左上角）  	(0,0) ↓y →x	--写在 OnGUI，每帧至少执行2次（一绘制，二响应）
+--有些时候要保存数据要建个类成员
+--Screen.xxx	直接用
+--可以在组件上加属性 [ExecuteInEditMode]，来“预览”，交互print不怎么样
+	if( GUI.Button(...) )  { ... }  
+	slidervalue = GUI.HorizontalSlider(new Rect(0, 0, 200, 1000), slidervalue, 0, 100);	//代码实时更新，不过print处理就有点问题
+}
+GUILayout、GUILayoutUtility
+--调试/help
+Debug{
+	DrawRay( pos, vector, color)	--绘制射线
+	Log(string)
+}
+
+Gizmos：{	--写在 OnDrawGizmos	OnDrawGizmoSelected
+--绘制一些图案，帮忙确定距离等。在Game中不显示，而在Editor中实时显示
+	Color
+	DrawWireSphere、DrawIcon、DrawGUITextures	
+}
+---------------------------------------------注意事项：
+1. 类成员初始化，值类型/static/编辑器能看到的类型可直接 = ，其他写在Awake或Start。否则可能由于未保存导致null
+2. 修改代码后不要马上调试，等Unity反应过来先。记得随手保存！

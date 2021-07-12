@@ -1,0 +1,40 @@
+1.树木：
+-Assert建个"Ambient-Occlusion"文件夹，引擎需要。
+-使用 Nature/Soft Occlusion Leaves&Bark 着色器，将树木放到文件夹中
+-确保树木网格由两种材质组成，一种表示叶子，另一种表示树干。两种材质是为着色器准备的。注：只有单一网格才会渲染
+-在树干的底部放置轴心
+-限制树木模型在2000tris(triangles)以下或更少，棕榈树为220
+-需要碰撞可以把树木做成预设物（项目视图 -拖> 场景视图 -> 添加碰撞器 -拖> 项目视图）
+-更改自定义树木，需要手动刷新
+
+2.Editor
+-建个Assets/Editor，在里面新建代码
+-建立菜单栏和其功能
+
+文件类：
+using UnityEditor;
+using UnityEngine;
+
+FileUtil：创建/删除/移动/重命名文件
+EditorUtility{
+    SaveFolderPanel("Choose Location of Built Game", "", "");
+    SaveFilePanel("save", "D:\\", "hello.txt", "txt");
+}
+--菜单栏功能
+[MenuItem("MyTools/XXX")]   --[MenuItem("Windows/XXX")]
+public static void fn(){...}
+
+-Editor 脚本
+Scene 结构在 Editor 中和运行时都可用，并包含一些与场景本身相关的只读属性，例如其名称和资源路径。
+EditorSceneManager 类仅在 Editor 中可用。该类派生自 SceneManager，并具有许多函数，使用这些函数即可通过 Editor 脚本实现上述所有多场景编辑功能。
+SceneSetup 类是一个小实用程序类，用于存储有关当前层级视图中的场景的信息。
+Undo 和 PrefabUtility 类已扩展为支持多个场景。现在可以使用 PrefabUtility.InstantiatePrefab 在给定场景中实例化预制件，并可使用 Undo.MoveGameObjectToScene 以不可撤销的方式将对象移动到场景的根目录。
+注意：要使用 Undo.MoveGameObjectToScene，必须确保游戏对象已经位于当前场景的根目录中。
+
+-提示和技巧
+通过在拖动场景时按住 Alt，可将场景添加到层级视图，同时使其保持_卸载_状态。这样允许在稍后需要时再加载场景。
+为避免每次重新启动 Unity 时都必须设置层级视图，或为了方便存储不同的设置，可使用 EditorSceneManager.GetSceneManagerSetup 获取一个描述当前设置的 SceneSetup 对象列表。然后，可将这些对象序列化为 ScriptableObject 或其他对象以及可能要存储的有关场景设置的所有其他信息。要恢复层级视图，只需重新创建 SceneSetup 列表并使用 EditorSceneManager.RestoreSceneManagerSetup。
+若要在运行时获取加载的场景列表，只需使用 GetSceneAt 获取 sceneCount 并遍历这些场景。
+可通过 GameObject.scene 获取游戏对象所属的场景，并可使用 SceneManager.MoveGameObjectToScene 将游戏对象移动到场景的根目录。
+建议避免使用 DontDestroyOnLoad 来保持需要在多次场景加载后仍存在的管理器游戏对象。相反，应创建一个包含所有管理器的管理器场景，并使用 SceneManager.LoadScene(<path>, LoadSceneMode.Additive) 和 SceneManager.UnloadScene 来管理游戏进度。
+

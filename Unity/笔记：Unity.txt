@@ -1,0 +1,41 @@
+1. 欧拉角：Quaternion.Euler(x, y, z);  //xyz为°，左手螺旋 0 1 0
+2. Box Collider：一般全1。特例：Plane的	Scale.X/2   1   Scale.Z/2	实际碰撞高为Scale.Y*Size.Y，所以一般Size.Y=1
+3. GameObjec可以从Scane中选，也可以从Prefab中。   组件：只能添加包含该组件的gameObject
+4. Instantiate：生成新实例，并返回游戏对象/对象上的组件 
+对于游戏对象类型的变量，可以将任何游戏对象分配给该变量，并且 Instantiate 函数将返回对新游戏对象实例的引用。
+对于组件类型变量（例如刚体、碰撞体和光源），只能将该组件类型的游戏对象分配给变量，并且 Instantiate 函数将返回新游戏对象实例上对该特定组件的引用。
+5. 静止的物体可以借助Empty Object构成组，同时设为static。经常运行的物体就少设parent，因为要执行局部全局坐标转换！
+6. 非一致缩放：某些组件不支持，子对象在选择时不会自动更新缩放比例。	倾斜的__盒型碰撞体 (Box Collider)__ 无法准确匹配渲染网格的形状
+7. 一般支持多选的都是按位0b发布的，使用时可以用<<确定具体值，如摄像机的Layout
+-----------------------------------------------------
+8. 特殊的文件夹：根目录在Asserts
+-Editor：存放编辑器代码, EditorGUIUtility.Load 函数可从 Editor 文件夹中的 Resources 文件夹加载资源。这些资源只能通过 Editor 脚本加载，并会从构建中剥离。
+-Resources：游戏必备的资源，是除代码外不会被Unity优化掉的东西，Resources.Load
+-Editor Default Resources：必须位于Assets下，EditorGUIUtility.Load可以收到
+-Gizmos： 必须位于Assets下，Gizmos.DrawIcon()加载图像
+-StreamingAssets：完整的文件目录
+
+特殊的代码名：
+GameManager
+
+导入时会忽略的东西：隐藏的文件夹、.头or~尾的文件和文件夹、.tmp的文件、名为cvs的文件和文件夹
+------------------------------------------------------
+9. 优化：
+大小：纹理和音频，动画等压缩好。注：用不到的文件，在构建时不会包含进去，不用担心
+速度：代码尽量不使用 var。不做少做做更好
+Trace.WatchTime(()=>{...},1000000次)	--观察代码运行时间
+------------------------------------------光线
+GameObject → Light、Window → Rendering → LightingSetting(添加天空盒)
+Components{
+	Projector：投影仪，可用于制作跟踪物体的影子
+	LensFlare：镜头光班，特性
+	遮挡 → Cookie，在Point Light里
+}
+
+------------------------------------------辅佐工具
+package manager → Unity Registry（官方工具）
+-Dynamic Bone：模拟衣物的飘动等
+-Job System：多线程编程框架，高性能、安全。	注：一般子线程无法操作Unity对象
+-2D PSD Importer：加速PSD、PSB的导入导出
+-3Dmax、Blender：制作模型，注意单位为米
+-Yamaha、Adobe Audition：制作音频和混音

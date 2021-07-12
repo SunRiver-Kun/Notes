@@ -1,0 +1,37 @@
+Mixamo：动画下载，https://www.mixamo.com/
+
+场景动画片段的创建：
+-调出Animation窗口：Window → Animation
+-创建动画：选择要制作的物体（自动添加Animator组件），然后点击Create
+-点击录制，选择关键帧，变换物体
+-点击播放，满意后结束录制
+-注：如果有一个anim有位移，其他的在原地改变即可。（独立性）
+
+Animator（动画机）：
+-直接打开Animator Controller
+-右键Make Transition，在State间转换
+-在时间轴添加Event，在脚本里面创建public void fn(...)
+-在Parameters添加变量，名字在代码中用到，若与Curves里同名会自动读取（Float）
+-并行/串行Layers，要调整好weight(0-1)，mask选需要的部分(右键Avatar Mask图层蒙版)
+
+-脚本：
+1.在Animator里的Parameters中添加状态，Trigger(触发一次后回复初始状态)，设置name；
+2.选中Transition，在Conditions中添加刚才的Parameters；
+3.建立脚本AnimControler，添加到控制的物体
+[RequireComponent(typeof(Animator))]
+anim = GetComponent<Animator>();
+anim{
+	GetLayerWeight(index)
+	SetLayerWeight(index,float weight)
+	SetTrigger("name");		--默认要上一个动画播放完成，要改变可取消勾选Transition里的Has Edit Time
+}
+----------------------------------------------------------------------
+Model参数：
+Rig→Animation Type：Legacy(旧版本)，None，Generic，Humanoid(类人类)(方便重定向)
+--选择Humanoid后点configure，在Scene视图里选Shaded视图，微调骨架
+--把Model拖到Scene，在Animator里选择Controller（可用Standard Assert里的）
+----------------------------------------------------------------------
+网格动画：3DMax，定点关键帧，被动，较少用
+骨骼动画：动画由骨骼产生	注：Animation里的Parameters的名字，与Animation文件夹里的Curves同名可自动更新数据!
+
+

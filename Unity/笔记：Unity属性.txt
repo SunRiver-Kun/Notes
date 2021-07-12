@@ -1,0 +1,44 @@
+属性：[...]  继承System.ComponentModel. 类名为XXXAttribute, 实际使用 XXX[(...)]
+注记：下面的默认用于函数
+
+System.ComponentModel{
+	
+}
+
+System.Security{
+	[SecuritySafeCritical]  // public int GetInstanceID();
+	
+}
+
+UnityEngine{
+	[SelectionBase]  class/struct	
+	[SerializeField] private  //value	
+	[SerializeReference]  private  //reference
+	
+	[RequireComponent(typeof(Animator))]		//class，若没有该组件，自动添加上去
+}
+
+UnityEngine.Bindings{
+    [NativeHeader("Runtime/GameCode/CloneObject.h")]    //class
+    [RequiredByNativeCode(GenerateProxy = true)]    //class
+
+}
+
+UnityEngine.Internal{
+    [ExcludeFromDocsAttribute]
+    [NativeMethod(Name = "Scripting::DestroyObjectFromScriptingImmediate", IsFreeFunction = true, ThrowsException = true)]
+    [Obsolete("use Object.Destroy instead.")]
+    [DefaultValue("0.0F")]  //paragm
+    [FreeFunction("GetSceneManager().DontDestroyOnLoad")]
+}
+
+UnityEngineInternal{
+     [TypeInferenceRule(TypeInferenceRules.TypeReferencedByFirstArgument)]  //第一个参数的类型，Object/Type
+
+}
+
+
+UnityEngine.Scripting{
+
+
+}
