@@ -49,7 +49,9 @@ git checkout -- xxx.cpp 或 git reset
 
 远程同步/发布：origin/xxx
 git pull	获取
+git pull --rebase origin master     //解决non-fast-forward
 git push [--set-upstream origin <branchname>]	推送
+git push -u origin master
 
 文件查看：
 git ls [-al|-s|-m|-l]		显示文件目录
