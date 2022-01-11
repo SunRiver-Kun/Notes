@@ -1,8 +1,8 @@
 属性：[...]  继承System.ComponentModel. 类名为XXXAttribute, 实际使用 XXX[(...)]
 注记：下面的默认用于函数
 
-System.ComponentModel{
-	
+System{
+	[Serializable]	//可以被unity编辑器编辑
 }
 
 System.Security{
@@ -16,6 +16,8 @@ UnityEngine{
 	[SerializeReference]  private  //reference
 	
 	[RequireComponent(typeof(Animator))]		//class，若没有该组件，自动添加上去
+
+	[CreateAssetMenu(fileName = "Preset", menuName = "Character Preset")]	--建立文件，用于ScriptObject保存 
 }
 
 UnityEngine.Bindings{

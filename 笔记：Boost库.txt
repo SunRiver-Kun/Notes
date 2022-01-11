@@ -19,6 +19,7 @@ using namespace boost;
 	{
 		~progress_timer() //自动cout过去的时间
 	}; 
+
 	class progress_display // cout个进度条
 	{
 		operator ++()

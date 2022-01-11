@@ -42,9 +42,9 @@
 <vcruntime.h> //一些十分有用的宏定义
 {
 	包含有宏：_CRT_BEGIN_C_HEADER, _CRT_END_C_HEADER, _HAS_EXCEPTIONS
-	这行的宏最后的一个_可去掉：     _CRT_STRINGIZE_(x) 	//x->"x"，简单加个"",不运行x的内容
-				 _CRT_WIDE_(s) 	//给s加个L, s->Ls ,一般s为字符串, "hello" -> L"hello" 变wchar_t
-				 _CRT_CONCATENATE_(a,b)	 // 把a,b连起来  ("hello"," world")->"hello world"   (123,456)->123456
+	这行的宏最后的一个_可去掉：     _CRT_STRINGIZE_(x)  (#x)	//x->"x"，简单加个"",不运行x的内容
+				 _CRT_WIDE_(s)  (L#x)	//给s加个L, s->Ls ,一般s为字符串, "hello" -> L"hello" 变wchar_t
+				 _CRT_CONCATENATE_(a,b) ((a)##(b))	 // 把a,b连起来  ("hello"," world")->"hello world"   (123,456)->123456
 				 _CRT_UNPARENTHESIZE_(...)	 // 表示 __VA_ARGS__
 	宏：__crt_countof(_Array) //得到数组长度
 
@@ -81,7 +81,7 @@
 	一些仿函数：plus、minus、multiplies、equal_to、not_equal_to、greater、less、greater_equal、less_equal
 	模版函数： addressof   传入一个参数,返回参数地址
 			   _Unfancy    把传入的参数转换为指针再返回
-	一些模版具体化宏函数：具体自己看吧,真缝合怪, 有关__cdecl、__clrcall、__fastcall、__stdcall、__vectorcall，以及 const、volatile、const volatile
+	一些模版具体化宏函数：具体自己看吧,真缝合怪, 有关__cdecl(从右到左入栈，默认)、__clrcall、__fastcall、__stdcall(从左到右入栈)、__vectorcall，以及 const、volatile、const volatile
 }
 <xtr1common> //类型处理与判断
 {
@@ -235,6 +235,18 @@
 	cin,cout,cerr,clog. wcin,wcout,wcerr,wlog
 }}
 <xiosfwd>  using ios = basic_ios<char, char_traits<char>>;  等
+<string>
+{
+	to_string(...)
+	stoi、stof
+	<xstring>
+	{
+		hash<string/wstring> () --返回哈希值
+		--其他的在< type_traits >
+	}
+}
+<string_view>  处理const char*的好帮手！
+
 <csignal> //终止处理
 {
 #include <yvals.h>  #include <signal.h>
@@ -399,6 +411,9 @@ _Ty fn(...){
 T	int	int	int	int*	cm int*	int	int	int		值类型，只有指针有cm									
 T&	int	int	\	int*	cm int*	cm int	cm int	cm int		左引用，值也可有cm
 T&&	int&	int&	int	int*&	cm int*&	cm int&	cm int&	cm int		全引用，lvalue or rvalue，值也可有cm
+//注：
+1. _Ty&：不能传入字面值（如：123），但可以在“不改变其值”的条件下传入常量（如：const int a）
+2. _Ty&&：可以传字面值，且可以改变其值（自动建临时变量）。也可以传常量，不过试图改变其值的时候会报错
 
 T t(arg)总结： T同arg_type，T&无引用，T&&右值无引其他&
 注意：int&& arg = move(a)，实际上arg是int&，因为 rvalue不能出现在 = 左边！不过可以用()来构建，不过真正传递还是用 static_cast好
@@ -445,12 +460,11 @@ _FwdIt max_element(_FwdIt _First, _FwdIt _Last)
 _FwdIt min_element(_FwdIt _First, _FwdIt _Last)
 pair<_FwdIt, _FwdIt> minmax_element(_FwdIt _First, _FwdIt _Last)
 
-//判断
+//判断	<xstddef> { plus、minus、multiplies、equal_to、not_equal_to、greater、less、greater_equal、less_equal、、、、、、 }
 bool all_of(_InIt _First, _InIt _Last, _Pr _Pred)
 bool any_of(const _InIt _First, const _InIt _Last, _Pr _Pred)
 bool none_of(const _InIt _First, const _InIt _Last, _Pr _Pred)
 bool is_partitioned(const _InIt _First, const _InIt _Last, _Pr _Pred) // 是否[_First, _Last)只有连续的一段满足_Pred
-bool _Equal_rev_pred_unchecked(_InIt1 _First1, _InIt2 _First2, const _InIt2 _Last2, _Pr _Pred)
 bool includes(_InIt1 _First1, _InIt1 _Last1, _InIt2 _First2, _InIt2 _Last2, _Pr _Pred) // test if every element in sorted [_First2, _Last2) is in sorted [_First1, _Last1)
 
 //复制	注：这里的_InIt与_OutIt应该同一种迭代器？
@@ -500,11 +514,21 @@ _OutIt partial_sum(const _InIt _First, const _InIt _Last, _OutIt _Dest, _BinOp _
 reduce：accumulate  	// _Val = _op(move(_Val),*it++)
 transform_reduce：inner_product
 exclusive_scan：partial_sum
+C++17支持部分算法并行
+#include <execution>
+sort(std::execution::parallel_unsequenced_policy(), begin(arr), end(arr))
+
 }
 
 c++17:
 constexpr函数有如下限制：可以用在Lambda
 函数体不能包含汇编语句、goto语句、label、try块、静态变量、线程局部存储、没有初始化的普通变量，不能动态分配内存，不能有new delete等，不能虚函数。
+
+_Types&&... args
+sizeof...(_Types)
+static_cast<_Types>()...
+
+
 
 <charconv>  from_chars, to_chars
 std::optional<int>  -- if(o)  *o

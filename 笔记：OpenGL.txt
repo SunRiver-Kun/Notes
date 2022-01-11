@@ -1,0 +1,65 @@
+-----------------------------
+VS使用boost：
+1. 属性-> VC++目录 -> 包含目录 : 添加 D:\OpenGL\include
+2. 属性-> VC++目录 -> 库目录 : 添加 D:\OpenGL\libs
+3. 属性->  链接器 -> 输入：添加 都是静态的
+opengl32.lib
+glew32s.lib
+glfw3.lib
+freeglut_static.lib
+-----------------------------
+#define FREEGLUT_STATIC  
+#define GLEW_STATIC
+
+
+清空屏幕：glClear(GL_COLOR_BUFFER_BIT);
+
+1.画虚线
+glEnable(GL_LINE_STIPPLE);
+glLineStipple(1, 0xff);
+glBegin();
+...
+glEnd();
+glDisable(GL_LINE_STIPPLE);
+
+
+
+#define GLEW_STATIC
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+int main()
+{
+	GLFWwindow* window;
+
+	/* Initialize the library */
+	if (!glfwInit())
+		return -1;
+
+	/* Create a windowed mode window and its OpenGL context */
+	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	if (!window)
+	{
+		glfwTerminate();
+		return -1;
+	}
+
+	/* Make the window's context current */
+	glfwMakeContextCurrent(window);
+
+	/* Loop until the user closes the window */
+	while (!glfwWindowShouldClose(window))
+	{
+		/* Render here */
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		/* Swap front and back buffers */
+		glfwSwapBuffers(window);
+
+		/* Poll for and process events */
+		glfwPollEvents();
+	}
+
+	glfwTerminate();
+	return 0;
+}

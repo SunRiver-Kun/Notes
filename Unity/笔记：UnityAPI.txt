@@ -1,3 +1,7 @@
+﻿--事件转发
+UnityEngine.Events.UnityEvent	类似Button一样的，可在编辑器上显示。
+简单的也可以用System.Action，不过Action可能为空，而UnityEvent不为空
+
 --核心
 Application{	
 	Quit()

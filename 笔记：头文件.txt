@@ -1,0 +1,51 @@
+.hpp 一般指带附加实现的头文件，不过用.h也可以
+
+一般的.h里面写
+#ifndef XXX_H
+#define XXX_H
+
+#ifdef __cpluscplus
+extern "C" {
+#endif
+
+#include <stdio.h>
+#define xxx
+//namespace sr {
+
+struct/class XXX{
+	void fn();
+	void fn2() { xxx };	
+}
+[extern] void fn()
+所有模版实现，所有inline
+
+//}
+
+#ifdef __cpluscplus
+}
+#endif
+
+#endif
+
+可写的实现：
+
+变量
+static int xxx	//尽量写在函数里，写在外面容易重定义
+const int xxx	//会被当成inline
+inline int xxx	
+
+static fn(...) {
+static int yyy;
+ ... }
+
+
+错误：
+[extern]  int x;	//没有inline || static 会链接错误，符号重命
+[extern]  void fn() {}
+
+
+main.cpp里
+#include "xxx.hpp"
+可以直接用 static 的实现，小心重定义!
+
+

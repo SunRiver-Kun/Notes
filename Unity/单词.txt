@@ -1,0 +1,9 @@
+albedo  反射率
+emission  发射
+occlusion  吸收率
+opaque  不透明的
+specular 镜面的
+nomal  法线的
+probe   探测
+metallic  金属的
+

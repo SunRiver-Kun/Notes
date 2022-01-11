@@ -1,4 +1,4 @@
-1.树木：
+﻿1.树木：
 -Assert建个"Ambient-Occlusion"文件夹，引擎需要。
 -使用 Nature/Soft Occlusion Leaves&Bark 着色器，将树木放到文件夹中
 -确保树木网格由两种材质组成，一种表示叶子，另一种表示树干。两种材质是为着色器准备的。注：只有单一网格才会渲染
@@ -11,6 +11,10 @@
 -建个Assets/Editor，在里面新建代码
 -建立菜单栏和其功能
 
+--菜单栏功能
+[MenuItem("MyTools/XXX")]   --[MenuItem("Windows/XXX")]
+public static void fn(){...}
+
 文件类：
 using UnityEditor;
 using UnityEngine;
@@ -20,9 +24,7 @@ EditorUtility{
     SaveFolderPanel("Choose Location of Built Game", "", "");
     SaveFilePanel("save", "D:\\", "hello.txt", "txt");
 }
---菜单栏功能
-[MenuItem("MyTools/XXX")]   --[MenuItem("Windows/XXX")]
-public static void fn(){...}
+
 
 -Editor 脚本
 Scene 结构在 Editor 中和运行时都可用，并包含一些与场景本身相关的只读属性，例如其名称和资源路径。

@@ -1,4 +1,4 @@
-1. 欧拉角：Quaternion.Euler(x, y, z);  //xyz为°，左手螺旋 0 1 0
+﻿1. 欧拉角：Quaternion.Euler(x, y, z);  //xyz为°，左手螺旋 0 1 0
 2. Box Collider：一般全1。特例：Plane的	Scale.X/2   1   Scale.Z/2	实际碰撞高为Scale.Y*Size.Y，所以一般Size.Y=1
 3. GameObjec可以从Scane中选，也可以从Prefab中。   组件：只能添加包含该组件的gameObject
 4. Instantiate：生成新实例，并返回游戏对象/对象上的组件 
@@ -32,6 +32,12 @@ Components{
 	遮挡 → Cookie，在Point Light里
 }
 
+------------------------------------------特效 *先添加Volume组件*
+Bloom：灯光效果
+Tonemapping：色调映射
+Color Adjustments：曝光、对比度等
+Shadows xxx：阴影颜色控制等
+Depth Of Field：景深
 ------------------------------------------辅佐工具
 package manager → Unity Registry（官方工具）
 -Dynamic Bone：模拟衣物的飘动等

@@ -1,3 +1,8 @@
+常用软件：Win+R		文件路径：C:\Windows\System32
+mspaint.exe	画图
+services.msc
+
+
 LPCWSTR : CONST WCHAR*
 LPCSTR : CONST CHAR*
 LPWSTR ：WCHAR*

@@ -1,4 +1,4 @@
-参考网址：https://github.com/JokerJohn/QT/blob/master/QT%E7%AC%94%E8%AE%B0%E5%90%88%E9%9B%86.md
+参考网址：
 1.日期，时间
 QDate、QTime、QDateTime
 d  1~31			M  1~12			    yy  00~99
@@ -20,10 +20,12 @@ enum Key{ KEY_XX   }// KEY_XX | KEY_XX ，| 可改为+
 enum  GlobalColor{...}
 }
 
-4.setWindowTiltle(QString)  //设置Widget的标题
- setCentralWidget(textEdit);  //设置位于中心的控件
+4.
+setWindowTiltle(QString)  //设置Widget的标题
+setCentralWidget(textEdit);  //设置位于中心的控件
 
 5.<br>、\n、\r\n 换行
+label ->setText("<h1><a href=\"https://www.baidu.com\">百度一下</a></h1>");
 
 6.自定义控件############################
 配置Designer：
@@ -57,7 +59,7 @@ VS使用自定义lib：
 ../ ：在sln目录下找，父级目录
 在.exe目录下的文件(默认)："../Debug/xxx.txt"
 
-8. QString  QDir::currentPath()   //返回的是工作目录
+8. QDir::currentPath()   //返回的是工作目录
 
 9.数据类型
 基本：bool、qint8、quin8、qint16、quin16、qint32、quin32、qint64、quin64、float、double、const char*
@@ -70,6 +72,7 @@ VS使用自定义lib：
 	QFile、QTextStream(与QFile配合)、QByteArray、QByteArrayMatcher
 
 10.数学函数
+<QMath>
 qBound(min,value,max)   //在min~max之间
 qAbs(T value)
 qint  qRound(value)  //四舍五入
@@ -78,7 +81,8 @@ bool qFuzzyCompare(float/double,float/double)  //比较两浮点数是否相同
 bool qFuzzyIsNull( float/double Value )  //判断浮点数是否为0
 
 11.调试等信息处理
-qDebug(const char*msg,...);
+#include <QtDebug>
+qDebug(const char*msg,...);      qDebug()<<a
 qWarning(const char*msg,...);
 qCritical(const char*msg,...);
 qFatal(const char*msg,...);  //自动abort，自定义时也应调用abort
@@ -88,7 +92,10 @@ enum的调试，使支持qDebug()<<
 Q_DECLARE_METATYPE(QRadioTuner::State)
 Q_MEDIA_ENUM_DEBUG(QRadioTuner, State)
 
+Q_ASSERT(cond)
+
 12.Event
+*具体的Event需要在.cpp中	#include<XXXEvent>
 -重写paintEvent、mousePressEvent等函数
 -重写event，重新分配具体事件，switch( e->type() ) paintEvent() return true;   else return QWiget::event(e)
 -重写eventFilter并在其他控件上-- installEventFilter  removeEventFilter -- 安装时组件同线程，运行时也是同线程，if(boj==xxx){...return ture/false;}  else return return QMainWindow::eventFilter(obj, event);
@@ -110,7 +117,8 @@ if( event->button() & Qt::LeftButton )  m_dragPoint = event->globalPos() - frame
 move(event->globalPos() - m_dragPoint);   //mouseMoveEvent
 drawPixmap  //paintEvent
 
-16.文件系统：请使用 / 作为分隔符
+16. 《文件》
+文件系统：请使用 / 作为分隔符
 QIODevice：所有 I/O 设备类的父类，提供了字节块读写的通用操作以及基本接口；  ENUM：Text文本格式读取、ReadOnly、WriteOnly、ReadWrite、Append
 QFileDevice：Qt5新增加的类，提供了有关文件操作的通用实现。
 QAbstractSocket：所有套接字类的父类；
@@ -122,12 +130,24 @@ QFlie：访问本地文件或者嵌入资源；  开/关/刷文件   	METHOD：�
   -QFileInfo获取文件信息，文件名/目录等   METHOD：baseName()、suffix()、isDir()、isExecutable()、  static bool exists(const QString &file);、
 QTemporaryFile：创建和访问本地文件系统的临时文件；
 QBuffer：读写QbyteArray, 内存文件；
+QDir  路径
+{	//文件是否存在
+	QFileInfo::isFile()
+	//文件夹是否存在
+	QFileInfo::isDir()	|	QDir::exists()
+	//文件或文件夹
+	QFileInfo::exists()	|	QFile::exists()
+}
+
+//注：这里的 / 只有一个，可用	QDir::toNativeSeparators(downloadDirectory)变两个/
+QStandardPaths::writableLocation(QStandardPaths::TempLocation);	// QStandardPaths 标准路径，如Temp、桌面、文档、音乐、程序路径等
 
 -顺序访问设备：只能从头到尾读一遍
-QProcess：运行外部程序，处理进程间通讯；
+QProcess：运行外部程序，处理进程间通讯；	process->start("notepad.exe "+labelpath);
 QTcpSocket：TCP协议网络数据传输；流通信
 QUdpSocket：传输 UDP 报文；报文通信
 QSslSocket：使用 SSL/TLS 传输数据；
+QDesktopServices：用文件浏览器打开		QDesktopServices::openUrl( QUrl::fromLocalFile( QDir::currentPath() ) );
 
 《QtMultimedia》
  #include <QtMultimedia/QtMultimedia>
@@ -237,13 +257,24 @@ QLCDNumber  LCD风格数字控件（手表风格） METHOD：setSegmentStyle(QLC
 QLabel  显示文本或图片，以及GIF
 
 《绘画》
-QImage  图片控件
-QPixmap  像素图控件
+QImage  图片控件，支持修改
+QPixmap  像素图控件，优化显示，不修改
 QPainter  绘画  ->QPen(线条)，QBrush(填充)   QPainter用于QWidget时只能在paintEvent内用。构函/begin使active
 QPainterPath  绘画路径   METHOD: moveTo(相对坐标变化)
 QPen、QBrush：线条、填充
 QLinearGradient、QRadialGradient、QConicalGradient：渐变，给Brush用   pos:0.0~1.0  angle:0.0~360.0
 QTransform：转换，QPainter.setTransform；  METHOD:  translate(dx,dy)、rotate、scale...
+
+《图表》
+#include <QtCharts>   Qt += charts
+ QChartView( QChart* )
+QChart 由一系列Series(QChart*)组成
+QLineSeries：折线图，由点组成
+QSplineSeries：曲线图，由点组成
+QAreaSeries：面积图，用到上下界QLineSeries
+QStackedBarSeries：条形图，由一个个QBarSet组成		QBarSeries就一堆
+QPieSeries：饼图，通过append(QString label, qreal value)，添加数据
+QScatterSeries：散点图
 
 《辅助显示》
 QTabWidget  Tab控件  切换界面  SIANGL：currentChanged(int)  从0开始编号
@@ -279,6 +310,7 @@ QEasingCurve：动画进行时的快慢曲线，常用：InQuad(a↑)、OutQuad(
 
 《对话框》
 QDialog  基类
+QDialogButtonBox	便于Dialog按键的摆放
 QInputDialog  ::getInt,Double,Text,Item
 QColorDialog  ::getColor
 QFileDialog  ::getExistingDirectory,OpenFileName,SaveFileName
@@ -290,6 +322,10 @@ QPrintPreviewDialog：
 QPageSetupDialog
 METHOD：setText、setInformativeText、setDetailedText(会多个detail按钮)、setStandardButtons、setDefaultButton
 堆区的 dialog->setAttribute( Qt::WA_DeleteOnClose ) 或者 建立在栈区，  .exec()
+
+exec()	隔绝式运行
+show()	不阻塞显示
+open()
 
 《工具/菜单栏》
 QToolBox  工具栏
@@ -320,17 +356,18 @@ QSplitterHandle  分割处理
 QStackedWidget  可使多个控件同时出现
 
 《布局》：可以根据窗口的大小而改变布局内控件的大小与位置，但 setGeometry(x,y,w,h)不能
-->addWidget(Widget*)    setLayout(Layout*)	注：Widget的parent要设为主窗体！
-注：Layout一般不要设置parent
+->addWidget(Widget*)    setLayout(Layout*)	
+注：一般Layout无parent，Widget有
 QHBoxLayout  水平布局控件
 QVBoxLayout  垂直布局控件
 QBoxLayout  水平或垂直布局控件
 QGridLayout  网格布局控件
+QSpacerItem占位
 
 QHBoxLayout* layout = new QHBoxLayout();
 QVBoxLayout* vlayout = new QVBoxLayout();
-vlayout->addLayout(layout);
 layout->addWidget(...)	//layout无法->setGeometry
+vlayout->addLayout(layout);
 this->setLayout(vlayout);
 vlayout->setGeometry(rect());	//先绑定后set
 
@@ -481,16 +518,29 @@ Transform：变化矩阵
 {{cosθ,-sinθ,0},     
  {sinθ,cosθ,0},            x' = rcos(θ+ψ) = rcosθcosψ - rsinθsinψ = cosθx -  sinθy
  {0,0,1}}		y' = rsin(θ+ψ) = rsinθcosψ + rcosθsinψ = sinθx +  cosθy
-绕x
+
+//单坐标内旋转，正反正
+绕x，正手
 {{1,0,0},
  {0,cosθ,-sinθ}
  {0,sinθ,consθ}}
-绕y
-{{cosθ,0,-sinθ},
+绕y，反手，我们要的是【X Z】不是【Z X】
+{{cosθ,0,sinθ},
  {0,1,0}
- {sinθ,0,cosθ}}
+ {-sinθ,0,cosθ}}
+绕z，正手
+{{cosθ,-sinθ,0},
+ {sinθ,cosθ,0},
+ {0,0,1}}
 
 位移  translation
 {{1,0,xt},     
  {0,1,yt},	->  x = x+xt , y = y+yt        
  {0,0,1}}
+
+//两坐标系转换，反正反
+原点平移
+Xtarget = fn（Xsurvey）
+X手系
+绕x，z旋转时，反手s→t （从survry转到target）；
+绕y旋转时，正手s→t（因为反手是【Z X】= fn【z x】，和我们想要的【X Z】= fn【x z】刚好是反的）

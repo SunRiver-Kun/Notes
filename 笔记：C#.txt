@@ -1,7 +1,22 @@
 1.比较char[]与string
 bool ok = str.Equal(new string(char*))   //注意char[]不需要'\0'结尾！
+
 2.启动外部程序
 using System.Diagnostics;
 Process proc = new Process();
 proc.StartInfo.FileName = "BuiltGame.exe";
-proc.Start();  
+proc.Start();
+
+3. Enum与Sring
+System.Enum.GetName ...
+
+4.Winform绘图
+System.Drawing
+using System.Drawing;
+
+-每秒都会重绘
+
+-重写OnPaint
+-event Paint
+-Graphics.FromXXX
+-this.CreatGraphics()
