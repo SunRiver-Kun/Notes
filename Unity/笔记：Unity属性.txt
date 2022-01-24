@@ -20,6 +20,12 @@ UnityEngine{
 	[CreateAssetMenu(fileName = "Preset", menuName = "Character Preset")]	--建立文件，用于ScriptObject保存 
 }
 
+UnityEditor{
+	[MenuItem("MyTools/fn")]	//static void fn(){...}	//在菜单栏上点击运行
+	[CustomEditor(typeof(XXX))]	//class : Editor	//XXX为可在Inspector显示的组件
+	[CustomPropertyDrawer(typeof(Data))]  class : SerializableDictionaryPropertyDrawer	//自定义数据绘制
+}
+
 UnityEngine.Bindings{
     [NativeHeader("Runtime/GameCode/CloneObject.h")]    //class
     [RequiredByNativeCode(GenerateProxy = true)]    //class

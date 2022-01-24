@@ -1,19 +1,32 @@
-﻿1.树木：
--Assert建个"Ambient-Occlusion"文件夹，引擎需要。
--使用 Nature/Soft Occlusion Leaves&Bark 着色器，将树木放到文件夹中
--确保树木网格由两种材质组成，一种表示叶子，另一种表示树干。两种材质是为着色器准备的。注：只有单一网格才会渲染
--在树干的底部放置轴心
--限制树木模型在2000tris(triangles)以下或更少，棕榈树为220
--需要碰撞可以把树木做成预设物（项目视图 -拖> 场景视图 -> 添加碰撞器 -拖> 项目视图）
--更改自定义树木，需要手动刷新
-
-2.Editor
+﻿1.Editor
 -建个Assets/Editor，在里面新建代码
 -建立菜单栏和其功能
 
 --菜单栏功能
-[MenuItem("MyTools/XXX")]   --[MenuItem("Windows/XXX")]
-public static void fn(){...}
+using UnityEditor;
+class XXX : EditorWindow
+[MenuItem("MyTools/XXX")]   
+public static void CreateWindow(){
+    EditorWindow.GetWindow(typeof(CopyTransitions),true,"Copy Transitions");
+}
+
+绘制窗口
+1、UnityEditor.Editor.OnInspectorGUI()    base.OnInspectorGUI()	target as xxx	
+2、UnityEditor.Editor.OnSceneGUI()   Handles.XXX
+3、UnityEditor.EditorWindow.OnGUI()
+
+Editor	编辑器窗口
+PropertyDrawer	Inspector属性绘制
+EditorWindow	新窗口
+
+
+EditorGUIlayout
+
+属性：
+[MenuItem("MyTools/fn")]	//static void fn(){...}	//在菜单栏上点击运行
+[CustomEditor(typeof(XXX))]	//class : Editor	//XXX为可在Inspector显示的组件
+[CustomPropertyDrawer(typeof(Data))] class : SerializableDictionaryPropertyDrawer	//自定义数据绘制
+
 
 文件类：
 using UnityEditor;
@@ -25,12 +38,16 @@ EditorUtility{
     SaveFilePanel("save", "D:\\", "hello.txt", "txt");
 }
 
+2. ScriptObject	https://blog.csdn.net/candycat1992/article/details/52181814
+
 
 -Editor 脚本
 Scene 结构在 Editor 中和运行时都可用，并包含一些与场景本身相关的只读属性，例如其名称和资源路径。
-EditorSceneManager 类仅在 Editor 中可用。该类派生自 SceneManager，并具有许多函数，使用这些函数即可通过 Editor 脚本实现上述所有多场景编辑功能。
-SceneSetup 类是一个小实用程序类，用于存储有关当前层级视图中的场景的信息。
-Undo 和 PrefabUtility 类已扩展为支持多个场景。现在可以使用 PrefabUtility.InstantiatePrefab 在给定场景中实例化预制件，并可使用 Undo.MoveGameObjectToScene 以不可撤销的方式将对象移动到场景的根目录。
+EditorSceneManager 类仅在 Editor 中可用，可实现多场景编辑功能。
+SceneSetup 类是，用于存储有关当前层级视图中的场景的信息。
+Undo 和 PrefabUtility 类支持多个场景。
+-可用 PrefabUtility.InstantiatePrefab 在给定场景中实例化预制件，
+-并可使用 Undo.MoveGameObjectToScene 以不可撤销的方式将对象移动到场景的根目录。
 注意：要使用 Undo.MoveGameObjectToScene，必须确保游戏对象已经位于当前场景的根目录中。
 
 -提示和技巧
@@ -40,3 +57,12 @@ Undo 和 PrefabUtility 类已扩展为支持多个场景。现在可以使用 Pr
 可通过 GameObject.scene 获取游戏对象所属的场景，并可使用 SceneManager.MoveGameObjectToScene 将游戏对象移动到场景的根目录。
 建议避免使用 DontDestroyOnLoad 来保持需要在多次场景加载后仍存在的管理器游戏对象。相反，应创建一个包含所有管理器的管理器场景，并使用 SceneManager.LoadScene(<path>, LoadSceneMode.Additive) 和 SceneManager.UnloadScene 来管理游戏进度。
 
+
+-修改VsCode Snippets
+C:\Users\Administrator\.vscode\extensions\kleber-swf.unity-code-snippets-1.3.0\snippets
+替换：}",
+为：", "{",
+
+C:\Users\Administrator\.vscode\extensions\ms-dotnettools.csharp-1.24.0\snippets
+++i
+--i

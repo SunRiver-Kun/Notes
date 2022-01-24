@@ -1,11 +1,16 @@
-Mixamo：动画下载，https://www.mixamo.com/
+﻿Mixamo：动画下载，https://www.mixamo.com/
 
 场景动画片段的创建：
 -调出Animation窗口：Window → Animation
 -创建动画：选择要制作的物体（自动添加Animator组件），然后点击Create
+1.
 -点击录制，选择关键帧，变换物体
 -点击播放，满意后结束录制
--注：如果有一个anim有位移，其他的在原地改变即可。（独立性）
+2.
+-把Sprite拖进去，一般各1-4帧放一个
+-右上角下面可以显示帧数，可以用来预览；
+
+-注：录制的参数，在动画结束会自动还原；参数是直接跳转；可以右键添加Event
 
 Animator（动画机）：
 -直接打开Animator Controller
@@ -13,6 +18,16 @@ Animator（动画机）：
 -在时间轴添加Event，在脚本里面创建public void fn(...)
 -在Parameters添加变量，名字在代码中用到，若与Curves里同名会自动读取（Float）
 -并行/串行Layers，要调整好weight(0-1)，mask选需要的部分(右键Avatar Mask图层蒙版)
+
+3. 动画打断和优先级
+Transition Setting -> Interruption Source 
+None、Current、Next、Current then Next、Next then Current State；
+被哪个State的Transition打断，而直接跳转。推荐：Run和Idel之间的都设为Next State
+
+优先级：点State，移动Transition，越上面的优先级越高，把Run放到最下面！
+
+4. Param
+Condition：通过+，来实现and；通过创建多个Transition来实现or
 
 -脚本：
 1.在Animator里的Parameters中添加状态，Trigger(触发一次后回复初始状态)，设置name；

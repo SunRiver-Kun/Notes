@@ -7,3 +7,6 @@ nomal  法线的
 probe   探测
 metallic  金属的
 
+joint   关节，约束其他刚体
+hinge  铰链，门把手连接处
+spring  弹簧

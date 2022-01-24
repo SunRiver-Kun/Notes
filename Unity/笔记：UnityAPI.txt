@@ -1,6 +1,7 @@
-﻿--事件转发
-UnityEngine.Events.UnityEvent	类似Button一样的，可在编辑器上显示。
-简单的也可以用System.Action，不过Action可能为空，而UnityEvent不为空
+﻿
+--事件转发
+UnityEngine.Events.UnityEvent<>，编辑器可以添加public的参数或最多带一个参数的函数。添加时，最上面的dynamic表示代码传入对应参数
+简单的也可以用System.Action<>，不过Action可能为空，而UnityEvent不为空
 
 --核心
 Application{	
@@ -19,38 +20,12 @@ Mathf{
 
 Random{
 	Range(a,b)	-- [a,b)
- 	
-	 --functions
-	 float Choose (float[] probs) {
-
-        float total = 0;
-
-        foreach (float elem in probs) {
-            total += elem;
-        }
-
-        float randomPoint = Random.value * total;
-
-        for (int i= 0; i < probs.Length; i++) {
-            if (randomPoint < probs[i]) {
-                return i;
-            }
-            else {
-                randomPoint -= probs[i];
-            }
-        }
-        return probs.Length - 1;
-    }
 }
 
 UnityEngine.SceneManagement{
 	SceneManager{
-		LoadScene(index)   --从0开始编号，bulid Settings最上面改
+		LoadScene(index,type)   --从0开始编号，bulid Settings最上面改
 	}
-}
-
-ComponentSystem{
-
 }
 
 Unity.Scene.SceneSystem{
@@ -74,7 +49,11 @@ AudioPlayer、AudioSource、VideoPlayer
 --物理
 Physics{		
 	bool RayCast( pos, direction[,out hitobjs], distance[, layout] )	--check colliseder
-}
+	bool CheckBox(Vector3 center, Vector3 halfExtents, Quaternion orientation);
+	bool SphereCast(Vector3 origin, float radius, Vector3 direction, out RaycastHit hitInfo);
+}	
+XXCollider.Raycast(Ray ray, out RaycastHit hitInfo, float maxDistance);
+Camera.main.ScreenPointToRay(Input.mousePosition);
 
 Rigidbody{
 	SetDensity(float density)	--设置密度
@@ -111,6 +90,7 @@ XXX Constraint{
 
 --输入/控制
 Input{
+	默认：下上全过程多次调用	Down：按下，一次	Up：弹起，一次
 	bool GetButton(string)		bool GetKey(KeyCode)		bool GetMouseButton()
 	bool GetButtonDown(string)		bool GetKeyDown(KeyCode)		bool GetMouseButtonDown()
 	bool GetButtonUp(string)		bool GetKeyUp(KeyCode)		bool GetMouseButtonUp()
@@ -124,6 +104,19 @@ CharacterController{		不是很好用……
 	isGrounded	--最后一次移动后，是否碰到地面
 	velocity、slopeLimit、stepOffset(将影响刚体的下落速度！)
 	、radius、height、center
+}
+
+--文件	
+PlayerPrefs：通过key来保存数据，简单
+ScriptObject：单独存数据，配合[CreateAssetMenu(menuName="Settings",fileName="Settings")]
+System.IO{
+	File
+	TextReader/Writer
+	BinaryReader/Writer
+	Path
+}
+UnityEngine{
+	JsonUtility
 }
 
 --时间
@@ -151,6 +144,3 @@ Gizmos：{	--写在 OnDrawGizmos	OnDrawGizmoSelected
 	Color
 	DrawWireSphere、DrawIcon、DrawGUITextures	
 }
----------------------------------------------注意事项：
-1. 类成员初始化，值类型/static/编辑器能看到的类型可直接 = ，其他写在Awake或Start。否则可能由于未保存导致null
-2. 修改代码后不要马上调试，等Unity反应过来先。记得随手保存！

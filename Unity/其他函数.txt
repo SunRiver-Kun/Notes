@@ -1,0 +1,47 @@
+//Animator
+OnAnimatorIK(int layerIndex)	//当Animator Layer中勾选IK pass时可调用，之后自己调用Animator里的函数
+OnAnimatorMove()	//移动Root时调用
+
+//Application
+OnApplicationFocus(bool focusStatus)
+OnApplicationPause(bool pauseStatus)
+OnApplicationQuit()
+OnFocus()	//得到键盘Focus时调用
+OnLostFocus()	//失去键盘Focus时调用
+
+//Visible
+OnBecameVisible()
+OnBecameInvisible()
+
+//NetWork
+  -客户端
+OnConnectedToServer()	//客户端连接到服务器时调用
+OnFailedToConnect(NetworkConnectionError error)	//连接失败时调用
+OnDisconnectedFromServer(NetworkDisconnection info)	//客户端断开连接时调用 
+  -服务端
+OnServerInitialized()	//服务端，NetWork.InitializeServer调用并完成时
+  -两者
+OnFailedToConnectToMasterServer(NetworkConnectionError error)	  //当连接主服务器有问题时
+OnMasterServerEvent(MasterServerEvent msEvent)	//当主服务器发送事件时
+
+//CharacterController	--不用刚体来简单移动物体
+void OnControllerColliderHit(ControllerColliderHit hit)
+
+//Joint	--挂着有 XXX Joint组件的物体上才其作用
+OnJointBreak(float breakForce)	//当Joint上的Break 不为 Infinity
+OnJointBreak2D(Joint2D brokenJoint)
+
+
+专用
+*EditorWindow*		--其他物体用事件   EditorApplication.xx += fn;
+OnHierarchyChange()	//当Hierarchy结构改变时
+OnInspectorUpdate()	//一秒十帧，用于改变Inspector
+
+*StateMachineBehaviour*	
+using UnityEditor.Animations;
+AnimatorState、AnimatorStateMachine、、
+OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)	//进入该State时调用
+OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)	//在该State时，每帧调用
+OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)		//离开该State时调用
+OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)	//在Animator.OnAnimatorMove()后调用
+OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)		//在Animator.OnAnimatorIK()后调用

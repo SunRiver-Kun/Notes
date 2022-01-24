@@ -1,4 +1,4 @@
-1.比较char[]与string
+﻿1.比较char[]与string
 bool ok = str.Equal(new string(char*))   //注意char[]不需要'\0'结尾！
 
 2.启动外部程序
@@ -20,3 +20,30 @@ using System.Drawing;
 -event Paint
 -Graphics.FromXXX
 -this.CreatGraphics()
+
+5. 委托和事件
+委托：类，包含+-=等，可以通过其他类Invoke
+事件：类，类外只能+-=，不能Invoke
+
+6.元组，类似tuple。编译器从Object派生的类
+var x = new ("sss",1,0f)
+var (_,_,n) = fn();	//_表示弃用
+public (string,int,int) fn() { return ("",1,0); }
+
+7.?:、??、?.
+p ?? false;	<-->  p!=null ? p : false
+p?.fn()	<-->	p!=null ? p.fn() : null	//注：p.fn()是void时?.可能报错 
+
+8. if( x is int num ) { print(num); }  //当x可以转为num时进入if
+using(int x) { ... }  //自动析构x
+
+9. 文件
+using System.IO;
+File
+using System.Runtime.Serialization.Formatters.Binary;
+BinaryFormatter{
+	Serialize(FileStream, object data);
+	object Deserialize(FileStream file);
+}
+
+unity   Application.persistentDataPath 

@@ -7,8 +7,42 @@
 5. 静止的物体可以借助Empty Object构成组，同时设为static。经常运行的物体就少设parent，因为要执行局部全局坐标转换！
 6. 非一致缩放：某些组件不支持，子对象在选择时不会自动更新缩放比例。	倾斜的__盒型碰撞体 (Box Collider)__ 无法准确匹配渲染网格的形状
 7. 一般支持多选的都是按位0b发布的，使用时可以用<<确定具体值，如摄像机的Layout
------------------------------------------------------
-8. 特殊的文件夹：根目录在Asserts
+8. Relative Force：局部空间力，受物体旋转的影响。 Force：全局力，不受物体影响
+9. 复合碰撞体：根物体添加Rigibody[2D]，子物体添加Collider。这样把脚本挂在根物体也可以 OnCollider/TriggerXXX
+10. 默认两个Mesh Collider 不会发生碰撞，除非开了Convex（凸面外壳）
+11.将网格碰撞体用于场景几何体，并使用复合原始碰撞体近似得出移动游戏对象的形状。
+12. Collider interactions
+(dynamic)Rigidbody Collider：完全由引擎控制，与其他都发生碰撞和触发
+Kinematic Rigidbody Collider：
+-触发不受影响
+-可通过Tranform组件改变位置而不触发碰撞和力。但也可以通过rigidbody.MovePosition来移动并产生碰撞
+-常用与只在必要时运动，其他时候静止的物体（如：自动门）
+-2D默认只与dynamic碰撞，不过可以勾选full rect与其他物体碰撞；
+-3D只与dynamic碰撞
+-触发器与全部反应
+Static Collider：a Collider but no Rigidbody. 
+-可以安全缩放，不移动，不会唤醒其他物体，只与dynamic碰撞
+-碰撞也不会被移动
+-触发：两静态不反应，其他反应
+注：两个触发器也会相互触发
+
+13. 协程注意：协程是挂在GameObject上的
+gameObject.active = false 
+可以停止该对象上全部协程的执行，即使再次激活，也不能继续执行。
+MonoBehaviour enabled = false 
+不能停止协程；对比 update却是可以在MonoBehaviour enabled = false 就中止
+
+1、IEnumerator 类型的方法不能带 ref 或者 out 型的参数，但可以带被传递的引用
+2、在函数 Update 和 FixedUpdate 中不能使用 yield 语句，否则会报错， 但是可以启动协程
+3、在一个协程中，StartCoroutine()和 yield return StartCoroutine()是不一样的。
+前者仅仅是开始一个新的Coroutine，这个新的Coroutine和现有Coroutine并行执行。
+后者是返回一个新的Coroutine，是一个中断指令，当这个新的Coroutine执行完毕后，才继承执行现有Coroutine。
+
+14. damage用正数表示，Delta时取反即可
+15. event 在Destroy GameObject时不会自动取消，要注意！！
+16. 切换场景时static的不会重置
+
+-特殊的文件夹：根目录在Asserts
 -Editor：存放编辑器代码, EditorGUIUtility.Load 函数可从 Editor 文件夹中的 Resources 文件夹加载资源。这些资源只能通过 Editor 脚本加载，并会从构建中剥离。
 -Resources：游戏必备的资源，是除代码外不会被Unity优化掉的东西，Resources.Load
 -Editor Default Resources：必须位于Assets下，EditorGUIUtility.Load可以收到
@@ -17,27 +51,33 @@
 
 特殊的代码名：
 GameManager
-
 导入时会忽略的东西：隐藏的文件夹、.头or~尾的文件和文件夹、.tmp的文件、名为cvs的文件和文件夹
-------------------------------------------------------
-9. 优化：
+
+- 优化：
 大小：纹理和音频，动画等压缩好。注：用不到的文件，在构建时不会包含进去，不用担心
 速度：代码尽量不使用 var。不做少做做更好
 Trace.WatchTime(()=>{...},1000000次)	--观察代码运行时间
-------------------------------------------光线
-GameObject → Light、Window → Rendering → LightingSetting(添加天空盒)
+
+- 想存储数据可以使用ScriptObject保存起来，常用于音频数据引用保存，
+分数等下次加载时还用到的东西的保存。
+[CreateAssetMenu(menuName="Settings",fileName="Settings")]
+
+-光线
+Window → Rendering → LightingSetting(添加天空盒)
 Components{
 	Projector：投影仪，可用于制作跟踪物体的影子
 	LensFlare：镜头光班，特性
 	遮挡 → Cookie，在Point Light里
 }
 
-------------------------------------------特效 *先添加Volume组件*
+- 特效 *先添加Volume组件*
+也可以导入Post Processing包
 Bloom：灯光效果
 Tonemapping：色调映射
 Color Adjustments：曝光、对比度等
 Shadows xxx：阴影颜色控制等
 Depth Of Field：景深
+
 ------------------------------------------辅佐工具
 package manager → Unity Registry（官方工具）
 -Dynamic Bone：模拟衣物的飘动等
@@ -45,3 +85,25 @@ package manager → Unity Registry（官方工具）
 -2D PSD Importer：加速PSD、PSB的导入导出
 -3Dmax、Blender：制作模型，注意单位为米
 -Yamaha、Adobe Audition：制作音频和混音
+-Cinemachine：方便的摄像机跟随等，可以配合Volume使用
+-Visual Effect Graph（VFX）：粒子特效集，建立丰富的特效。
+	GetWorldToObjectMatrix：https://answers.unity.com/questions/1821260/visual-effect-graph-does-not-work-with-urp.html
+-Recorder：录屏
+-Quick Search：Ctrl+'
+-Polybrush：网格绘制多边形
+-TimeLine：使用 Unity 的时间轴创建电影内容、游戏序列、音频序列和复杂的粒子效果。
+
+---------------------------------------------快捷键
+鼠标右键+WSAD：在透视模式下愉快地浏览Scene
+Alt+左键：顶点旋转视角
+Alt+右键：缩放
+旋转和移动时，按住Ctrl，每次移动固定单元，可在Edit中设置单元
+移动时，按住V，可选择顶点进行对齐
+移动时，按住Ctrl+Shift，可进行表面快速对齐
+移动时，开启Global+右边的网格，可开启网格对齐；也可在Edit设置单元时点击轴来实现对齐
+
+可在inspector中为物体选择图标，打开Gizmos就可以看见了（3D Icons调大小）
+在inspector右下角可以设置标签，方便查找，直接输入并回车即可
+Alt+‘，快速搜索
+按住Alt可以展收子层级
+GameObject菜单栏里的Align With View，可以快速帮摄像机对齐Scene里的视图
