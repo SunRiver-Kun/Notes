@@ -1,4 +1,4 @@
-基础知识：https://www.w3school.com.cn/xml/xml_intro.asp
+﻿基础知识：https://www.w3school.com.cn/xml/xml_intro.asp
 
 XML：Extensible Markup Language
 XSLT：Extensible Stylesheet Language Transformations
@@ -35,3 +35,17 @@ XSLT：Extensible Stylesheet Language Transformations
 	<子标签 属性=' "" '>  </子标签>
 	<子标签2  属性="..." />
 </标签>
+
+
+<Json>	https://www.runoob.com/json/json-syntax.html
+例如：
+{
+	"name" : "Tom",
+	"age" : 18,
+	"isman" : true,
+	"friends" : [
+		{ "name" : "Jack", "age" : 17 } ,
+		{ "name" : "Bier", "age" : 16 }
+	]
+	"father" : null
+}

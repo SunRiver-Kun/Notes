@@ -2,6 +2,9 @@
 --事件转发
 UnityEngine.Events.UnityEvent<>，编辑器可以添加public的参数或最多带一个参数的函数。添加时，最上面的dynamic表示代码传入对应参数
 简单的也可以用System.Action<>，不过Action可能为空，而UnityEvent不为空
+注：Action要判空，物体摧毁时要手动取消。
+公开的UnityEvent会自己创建，在物体销毁后，只有函数无关物体才会调用！
+子物体的析构函数在GameObject.Destroy时不会马上调用！ 艹
 
 --核心
 Application{	
@@ -84,6 +87,26 @@ XXX Constraint{
 --XXX Rest：静止时（权为0时）
 --XXX Offset：运动时
 --Freeze XXX：对与position是启用，对于Rotation是禁用
+}
+
+Joint 2D{	关节
+距离	Distance：保持该刚体和另一个刚体或位置(None)的固定或最大距离
+摩擦力	Friction：摩擦关节将对象之间的线速度和角速度降低到零
+*铰链	Hinge：物体可绕某点旋转，电机
+固定	Fixed：保持固定的距离和角度，弹簧，震动，锚点
+*相关	Relative：保持固定的距离和角度，电机，偏移
+*滑动	Slider：让物体只在一条直线上运动，电机，自动门/开关
+弹簧	Spring：沿轴线施力，尝试让物体保持一定距离
+目标	Target：尝试把物体移动到某点
+*车轮	Wheel：弹簧让锚点沿Angle线重合，Motor让Connected Rigidbody转起来。挂车身上，车身把旋转关了避免翻车，车身用多边形碰撞器
+}
+
+Effector2D{  效应器，同一物体无法添加多个效应器
+	Platform：控制碰撞图层、单向碰撞、消除侧向摩擦/弹性等
+	Surface：传送带，通过可随机speed来控制的，和人物移动冲突
+	Point：引力/斥力点，可加随机力，反线性或反平方比例力
+	Buoyancy：漂浮，可加随机力
+	Area：定向可加随机力
 }
 
 

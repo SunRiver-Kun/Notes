@@ -30,12 +30,27 @@ var x = new ("sss",1,0f)
 var (_,_,n) = fn();	//_表示弃用
 public (string,int,int) fn() { return ("",1,0); }
 
+集合初始值设定项
+Student s = new  Student[(...)]{ Name="Tom", Age = 18 }
+var students2 = new Dictionary<int, StudentName>()
+        {
+            [111] = new StudentName { FirstName="Sachin", LastName="Karnik", ID=211 },
+            [112] = new StudentName { FirstName="Dina", LastName="Salimzianova", ID=317 } ,
+            [113] = new StudentName { FirstName="Andy", LastName="Ruth", ID=198 }
+        };
+
 7.?:、??、?.
 p ?? false;	<-->  p!=null ? p : false
 p?.fn()	<-->	p!=null ? p.fn() : null	//注：p.fn()是void时?.可能报错 
 
-8. if( x is int num ) { print(num); }  //当x可以转为num时进入if
+8. 
+if( x is int num ) { print(num); }  //当x可以转为num时进入if	//is not
 using(int x) { ... }  //自动析构x
+int fn(int v) => 
+ v switch
+{
+	
+}
 
 9. 文件
 using System.IO;
@@ -47,3 +62,97 @@ BinaryFormatter{
 }
 
 unity   Application.persistentDataPath 
+
+10. 属性
+public bool x
+{
+	get => return __x;
+	set => __x = value;
+}
+public bool x {get; private set;}
+
+public event Action x
+{
+	add { if(value==null) }
+	remove { if(value==null) }
+}
+
+11.元组 (T1,T2,...)
+(string,int) fn(string a, int b) { return (a,b); }
+void fn( (string,int) v ) { v.Item1 = "";}
+var (name, id) = fn("",1);	//用 _ 占位丢弃， name可以已声明，也可以没有
+(string name, var/int id) 	(name, int id)
+
+隐式类型
+var x = {"",123};
+var arr = new[] { 1,2,33 };
+var arr2 = new[] { new[]{1,2,3},  new[]{1} }
+
+
+自定义类中可以用定义 Deconstruct 来实现元组
+public void Deconstruct(out string fname, out string lname)
+
+
+12.运算符重载
+public static T operator @1(T a) 
+public static T operator @2(T a, T b)
+public static [implicit/explicit] operator targettype(T a)
+
+不可重载但可由编译器自动生成： +=, -=, *=, /=, %=
+不可重载：=, ., ?; ->, new, is, sizeof, typeof
+
+13. 
+Console.Write("{0:4}")
+Console.Write($"{1+2} + {str}")	//{str}里的会执行
+
+14. 委托
+System
+{	
+	void Action<...>(... args)	--0~16
+	TResult Func<..., TResult>(... args)	--0~16	
+	bool Predicate<in T>(T obj);		//Find
+	int Comparison<in T>(T x, T y);	//比较 return x-y;
+	TOutput Converter<in TInput, out TOutput>(TInput input);	//转换
+}
+
+15. 
+ System.Collections.Generic;
+Comparer<T>.Defult  ||  Comparer<T>.Creat(Comparison<T> fn)
+
+16. 接口
+System{
+	IComparable<T>
+	IEquatable<T>
+}
+
+System.Collections.Generic{
+	IComparer<T>	--Comparer<T>.Default  
+	IEqualityComparer<T>	--EqualityComparer<T>.Default 
+	IEnumerable<T>
+	IEnumerator<T> 
+	ICollection<T> : IEnumerable<T>
+	IList<T> : ICollection<T>, IEnumerable<T>
+	IDictionary<TKey,TValue> : ICollection<KeyValuePair<TKey,TValue>>, IEnumerable<KeyValuePair<TKey,TValue>>
+}
+
+System.Linq{
+	IGrouping<TKey,TElement>
+	IOrderedEnumerable<TElement>
+	IOrderedQueryable<T>	
+	IQueryable<T>
+}
+
+17. 泛型修饰符
+in：类型可逆变 ( object -> int )
+out：类型可协变( int -> object )
+
+18. String.Format和字符串内插$	
+https://docs.microsoft.com/zh-cn/dotnet/api/system.string.format?view=net-6.0
+"{index[,alignment][:formatString]}"
+
+https://docs.microsoft.com/zh-cn/dotnet/csharp/tutorials/string-interpolation
+$"{value[,alignment][:formatString]}"   其中：{{, }}表单括号。 { (bool ? : ) }  三目括号起来
+
+https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/standard-numeric-format-strings
+
+19. 序列化和反序列化

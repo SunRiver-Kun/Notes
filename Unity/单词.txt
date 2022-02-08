@@ -1,12 +1,20 @@
-albedo  反射率
+albedo  反射率	底色
 emission  发射
 occlusion  吸收率
 opaque  不透明的
 specular 镜面的
-nomal  法线的
+nomal  法线的	扭曲
 probe   探测
 metallic  金属的
 
 joint   关节，约束其他刚体
 hinge  铰链，门把手连接处
 spring  弹簧
+
+
+chorus  副歌
+distortion  失真
+echo  回声
+reverb  混响
+reverse  反向
+inverse  逆
