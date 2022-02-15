@@ -16,7 +16,7 @@ XSLT：Extensible Stylesheet Language Transformations
 &quot;	"	引号
 注释：在 XML 中，只有字符 "<" 和 "&" 确实是非法的。大于号是合法的，但是用实体引用来代替它是一个好习惯。
 
-2.注释	<!-- This is a comment --> 
+2.注释	<!-- This is a comment -->   不能嵌套
 
 3.XML 以 LF 存储换行   LF: \n   CR:\r    
 在 Windows 应用程序中，换行通常以一对字符来存储：回车符 (CR) 和换行符 (LF)。  \r\n
@@ -31,13 +31,14 @@ XSLT：Extensible Stylesheet Language Transformations
 名称不能包含空格
 可使用任何名称，没有保留的字词。
 
-6. <标签 属性="...">
+6. 
+<根标签 属性="...">   	<!--根标签只有一个-->
 	<子标签 属性=' "" '>  </子标签>
 	<子标签2  属性="..." />
-</标签>
+</根标签>
 
 
-<Json>	https://www.runoob.com/json/json-syntax.html
+#Json	https://www.runoob.com/json/json-syntax.html
 例如：
 {
 	"name" : "Tom",

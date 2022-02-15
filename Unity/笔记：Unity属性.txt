@@ -3,6 +3,7 @@
 
 System{
 	[Serializable]	//可以被unity编辑器编辑
+	[NonSerialized]	//忽略序列号，默认只序列化public
 }
 
 System.Security{
@@ -18,12 +19,17 @@ UnityEngine{
 	[RequireComponent(typeof(Animator))]		//class，若没有该组件，自动添加上去
 
 	[CreateAssetMenu(fileName = "Preset", menuName = "Character Preset")]	--建立文件，用于ScriptObject保存 
+	[AddComponentMenu("XX/x")]
 }
 
 UnityEditor{
 	[MenuItem("MyTools/fn")]	//static void fn(){...}	//在菜单栏上点击运行
-	[CustomEditor(typeof(XXX))]	//class : Editor	//XXX为可在Inspector显示的组件
+	[CustomEditor(typeof(XXX))]	//class : Editor	//XXX为可在Inspector显示的组件或ScriptObject
 	[CustomPropertyDrawer(typeof(Data))]  class : SerializableDictionaryPropertyDrawer	//自定义数据绘制
+}
+
+UnityEditor.AssetImporters{
+	[ScriptedImporter(1, "cube")]	//class, ScriptedImporter
 }
 
 UnityEngine.Bindings{
@@ -42,11 +48,5 @@ UnityEngine.Internal{
 
 UnityEngineInternal{
      [TypeInferenceRule(TypeInferenceRules.TypeReferencedByFirstArgument)]  //第一个参数的类型，Object/Type
-
-}
-
-
-UnityEngine.Scripting{
-
 
 }

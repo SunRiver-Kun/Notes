@@ -3,17 +3,20 @@
 UnityEngine.Events.UnityEvent<>，编辑器可以添加public的参数或最多带一个参数的函数。添加时，最上面的dynamic表示代码传入对应参数
 简单的也可以用System.Action<>，不过Action可能为空，而UnityEvent不为空
 注：Action要判空，物体摧毁时要手动取消。
-公开的UnityEvent会自己创建，在物体销毁后，只有函数无关物体才会调用！
-子物体的析构函数在GameObject.Destroy时不会马上调用！ 艹
+编辑器的UnityEvent会自己创建，在物体销毁后，只有函数无关物体才会调用！
+子物体的析构函数在GameObject.Destroy时不会马上调用！ 
 
 --核心
 Application{	
-	Quit()
+	Quit()、OpenURL、installerName
+	dataPath、consoleLogPath、temporaryCachePath、persistentDataPath、streamingAssetsPath
+	event:  logMessageReceived
 }
 
 Mathf{
 	float Clamp(value, min, max)	--返回[min,max]之间的值
-	float Lerp(a, b, time)		-- time[0~1]，按time插值
+	float Lerp(a, b, time)		-- time[0~1]，按time插值	return a*(1-t) + b*t
+	--在Update中Lerp平滑，  value = Mathf.Lerp(value, target, Time.deltaTime * speed)
 	float PingPong(t, max)	--摇摆t的值，且不大于max，也不小于0
 	bool Approximately(a, b)	-- a==b，是否十分接近
 	float DeltaAngle(a, b)		--计算两个角度间的夹角？	
@@ -37,18 +40,15 @@ Unity.Scene.SceneSystem{
 	UnLoadScene(SceneGUID)
 }
 
-Entities{
-
-}
-
---动画
-Animation{	
-
+Animator{
+	IK、SetValue、GetValue、Play
 }
 
 --音/视频
 AudioPlayer、AudioSource、VideoPlayer
-
+UnityEngine.Audio{ 
+	AudioMixer、AudioMixerGroup、AudioMixerPlayable
+}
 --物理
 Physics{		
 	bool RayCast( pos, direction[,out hitobjs], distance[, layout] )	--check colliseder
@@ -56,9 +56,9 @@ Physics{
 	bool SphereCast(Vector3 origin, float radius, Vector3 direction, out RaycastHit hitInfo);
 }	
 XXCollider.Raycast(Ray ray, out RaycastHit hitInfo, float maxDistance);
-Camera.main.ScreenPointToRay(Input.mousePosition);
+ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-Rigidbody{
+Rigidbody{	//relative 物体坐标系，否则全局坐标系
 	SetDensity(float density)	--设置密度
 	AddForce(Vector3 force, mode = ForceMode.Force)	--添加力
 	AddTorque(Vector3 torque, mode = ForceMode.Force)	--添加力(转/扭)矩
@@ -109,7 +109,15 @@ Effector2D{  效应器，同一物体无法添加多个效应器
 	Area：定向可加随机力
 }
 
-
+2D显示排序
+SortGroup：对子物体按父物体来设置渲染
+Sprite Render{
+	DrawMode: Simple(非9切片、全缩放)，Sliced(拉伸不重复) and Tiled(可限制的重复)，用Full Rect，改Size，仅支持Box/Polygon Collider2D    
+}
+SpriteAtlas{ 图集，压缩存储的图片，可通过脚本进行加载。但一个图片在多个图集且都包含在Build时，可能随机选择其一的图片进行渲染
+	int GetSprites(Sprint[] arr)
+}
+Sprite Shape Render、Sprite Controller(package: Sprite Shape)	https://www.jianshu.com/p/100597b24f02
 
 --输入/控制
 Input{
@@ -119,7 +127,13 @@ Input{
 	bool GetButtonUp(string)		bool GetKeyUp(KeyCode)		bool GetMouseButtonUp()
 	float GetAxis("Horizontal" or "Vertical")  //float
 	mousePosition
+	//移动设备
+	touches
+	acceleration	//以主屏幕按钮为底部，竖直，右x上y前z
 }
+TouchScreenKeyboard.Open() 	//打开移动键盘
+//XR输入
+UnityEngine.XR{  InputDevices、Input.CommonUsages  }
 
 CharacterController{		不是很好用……
 	CollisionFlags Move(Vector3 motion)	--不考虑重力，返回碰撞到的碰撞器
@@ -129,7 +143,7 @@ CharacterController{		不是很好用……
 	、radius、height、center
 }
 
---文件	
+--文件、保存、加载	
 PlayerPrefs：通过key来保存数据，简单
 ScriptObject：单独存数据，配合[CreateAssetMenu(menuName="Settings",fileName="Settings")]
 System.IO{
@@ -139,7 +153,24 @@ System.IO{
 	Path
 }
 UnityEngine{
-	JsonUtility
+	JsonUtility{ --使用Unity 序列化器，要创建的自定义结构体……public、[SerializeField]， not : static、private、[System. NonSerialized]
+		Type FromJson<Type>(string json)	--Type: 只支持普通类和结构，不支持派生自 UnityEngine.Object 的类（如 MonoBehaviour 或 ScriptableObject）。
+		string ToJson(object obj, bool prettyPrint = false)  --obj必须是 MonoBehaviour、ScriptableObject、[Serializable] 的类/结构体
+	}
+	--Shader
+	 Material material = new Material (Shader.Find("Specular"));
+	--File
+	Resources.Load	//加载"Assets/Resources"里的资源
+	AssetBundle.LoadFromFile	//加载AssetBundle的资源
+}
+UnityEditor{
+	--path = "Assets/XXX";
+	AssetDatabase{  -- 导入-> 加载	要保留meta，推荐用这个类而不是System.IO
+		ImportAsset("Assets/Textures/texture.jpg", ImportAssetOptions.Default);
+		LoadAssetAtPath<Texture2D>("Assets/Textures/texture.jpg");
+		Contains、CreateAsset、CreateFolder、RenameAsset、
+		CopyAsset、MoveAsset、MoveAssetToTrash 、 DeleteAsset
+	}
 }
 
 --时间
@@ -155,7 +186,7 @@ GUI{	--坐标系采用屏幕坐标系（左上角）  	(0,0) ↓y →x	--写在 
 	if( GUI.Button(...) )  { ... }  
 	slidervalue = GUI.HorizontalSlider(new Rect(0, 0, 200, 1000), slidervalue, 0, 100);	//代码实时更新，不过print处理就有点问题
 }
-GUILayout、GUILayoutUtility
+GUILayout、GUILayoutUtility、EditorGUILayout
 --调试/help
 Debug{
 	DrawRay( pos, vector, color)	--绘制射线
@@ -166,4 +197,10 @@ Gizmos：{	--写在 OnDrawGizmos	OnDrawGizmoSelected
 --绘制一些图案，帮忙确定距离等。在Game中不显示，而在Editor中实时显示
 	Color
 	DrawWireSphere、DrawIcon、DrawGUITextures	
+}
+
+UI
+UnityEngine.UI{	//找不到命名空间，把代码打开方式改为VS，打开一次，再改回VS Code即可。或更新Package里的vscode扩展
+https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/UIBasicLayout.html
+
 }

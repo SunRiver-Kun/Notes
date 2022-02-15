@@ -41,7 +41,7 @@ var students2 = new Dictionary<int, StudentName>()
 
 7.?:、??、?.
 p ?? false;	<-->  p!=null ? p : false
-p?.fn()	<-->	p!=null ? p.fn() : null	//注：p.fn()是void时?.可能报错 
+p?.fn()	<-->	p!=null ? p.fn() : null	//注：fn是事件或委托时可能为空而出错
 
 8. 
 if( x is int num ) { print(num); }  //当x可以转为num时进入if	//is not
@@ -52,9 +52,14 @@ int fn(int v) =>
 	
 }
 
-9. 文件
-using System.IO;
-File
+9. 文件、序列化、Xml、Json
+System.IO{
+	File -> Read|Write|Exists
+	TextReader/Writer
+	BinaryReader/Writer
+	Path{ HasExtension()、IsPathRooted()、GetFullPath()、GetTempPath()、GetTempFileName()、GetDirectoryName()、GetExtension }
+	FileInfo -> Directory(目录) -> Create
+}
 using System.Runtime.Serialization.Formatters.Binary;
 BinaryFormatter{
 	Serialize(FileStream, object data);
@@ -63,6 +68,21 @@ BinaryFormatter{
 
 unity   Application.persistentDataPath 
 
+XML读写
+using System.Xml;
+XmlDocument doc = new XmlDocument();       
+doc.Load(path);	//doc.LoadXml("<root>...</root>");
+root = doc.FirstChild or doc.DocumentElement;
+XmlElement.GetAttribute()
+XmlElement["nodename"]
+
+root = doc.CreateElement();
+doc.CreatAttribute()  -> root.Attributes.Append()
+doc.CreateElement() -> element.InnerText ->root.AppendChild(element)
+doc.Save(path);
+
+foreach(XmlElement v in folder.ChildNodes)  //XmlNode
+
 10. 属性
 public bool x
 {
@@ -70,6 +90,7 @@ public bool x
 	set => __x = value;
 }
 public bool x {get; private set;}
+public bool y {get; set;}	--和 public bool y; 一样
 
 public event Action x
 {
@@ -113,6 +134,12 @@ System
 	bool Predicate<in T>(T obj);		//Find
 	int Comparison<in T>(T x, T y);	//比较 return x-y;
 	TOutput Converter<in TInput, out TOutput>(TInput input);	//转换
+
+	//匿名函数写法
+	x => x + 1;
+	(x,y) => {return x > y;}
+	(GameObjcet inst) =>{ ... } 
+	delegate {...}  	//忽略参数
 }
 
 15. 
@@ -149,6 +176,10 @@ out：类型可协变( int -> object )
 18. String.Format和字符串内插$	
 https://docs.microsoft.com/zh-cn/dotnet/api/system.string.format?view=net-6.0
 "{index[,alignment][:formatString]}"
+
+19. 构造，赋值
+class/struct XXX {...};
+XXX v = new XXX(...) {name="", id = 111, ...};
 
 https://docs.microsoft.com/zh-cn/dotnet/csharp/tutorials/string-interpolation
 $"{value[,alignment][:formatString]}"   其中：{{, }}表单括号。 { (bool ? : ) }  三目括号起来

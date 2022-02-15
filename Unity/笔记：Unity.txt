@@ -50,14 +50,18 @@ MonoBehaviour enabled = false
 Instantiate，不要在Start或Awake中克隆自身，Awake()立即调用，Start()下一帧调用
 AddComponent，不会调用Reset()，也不会自动初始化变量
 Unity Editor只会在手动挂脚本时，帮忙初始化要显示的变量，并调用Reset()
-
-
+18. 透明队列中的 2D 渲染器
+排序图层和图层中的顺序>指定渲染队列>与摄像机的距离*透视/正交*自定义轴排序模式*精灵排序点> 
+排序组>材质/着色器>多个渲染器具有相同的排序优先级时，将由仲裁程序决定优先级。
+19. Sprite Editor可以选择Custom Outline(减少渲染)/Physics Shape(Polygen碰撞体)，
+Outline Tolerance控制误差范围，通过Generate快速生成。Secondary Texture用于Shader，名字如：_MaskTex
+20.
 -特殊的文件夹：根目录在Asserts
 -Editor：存放编辑器代码, EditorGUIUtility.Load 函数可从 Editor 文件夹中的 Resources 文件夹加载资源。这些资源只能通过 Editor 脚本加载，并会从构建中剥离。
 -Resources：游戏必备的资源，是除代码外不会被Unity优化掉的东西，Resources.Load
 -Editor Default Resources：必须位于Assets下，EditorGUIUtility.Load可以收到
 -Gizmos： 必须位于Assets下，Gizmos.DrawIcon()加载图像
--StreamingAssets：完整的文件目录
+-StreamingAssets：让资源以其原始格式作为单独的文件提供，如IOS上Handheld.PlayFullScreenMovie 播放视频
 
 特殊的代码名：
 GameManager
@@ -91,11 +95,14 @@ Color Adjustments：曝光、对比度等
 Shadows xxx：阴影颜色控制等
 Depth Of Field：景深
 
+-Input System    package: Input System
+Create Input Actions Asset -> New Action Map and Type -> Binding Input -> Add PlayerInput component 
 ------------------------------------------辅佐工具
 package manager → Unity Registry（官方工具）
 -Dynamic Bone：模拟衣物的飘动等
 -Job System：多线程编程框架，高性能、安全。	注：一般子线程无法操作Unity对象
 -2D PSD Importer：加速PSD、PSB的导入导出
+-2D Sprite Shape：用于创建更多变的地图  https://www.jianshu.com/p/100597b24f02
 -3Dmax、Blender：制作模型，注意单位为米
 -Yamaha、Adobe Audition：制作音频和混音
 -Cinemachine：方便的摄像机跟随等，可以配合Volume使用
@@ -121,3 +128,9 @@ Alt+右键：缩放
 Alt+‘，快速搜索
 按住Alt可以展收子层级
 GameObject菜单栏里的Align With View，可以快速帮摄像机对齐Scene里的视图
+
+TileMap
+Shift + 左键：临时橡皮擦
+[, ]  顺逆旋转笔刷
+Shift + [, ]   xy轴翻转笔刷
+-=   加减z轴位置，仅Lock Z Position关时（在Tile Palette下面拉取）

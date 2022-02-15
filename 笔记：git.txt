@@ -1,5 +1,24 @@
 ﻿git-brash command: TAB补全
 
+谷歌插件
+octotree：支持单文件下载，搜索。但网不好还是下不了……
+
+单文件夹克隆：Git1.7.0之后的Sparse Checkout模式，
+例如：下载 codes.git里的C文件夹，也可以是C/XXX，  别写 " "
+git init
+
+git remote add origin git@github.com:SunRiver-Kun/DST_Notes.git
+git config core.sparsecheckout true
+echo C >> .git/info/sparse-checkout
+git pull origin master
+
+
+
+只下某种文件：echo *.cpp >> .git/info/sparse-checkout		前面也可以加路径，如  XXX/*.cpp
+排除某文件夹（如C）：echo !C >> .git/info/sparse-checkout
+回复检出设置：echo * >> .git/info/sparse-checkout	在有 \*  时无用
+二次拉取：git checkout master
+
 git
 加速：
 1.镜像	https://github.com.cnpmjs.org/x
