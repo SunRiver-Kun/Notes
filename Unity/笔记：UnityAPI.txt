@@ -24,20 +24,18 @@ Mathf{
 	Epsilon(很小的常量)、Infinity(正无穷)、NegativeInfinity(负无穷)、PI、Deg2Rad、Rad2Deg
 }
 
-Random{
-	Range(a,b)	-- [a,b)
+UnityEngine.Random{
+static:
+	rotation、rotationUniform、value[0f,1f]、
+	insideUnitCircle、insideUnitSphere、onUnitSphere
+	Range[a,b]、ColorHSV()	
+	InitState(seed)
 }
 
 UnityEngine.SceneManagement{
 	SceneManager{
 		LoadScene(index,type)   --从0开始编号，bulid Settings最上面改
 	}
-}
-
-Unity.Scene.SceneSystem{
-	--SubScene
-	LoadScene(SceneGUID)
-	UnLoadScene(SceneGUID)
 }
 
 Animator{
@@ -55,8 +53,9 @@ Physics{
 	bool CheckBox(Vector3 center, Vector3 halfExtents, Quaternion orientation);
 	bool SphereCast(Vector3 origin, float radius, Vector3 direction, out RaycastHit hitInfo);
 }	
-XXCollider.Raycast(Ray ray, out RaycastHit hitInfo, float maxDistance);
 ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+XXCollider.Raycast(Ray ray, out RaycastHit hitInfo, float maxDistance);
+
 
 Rigidbody{	//relative 物体坐标系，否则全局坐标系
 	SetDensity(float density)	--设置密度
@@ -70,10 +69,30 @@ Rigidbody{	//relative 物体坐标系，否则全局坐标系
 Transform{
 	LookAt(Transform target, Vector3 worldUp)
 	Vector3D TransformDirection( xxx.forward/right/up )
-	position、eulerAngles、forward、right、up、rotation(四元素)}
+	position、eulerAngles、forward、right、up、rotation(四元素)
+}
+
+Vector3{
+	Normalize()、normalized、magnitude、sqrMagnitude、x、y、z、Set()、ToString()	
+static:
+	+-Vector3、 float*float、/float、== !=、Equal()、Max()、Min()
+	up、down、left、right、forward、back、one、zero、positiveInfinity、negativeInfinity
+	Normalize()、OrthoNormalize()、Scale()、ClampMagnitude()、Cross(x)、Dot(.)
+	Project()、ProjectOnPlane()、MoveTowards()、Reflect()
+	Angle()、SignedAngle()、RotateTowards()、Distance()
+	Lerp()、LerpUnclamped、Slerp()、SlerpUnclamped()、SmoothDamp()
+}
 
 Quaternion{
-	Euler(0, angleDegrees, 0)	--按°来旋转，左手螺旋
+	eulerAngles、normalized、Set()、SetFromToRotation、SetLookRotation()、ToAngleAxis()、ToEulerAngles()
+static:
+	identity、、、
+	Angle()、AngleAxis()、
+	Euler(x,y,z)	--按°来旋转，左手螺旋
+	FromToRotation()、Inverse()、LookRotation()、
+	[S]Lerp()、[S]LerpUnclamped()、RotateTowards()
+	Vector3 operator *(Quaternion rotation, Vector3 point);	//旋转后的另一个点
+        	Quaternion operator *(Quaternion a, Quaternion b);	//∠a + ∠b
 }
 
 XXX Constraint{
@@ -89,10 +108,28 @@ XXX Constraint{
 --Freeze XXX：对与position是启用，对于Rotation是禁用
 }
 
+效果 = 刚度 * (drivePosition - targetPosition) - 阻尼 * (driveVelocity - targetVelocity)  Stiffness：刚度	Damping：阻尼
+
+Articulation Body{	接连体，用于Transform，模拟机械臂
+   Joint{
+固定	Fixed：固定关节，无附加属性
+棱形	Prismatic：阻止除了沿特定轴滑动之外的所有运动
+旋转	Revolute：允许绕特定轴旋转（如铰链）。
+球形	Spherical：允许两次摆动和一次扭转。
+}}
+
+Joint{	*表示有电机
+角色	Character：模拟球窝关节，例如臀部或肩膀。沿所有线性自由度约束刚体移动，并实现所有角度自由度。GameObject -> 3D ->Ragdoll(布娃娃)
+*任意	Configurable：模拟任何骨骼关节，例如布娃娃中的关节。您可以配置此关节以任何自由度驱动和限制刚体的移动。
+固定	Fixed：	限制刚体的移动以跟随所连接到的刚体的移动。无需Transform父级化
+*铰链	Hinge：物体可绕某点旋转，门
+弹簧	Spring：沿轴线施力，尝试让物体保持一定距离
+}
+
 Joint 2D{	关节
 距离	Distance：保持该刚体和另一个刚体或位置(None)的固定或最大距离
 摩擦力	Friction：摩擦关节将对象之间的线速度和角速度降低到零
-*铰链	Hinge：物体可绕某点旋转，电机
+*铰链	Hinge：物体可绕某点旋转，门，电机
 固定	Fixed：保持固定的距离和角度，弹簧，震动，锚点
 *相关	Relative：保持固定的距离和角度，电机，偏移
 *滑动	Slider：让物体只在一条直线上运动，电机，自动门/开关
@@ -108,6 +145,9 @@ Effector2D{  效应器，同一物体无法添加多个效应器
 	Buoyancy：漂浮，可加随机力
 	Area：定向可加随机力
 }
+
+特殊的碰撞体：
+Character Controller：主要用于第三人称玩家控制或者是不使用刚体的第一人称玩家控制。不会自动施力，回调：OnControllerColliderHit()
 
 2D显示排序
 SortGroup：对子物体按父物体来设置渲染
@@ -202,5 +242,10 @@ Gizmos：{	--写在 OnDrawGizmos	OnDrawGizmoSelected
 UI
 UnityEngine.UI{	//找不到命名空间，把代码打开方式改为VS，打开一次，再改回VS Code即可。或更新Package里的vscode扩展
 https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/UIBasicLayout.html
+}
 
+渲染
+UnityEngine.Rendering{
+	RenderPipelineAsset 
+	GraphicsSettings.renderPipelineAsset 
 }

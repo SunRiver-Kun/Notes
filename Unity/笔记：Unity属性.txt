@@ -17,6 +17,7 @@ UnityEngine{
 	[SerializeReference]  private  //reference
 	
 	[RequireComponent(typeof(Animator))]		//class，若没有该组件，自动添加上去
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]	//static fn，在加载场景后自动运行。if (!Debug.isDebugBuild || !DebugManager.instance.enableRuntimeUI || FindObjectOfType<DebugUpdater>() != null) }{return;}
 
 	[CreateAssetMenu(fileName = "Preset", menuName = "Character Preset")]	--建立文件，用于ScriptObject保存 
 	[AddComponentMenu("XX/x")]

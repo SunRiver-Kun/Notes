@@ -41,7 +41,7 @@ MonoBehaviour enabled = false
 -在一个协程中，StartCoroutine()和 yield return StartCoroutine()是不一样的。
 前者仅仅是开始一个新的Coroutine，这个新的Coroutine和现有Coroutine并行执行。
 后者是返回一个新的Coroutine，是一个中断指令，
-当这个新的Coroutine执行完毕后，才继承执行现有Coroutine。
+当这个新的Coroutine执行完毕后，才继续执行现有Coroutine。
 
 14. damage用正数表示，Delta时取反即可
 15. event 在Destroy GameObject时不会自动取消，要注意！！
@@ -53,9 +53,12 @@ Unity Editor只会在手动挂脚本时，帮忙初始化要显示的变量，�
 18. 透明队列中的 2D 渲染器
 排序图层和图层中的顺序>指定渲染队列>与摄像机的距离*透视/正交*自定义轴排序模式*精灵排序点> 
 排序组>材质/着色器>多个渲染器具有相同的排序优先级时，将由仲裁程序决定优先级。
-19. Sprite Editor可以选择Custom Outline(减少渲染)/Physics Shape(Polygen碰撞体)，
+19. 2D Sprite Editor可以选择Custom Outline(减少渲染)/Physics Shape(Polygen碰撞体)，
 Outline Tolerance控制误差范围，通过Generate快速生成。Secondary Texture用于Shader，名字如：_MaskTex
-20.
+20. 渲染管线：
+Edit > Project Settings > Quality > Render Pipeline
+Edit > Project Settings > Graphics > Scriptable Render Pipeline Setting
+
 -特殊的文件夹：根目录在Asserts
 -Editor：存放编辑器代码, EditorGUIUtility.Load 函数可从 Editor 文件夹中的 Resources 文件夹加载资源。这些资源只能通过 Editor 脚本加载，并会从构建中剥离。
 -Resources：游戏必备的资源，是除代码外不会被Unity优化掉的东西，Resources.Load
@@ -95,8 +98,11 @@ Color Adjustments：曝光、对比度等
 Shadows xxx：阴影颜色控制等
 Depth Of Field：景深
 
--Input System    package: Input System
+-分析：Window -> Analysis -> Profiler/Physics Debugger/Frame Debugger/IMGUI Debugger
+
+-输入系统 Input System    package: Input System
 Create Input Actions Asset -> New Action Map and Type -> Binding Input -> Add PlayerInput component 
+
 ------------------------------------------辅佐工具
 package manager → Unity Registry（官方工具）
 -Dynamic Bone：模拟衣物的飘动等
@@ -121,6 +127,7 @@ Alt+右键：缩放
 移动时，按住V，可选择顶点进行对齐
 移动时，按住Ctrl+Shift，可进行表面快速对齐
 移动时，开启Global+右边的网格，可开启网格对齐；也可在Edit设置单元时点击轴来实现对齐
+
 多边形碰撞器按Ctrl可清除多余连线
 
 可在inspector中为物体选择图标，打开Gizmos就可以看见了（3D Icons调大小）
