@@ -1,7 +1,9 @@
-常用软件：Win+R		文件路径：C:\Windows\System32
+常用软件：Win+R		文件路径：C:/Windows/System32
 mspaint.exe	画图
 services.msc
 
+开始菜单：C:/ProgramData/Microsoft/Windows/Start Menu/Programs
+桌面：C:/Users/Administrator/Desktop
 
 LPCWSTR : CONST WCHAR*
 LPCSTR : CONST CHAR*
@@ -20,9 +22,9 @@ PROC : process 被定义为了回调函数类型
 Project Setting: 
 路径：
 $(SolutionDir)：sln的位置    
-$(ProjectDir)：(工作目录)项目路径，Task文件夹，默认路径,不用加\
+$(ProjectDir)：(工作目录)项目路径，Task文件夹，默认路径,不用加/
 $(Configuration)：Dubug或Release文件夹，单独用指在Task文件夹里的D|R文件夹   
-$(TargetPath)：目标文件位置，不用加\，/xx.exe
+$(TargetPath)：目标文件位置，不用加/，/xx.exe
 $(ProjectName)：项目名
 
 指定文件夹位置时，在(调试/工作目录)下找，否则在(常规/输出目录)下找
@@ -54,16 +56,16 @@ BOOL WINAPI Beep(
 BOOL WINAPI MessageBeep(__in UINT uType);  //MB_OK
 
 4.播放任意格式声音
-mciSendString(L"open C:\\Users\\Administrator.SUNRIVER\\Desktop\\ding.wav", NULL, 0, 0);
-mciSendString(L"play C:\\Users\\Administrator.SUNRIVER\\Desktop\\ding.wav", NULL, 0, 0);
+mciSendString(L"open C://Users//Administrator.SUNRIVER//Desktop//ding.wav", NULL, 0, 0);
+mciSendString(L"play C://Users//Administrator.SUNRIVER//Desktop//ding.wav", NULL, 0, 0);
 
-5.PlaySound(L"C:\\Users\\Administrator.SUNRIVER\\Desktop\\ding.wav", 0, SND_SYNC);
+5.PlaySound(L"C://Users//Administrator.SUNRIVER//Desktop//ding.wav", 0, SND_SYNC);
 
 -----------------文件管理---------------------
 文件：<fileapi>
 1.创建文件夹
 //lpPathName默认创建在工作目录。可以是L"./resource" 其中./可省略
-//  /一个可以  \\要两个
+//  /一个可以  //要两个
 CreateDirectory( LPCWSTR lpPathName,  LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 
 ------------------窗体设置----------------------
@@ -78,11 +80,11 @@ LPWSTR    lpCmdLine：控制台命令行
 UINT  meg：消息  WM_
 MessageBox返回 IDYES 等
 --------------------------------------------------
-TextOut( HDC hdc, int x, int y, LPCWSTR lpString, int c);  //c表示lpString长度，注意不含'\0'
+TextOut( HDC hdc, int x, int y, LPCWSTR lpString, int c);  //c表示lpString长度，注意不含'/0'
 
 SetConsoleTitle("俄罗斯方块");  //设置标题
 ---------------------------------------------------
-的len不要带'\0'的 lstrlenW(str)  ,多输幻影
+的len不要带'/0'的 lstrlenW(str)  ,多输幻影
 其他读入字符串的len要，__crt_countof(str);
 wsprintf : 格式化输入到字符串数组 
 

@@ -1,4 +1,5 @@
  core 核心, CRT C runtime library(part of the C standard library), declarations 声明, implementation 实现,deprecated 被弃用
+调用外部程序/控制台命令， system("xxx")
 <vadefs.h> //为第一个一定被包含的头文件，包含了很多一些基于系统的调整
 {
 	_ADDRESSOF(v) // 宏,返回地址
@@ -271,6 +272,8 @@ signal(信号,void(*fn)(int))
 #endif  来判断编译器是否支持
 
 #pragma once
+
+//pack -> warning -> macro -> code -> macro -> warning ->pack
 
  //改变结构体/类的字节对齐
  #pragma pack(push,[identified],n) // n =1,2,4,8(_CRT_PACKING) ; 栈存储，只有n时是改变当前值

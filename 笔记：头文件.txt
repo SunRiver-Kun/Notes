@@ -16,8 +16,8 @@ struct/class XXX{
 	void fn();
 	void fn2() { xxx };	
 }
-[extern] void fn()
-所有模版实现，所有inline
+所有模版实现
+所有inline
 
 //}
 

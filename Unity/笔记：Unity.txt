@@ -29,6 +29,9 @@ Static Collider：a Collider but no Rigidbody.
 -碰撞也不会被移动
 -触发：两静态不反应，其他反应
 
+连续碰撞检测 (CCD)
+	基于扫掠的 CCD：Collision Detection 设置为 Continuous 或 Continuous Dynamic。线，旋幽，慢
+	推断性 CCD：Collision Detection 设置为 Continuous Speculative。线+角，幽灵
 
 13. 协程注意：协程是挂在GameObject上的
 gameObject.active = false 
@@ -105,19 +108,61 @@ Create Input Actions Asset -> New Action Map and Type -> Binding Input -> Add Pl
 
 ------------------------------------------辅佐工具
 package manager → Unity Registry（官方工具）
--Dynamic Bone：模拟衣物的飘动等
--Job System：多线程编程框架，高性能、安全。	注：一般子线程无法操作Unity对象
--2D PSD Importer：加速PSD、PSB的导入导出
--2D Sprite Shape：用于创建更多变的地图  https://www.jianshu.com/p/100597b24f02
 -3Dmax、Blender：制作模型，注意单位为米
--Yamaha、Adobe Audition：制作音频和混音
 -Cinemachine：方便的摄像机跟随等，可以配合Volume使用
--Visual Effect Graph（VFX）：粒子特效集，建立丰富的特效。
-	GetWorldToObjectMatrix：https://answers.unity.com/questions/1821260/visual-effect-graph-does-not-work-with-urp.html
--Recorder：录屏
--Quick Search：Ctrl+'
+-TimeLine：使用 Unity 的时间轴来创建电影内容、游戏序列、音频序列和复杂的粒子效果，常用于CG
+
+模型类：
+-2D Sprite Shape：用于创建更多变的地图  https://www.jianshu.com/p/100597b24f02
 -Polybrush：网格绘制多边形
--TimeLine：使用 Unity 的时间轴创建电影内容、游戏序列、音频序列和复杂的粒子效果。
+-Tenkoku=Dynamic Sky System：好全天候动态天空
+-Foggy Lights：高质量的光晕
+-Voxel Master：立体像素，类似“我的世界”
+
+特效类：
+-Yamaha、Adobe Audition：制作音频和混音
+-Visual Effect Graph（VFX）：粒子特效集，建立丰富的特效。   GetWorldToObjectMatrix：https://answers.unity.com/questions/1821260/visual-effect-graph-does-not-work-with-urp.html
+
+动画类：
+-Dynamic Bone：动态骨骼，模拟衣物的飘动等
+-Final IK：反向运动学
+-Camera Path Animator：相机专用路径
+
+编辑器：
+-2D PSD Importer：加速PSD、PSB的导入导出
+-Quick Search：Ctrl+'
+-Recorder：录屏
+-BehaviorTree：行为树
+-Spline Editor：路径器
+
+脚本类：
+-Playmaker：可视化编程工具
+-Lua Framework：
+
+GUI类：
+-TextMesh Pro：创建多变的文本，作为模型渲染
+-Closing Credits：创建游戏结尾的滚动字幕
+-UGallery Flow：图片墙预览
+-Pro Chart：创建传统的图表
+-UGUI Minimap：小地图制作
+-DOTween Pro：一些简单的动作，也可用于其他非UI物体
+
+着色器：
+-Cool Mobile Water：移动设备专用水面效果，两个摄像机，一个渲染水上，一个渲染水下
+-Dynamic Volumetric Fog：动态体积雾，简单的
+-Highlighting System：轮廓发光
+-Paint in 3D：在模型上绘图
+-See-Through  System：可配置的透明度，显示角色遮挡时的透明度
+-Curved World：创建弧度的世界
+-SoftShadow2D：软阴影
+
+优化类：
+-Job System：多线程编程框架，高性能、安全。	注：一般子线程无法操作Unity对象
+-FPS Graph-Performance Analyzer：性能分析，帧数测试
+-Asset Hunter2：消除多余的资源
+-Dynamic Occlusion System：动态剔除，unity自带的只能剔除static物体
+-Simple LOD：低模合成
+-PoolManager：内存池
 
 ---------------------------------------------快捷键
 鼠标右键+WSAD：在透视模式下愉快地浏览Scene

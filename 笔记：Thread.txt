@@ -17,7 +17,68 @@
 -可重入性(Reentrancy)：多个线程并行访问时，即使不按照调用顺序重叠运行代码，也必须保证结果
 -线程优先级：高优先的线程先运行，CPU会自动根据需要升降优先级
 -堆区域、数据区域、代码区域       每个线程(寄存器区域、栈区域)   --线程内部寄存器区域不共享，栈区域与其他线程共享
+《原始》
+<thread>{
+	namespace this_thread { get_id()、sleep_until(time_point)、sleep_for(time_span) 、
+		yield()  //让出当前线程抢占的时间片，一般用在while(true) + if( waittime/lock )
+	}
+	thread{
+		//线程在构造的时候开始运行（除了默认构造）
+		thread()  //non-joinable，id==0 和其他join或detach后的线程一样
+		thread(fn, args...)	
+		operator =( thread&&)
 
+		join()	//如果线程未结束，阻塞调用线程。该线程内存由调用线程管理
+		detach()   //不阻塞调用线程，线程内存自动回收
+		swap()、std::swap()
+		
+		~thread()   //析构的时候，若无join/detach则报错
+	}
+注：std::cout是全局变量，std::cout << 如果不用锁会导致输出错位
+}
+
+<mutex>{  global
+互斥锁	mutex { lock()、try_lock()、unlock()、native_handle() }
+循环	recursive_mutex：允许单个线程重复锁，直到全部解锁 { lock()、try_lock()、unlock()、native_handle() }
+	timed_mutex：支持定时，try_lock_for(time)、try_lock_until(timepoint)
+	recursive_timed_mutex：循环定时
+guard: local
+	lock_guard<type_mutex>  (mutex[, adopt_lock()])   //构造时可锁，析构时解锁
+	unique_lock：支持定时锁，构锁析解
+[17]	scoped_lock：支持多个不同类型锁的构锁析解
+tags:
+	try_to_lock_t：尝试锁  try_lock()
+	defer_lock_t：被其他线程锁了构造不锁
+	adopt_lock_t：被当前进程锁而构造时不锁
+global:
+	std::try_lock(...)、std::lock(...)  同时锁
+	std::call_once(once_flag, fn, args...) //当有同一个once_flag时，只调用一次，且全部等调用结束后才返回
+}
+
+<atomic>{  global  //无法并行的数据，相对于存取的时候自动锁了
+	atomic_xxx
+}
+
+<condition_variable>{   global		//当前线程可被其他线程唤醒，wait时会暂时解锁
+	condition_variable_any：可使用任意锁
+	condition_variable{	//使用unique_lock<mutex>，这里的 lck 表示之前占用的资源的锁
+		wait(unique_lock<mutex> lck)    //wait -> lck.unlock() -> blcoked -> notified -> lck.lock()
+		wait(unique_lock<mutec> lck bool(*fn)())   //...-> notified -> lck.lock() ->  while( !fn() ) wait(lck);
+		wait_for、wait_until
+		notify_one()、notify_all()
+	}
+	std::notify_all_at_thread_exit(condition_variable& cond, unique_lock<mutex> lck)  //当线程exit时, lck.unlock(), cond.notify_all() 
+}
+
+<future>{
+}
+
+<chrono>{ 时钟
+	stystem_clock::time_point ()
+	chrono::milinsecond()
+}
+
+《Qt》
 线程类：
 #include <QtCore/QtCore>
 QAtomicInt：提供Integer 上与平台无关的Atomic运算
@@ -56,10 +117,6 @@ QtConcurrent：不使用互斥体、读-写锁、等待条件和信号量等低�
 METHOD：map、filter、run、 在原本的修改
 mapped、filtered、 返回修改后的
 mappedReduced、filteredReduced  返回简化的修改后的
-
-原生代码：
-<thread>、<mutex>、<future>、<atomic>
-
 
 注意事项：
 1.多线程访问共享变量时，要先进行同步。

@@ -148,6 +148,10 @@ Effector2D{  效应器，同一物体无法添加多个效应器
 
 特殊的碰撞体：
 Character Controller：主要用于第三人称玩家控制或者是不使用刚体的第一人称玩家控制。不会自动施力，回调：OnControllerColliderHit()
+Cloth
+Terrin Collider
+Wheel Collider
+Mesh Collider
 
 2D显示排序
 SortGroup：对子物体按父物体来设置渲染
