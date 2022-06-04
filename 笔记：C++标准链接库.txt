@@ -236,16 +236,6 @@
 	cin,cout,cerr,clog. wcin,wcout,wcerr,wlog
 }}
 <xiosfwd>  using ios = basic_ios<char, char_traits<char>>;  等
-<string>
-{
-	to_string(...)
-	stoi、stof
-	<xstring>
-	{
-		hash<string/wstring> () --返回哈希值
-		--其他的在< type_traits >
-	}
-}
 <string_view>  处理const char*的好帮手！
 
 <csignal> //终止处理
@@ -435,11 +425,152 @@ T t(arg)总结： T同arg_type，T&无引用，T&&右值无引其他&
 		//在_kbhit()之前使用，等待按下键盘，并把_kbhit()的结果设为真
 		//在_kbhit()之后使用，直接获取键值，并重置_kbhit()的结果为假
 }
+
+//容器
+emplace：用args...构造并加入容器
+insert(pos_it, ...)：在pos_it的位置插入值，pos_it向后移，返回第一个插入元素的迭代器
+erase(pos)：移除pos位置的值，并返回原本pos之后的迭代器
+sort(bool(*fn)(front, back))：如果要front在back之前则返回true。默认是less，即升序
+
+参数：
+comp：less  	bool compare(a, b) { return a < b; }  //升序 
+
+typedef：
+value_type、reference、const_reference、pointer、const_pointer、size_type=size_t
+iterator、const_iterator、difference_type=ptrdiff_t  （stack/queue除外）
+bit/random :  reverse_iterator<iterator>、const_reverse_iterator = reverse_iterator<const_iterator>
+allocator_type = _Alloc（除array外）
+map/set:  key_compare=_Compare、value_compare= 仿函数<key_compare>、key_type、[map: mapped_type]
+
+<array>{  array<_Ty, _Size>  swap() //交互真实数据，其他容器交互内部数据（指针等） }
+<deque>{
+	deque<_Ty>{
+		iterator emplace(const_iterator pos, _Arg&&... args)  //在pos位置插入用args构造的_Ty
+		void emplace_front(_Args&&... args)、void emplace_back(_Args&&... args)
+		push_back(value)、push_front(value)、
+		pop_back()、pop_front()
+	}
+}
+<vector>{
+	vector<_Ty>{
+		vector{...}
+		vector(size_t size)
+		reserve()   //change the capacity
+		shrink_to_fit()	//reserve(size())
+		operator []、front()、back()
+	}
+	vector<bool>{
+		filp()	//反转bit。true->false,  false->true
+	}
+}
+<stack>{
+	stack<_Ty>{
+		empty()、size()、swap()
+		push(value)、emplace(args...)、pop()、top()
+	}
+}
+<queue>{
+	queue<_Ty>{
+		empty()、size()、swap()
+		push(value)、emplace(args...)、pop()
+		front()、back()
+	}
+	//默认降序排列(top()返回最大值)
+	priority_queue<_Ty,  _Container=vector<_Ty>, _Compare=less<typename _Container::value_type>>{
+		empty()、size()、swap()
+		push()、emplace(args...)、pop()、top()
+	}
+}
+<list>{
+	list<_Ty>{    // *next, *pred
+		assign(size, value)、assign (initializer_list)、assign(begin, end)
+		push_front(value)、emplace_front(args...)、push_back(value)、emplace_back(args..)
+		pop_front()、pop_back()
+		splice(pos, &list[,begin, end])、splice(pos, &list, where)  //拼接，从list中移除并从pos插入（pos后移了）
+		remove(value)、remove_if( bool(*fn)(_Ty value) )
+		sort(fn=less)
+		unique(fn=equal)   //sort->unique 加速
+	}
+}
+<forward_list>{
+	forward_list<_Ty>{  //只有*next，节约内存，插入/移除更快，但遍历不是很方便
+		size() ->  distance(begin(), end())
+		reseize()
+		before_begin()   //返回在begin()之前的迭代器，常用与 xxx_after()
+		push_front()、pop_front()
+		emplace_after()、insert_after()、erase_after()
+		splice_after(pos, &fwdlst)
+		splice_after(pos, &fwdlst, where)
+		splice_after(pos, &fwdlst, before_first, last)  //插入 (before_first, last)
+		merge(&forward_list[, comp])    //合并有序链表(自身也必须先有序)
+		reverse()   //反转链表
+		remove()、remove_if()、unique()、sort()
+	}
+}
+//set和map类会自动排序，默认是less<_Ty>升序
+<set> {
+	set<_Ty, less<_Ty>>
+	insert()、erase()、clear()、emplace()/emplace_hint()
+	lower_bound(key) --> iterator   begin() min 第一个<=的it max end()
+ 	upper_bound(key)  --> iterator begin() min 第一个给>的it max end()
+	equal_range(key)  --> make_pair(lower_bound(key), upper_bound(key))
+}
+<map>{
+	map<_Key, _Value, _Compare=less<_Key>, _Alloc=allocator<pair<const Key, Value>> >
+	operator[key]	--不存在也会自动插入
+	at(key)	--不存在会报错	
+	insert()	--> C11之后，新插入的等key元素会在之前插入的之后
+	erase()	--> value 的话全部都会去掉
+	find(key)	--> 第一个匹配的（之前）
+	clear()、emplace()/emplace_hint()
+	key_comp()、value_comp()    --仿函数比较器
+	lower_bound(key) --> iterator   begin() min 第一个<=的it max end()
+ 	upper_bound(key)  --> iterator begin() min 第一个给>的it max end()
+	equal_range(key)  --> pair<it,it>  nofind: first==second;   for(it = first; it!=second; ++it)
+}
+<memory>{
+	unique_ptr<_Ty>   unique_ptr<_Ty[]>    <-  make_unique<>()
+	shared_ptr<_Ty>   <-  make_shared<>()
+	weak_ptr(shared_ptr)
+}
+<string>{
+	class: string(char)、u16string(char16_t)、u32string(char32_t)、wstring(wchar_t)
+	//API一样，以string为例。sizeof: 1、2、4、2.
+  
+	const int string::npos = -1;    //no_find or copy all character
+	
+	to_string(...)、to_wstring(...)
+	stoi()、stoul、stoll、stoull、stof、stod、stold
+	size()==length()  //返回字符串长度(不包含'\0')	
+
+	const char* c_str()	//返回相等的C风格指针，结尾有'\0'
+	const char* data()	//返回当前存储的数据，结尾不一定有'\0'
+	string substr(pos=0, len=npos)  //返回子串
+	int compare([pos, len,] str [, strpos, strlen])    //0等于，>0大于，<0小于
+	int copy(*out_str, out_len, in_pos=0)   //从pos位置，拷贝到len个字节到str，返回实际拷贝的长度，不自动加'\0'   ->  s[str.copy(s,len)] = '\0';
+	size_t find(ch/str [, pos, cmp_n])   //从pos位置开始全比较，成返index 失返string::npos
+	size_t rfind(...)  //最后一个全比较找到的index
+ 	find_first_of、find_last_of、find_first_not_of、find_last_not_of   参数同上，找到任意字符（任意比较）
+
+}
+//算法
+iterator:  下面的可以转为上面的。 xxx_iterator_tag 
+input：只读。++, const *->, ==, !=, swap   	_InIt 
+output：修改,non-const容器，*a=t, ++,swap	_OutIt
+forward：input and output			_FwdIt 	forward_list
+bidirectional：forward and --			_BidIt	list/map/multimap/set/multiset
+random_access：bidirectional and +-,+-=, [n], <,>,<=,>=, size=end-begin	_RanIt	deque/vector/array
+
 <algorithm>
 {
 <xmemory>{
 #include <cstdint> <cstdlib> <limits> <new> <xatomic.h>
 #include <xutility> {#include <climits> <cstdlib> <cstring> <utility>}}
+
+//迭代器
+begin()、end()、cbegin()、cend()、rbegin()、rend()、crbegin()、crend()
+_Diff distance(_InIt _First, _InIt _Last)	//迭代器之间的差值.  end()-begin() = size()
+advance(&it, n)  //移动it，n > 0后移，n<0，前移。  random: +-   other: ++、--
 
 //遍历
 _Fn for_each(_InIt _First, _InIt _Last, _Fn _Func)
@@ -455,11 +586,13 @@ _FwdItHaystack search(_FwdItHaystack _First1, _FwdItHaystack _Last1, const _FwdI
 _FwdIt search_n(const _FwdIt _First, _FwdIt _Last, const _Diff _Count_raw, const _Ty& _Val, _Pr _Pred)
  _FwdIt1 find_end(_FwdIt1 _First1, const _FwdIt1 _Last1, const _FwdIt2 _First2, const _FwdIt2 _Last2, _Pr _Pred)
 _FwdIt1 find_first_of(_FwdIt1 _First1, const _FwdIt1 _Last1, const _FwdIt2 _First2, const _FwdIt2 _Last2, _Pr _Pred)
-_FwdIt upper_bound(_FwdIt _First, _FwdIt _Last, const _Ty& _Val)  // find first element that _Val is before
-_FwdIt lower_bound(_FwdIt _First, _FwdIt _Last, const _Ty& _Val) 
+//要求用Cmp排序过容器，返回 >Val的第一个迭代器，end()比任何都大，无时返回begin()
+_FwdIt upper_bound(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, Cmp=less)  
+//要求用Cmp排序过容器，返回 <= Val的第一个迭代器，无时返回begin()
+_FwdIt lower_bound(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, Cmp=less)   
 pair<_FwdIt, _FwdIt> equal_range(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, _Pr _Pred)   // find range equivalent to _Val
 bool binary_search(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, _Pr _Pred)
-_FwdIt max_element(_FwdIt _First, _FwdIt _Last)
+_FwdIt max_element(_FwdIt _First, _FwdIt _Last)   //返回迭代器，不要和max搞混了
 _FwdIt min_element(_FwdIt _First, _FwdIt _Last)
 pair<_FwdIt, _FwdIt> minmax_element(_FwdIt _First, _FwdIt _Last)
 
@@ -532,6 +665,7 @@ sizeof...(_Types)
 static_cast<_Types>()...
 
 
+<regex>	看《笔记：Boost库》
 
 <charconv>  from_chars, to_chars
 std::optional<int>  -- if(o)  *o

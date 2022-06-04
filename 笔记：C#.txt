@@ -46,19 +46,25 @@ p?.fn()	<-->	p!=null ? p.fn() : null	//注：fn是事件或委托时可能为空
 8. 
 if( x is int num ) { print(num); }  //当x可以转为num时进入if	//is not
 using(int x) { ... }  //自动析构x
-int fn(int v) => 
+string fn(string v) => 
  v switch
 {
-	
-}
+      "A" => "Alice",
+      "B"  => "BGM",
+       _  =>  ""   //default
+};
+
+delegate(args...){ ... }
 
 9. 文件、序列化、Xml、Json
 System.IO{
 	File -> Read|Write|Exists
+	File.OpenRead()	File.OpenWrite并不会自动清空，要情况请用 Open(path, FileMode.Write)
 	TextReader/Writer
-	BinaryReader/Writer
+	BinaryReader/Writer	PeekChar()==-1  并不能准确判断EOF，就离谱！
 	Path{ HasExtension()、IsPathRooted()、GetFullPath()、GetTempPath()、GetTempFileName()、GetDirectoryName()、GetExtension }
 	FileInfo -> Directory(目录) -> Create
+	Directory.Exists/ GetFiles / Delete(path, true)
 }
 using System.Runtime.Serialization.Formatters.Binary;
 BinaryFormatter{
@@ -91,6 +97,7 @@ public bool x
 }
 public bool x {get; private set;}
 public bool y {get; set;}	--和 public bool y; 一样
+public T x => xxx
 
 public event Action x
 {

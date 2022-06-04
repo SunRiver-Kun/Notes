@@ -8,9 +8,11 @@ UnityEngine.Events.UnityEvent<>，编辑器可以添加public的参数或最多�
 
 --核心
 Application{	
+	isPlaying
 	Quit()、OpenURL、installerName
-	dataPath、consoleLogPath、temporaryCachePath、persistentDataPath、streamingAssetsPath
-	event:  logMessageReceived
+	dataPath(..Assets)、streamingAssetsPath(..Assets/StreamingAssets)、
+	consoleLogPath、temporaryCachePath、persistentDataPath	   Users/AppData/Local/...
+	event:  logMessageReceived		//关于Scene的不要用，异步时会漏掉的
 }
 
 Mathf{
@@ -22,6 +24,26 @@ Mathf{
 	float DeltaAngle(a, b)		--计算两个角度间的夹角？	
 	Ceil、Round(a)		--取整，System.Convert.ToInt32(a) , (int)
 	Epsilon(很小的常量)、Infinity(正无穷)、NegativeInfinity(负无穷)、PI、Deg2Rad、Rad2Deg
+	MoveTowards (current, target, maxDelta);   maxDelta正近，负离。  不会越过target
+}
+
+GameObject{
+	static FindGameObjectWithTag(tag)
+	static Find(name)
+
+	CompareTag(tag)	//tag必须是已注册过的，不会会报错
+
+	//组件获取，不管是否禁用都可以获取到
+	GetComponent(type:string|Type)	GetComponent<T>()	
+
+	//下面的涉及自身和子（父）对象是否已激活
+	GetComponentInChildren<T>(bool includeInactive=false)	//自身一定，未激阻断
+	GetComponentInParent<T>(bool includeInactive=false)	//自身一定，未激阻断
+	BroadcastMessage(methodname[, parameter])	//逐级递推，未激阻断   未激活对象调用BroadcastMessage直接阻断
+}
+
+UnityEngine.Assertions.Assert{
+	IsNull、AreEqual、IsTrue
 }
 
 UnityEngine.Random{
@@ -47,8 +69,19 @@ AudioPlayer、AudioSource、VideoPlayer
 UnityEngine.Audio{ 
 	AudioMixer、AudioMixerGroup、AudioMixerPlayable
 }
+--截屏
+ScreenCapture{
+	CaptureScreenshot(filename)
+	Texture2D CaptureScreenshotAsTexture()
+}
+
 --物理
 Physics{		
+	public const int IgnoreRaycastLayer = 4;
+        	public const int DefaultRaycastLayers = -5;	//除IgnoreRaycastLayer外的所有图层
+        	public const int AllLayers = -1;
+	//LayerMask  Nothing=0  Default = 1   1<<x   
+
 	bool RayCast( pos, direction[,out hitobjs], distance[, layout] )	--check colliseder
 	bool CheckBox(Vector3 center, Vector3 halfExtents, Quaternion orientation);
 	bool SphereCast(Vector3 origin, float radius, Vector3 direction, out RaycastHit hitInfo);
@@ -89,8 +122,8 @@ static:
 	identity、、、
 	Angle()、AngleAxis()、
 	Euler(x,y,z)	--按°来旋转，左手螺旋
-	FromToRotation()、Inverse()、LookRotation()、
-	[S]Lerp()、[S]LerpUnclamped()、RotateTowards()
+	FromToRotation()、Inverse()、LookRotation(direction, upward)、
+	[S]Lerp()、[S]LerpUnclamped()、RotateTowards(from,to,maxdelta)
 	Vector3 operator *(Quaternion rotation, Vector3 point);	//旋转后的另一个点
         	Quaternion operator *(Quaternion a, Quaternion b);	//∠a + ∠b
 }
@@ -147,8 +180,10 @@ Effector2D{  效应器，同一物体无法添加多个效应器
 }
 
 特殊的碰撞体：
-Character Controller：主要用于第三人称玩家控制或者是不使用刚体的第一人称玩家控制。不会自动施力，回调：OnControllerColliderHit()
-Cloth
+Character Controller：不使用刚体的玩家角色。
+	不会对力作出反应，也不会自动推开刚体，不会触发OnCollideXXX，但可以触发Trigger
+	回调：OnControllerColliderHit(other)	
+	skinwidth最好是radius的10%左右
 Terrin Collider
 Wheel Collider
 Mesh Collider
@@ -191,6 +226,9 @@ CharacterController{		不是很好用……
 PlayerPrefs：通过key来保存数据，简单
 ScriptObject：单独存数据，配合[CreateAssetMenu(menuName="Settings",fileName="Settings")]
 System.IO{
+	FileInfo  => 
+		if (!info.Directory.Exists) { info.Directory.Create(); 
+		bool isDir = (info.Attributes & FileAttributes.Directory) != 0
 	File
 	TextReader/Writer
 	BinaryReader/Writer
@@ -215,11 +253,15 @@ UnityEditor{
 		Contains、CreateAsset、CreateFolder、RenameAsset、
 		CopyAsset、MoveAsset、MoveAssetToTrash 、 DeleteAsset
 	}
+	EditorUtility{
+		SaveFilePanel、SaveFolderPanel	...
+	}
 }
 
 --时间
 Time{
-	  deltaTime	--帧之间的间隔
+	deltaTime	--帧之间的间隔
+	fixedDeltaTime
 }
 
 --绘制/GUI
@@ -242,10 +284,16 @@ Gizmos：{	--写在 OnDrawGizmos	OnDrawGizmoSelected
 	Color
 	DrawWireSphere、DrawIcon、DrawGUITextures	
 }
+Handles{ --自定义Editor时，绘画用	}
 
 UI
 UnityEngine.UI{	//找不到命名空间，把代码打开方式改为VS，打开一次，再改回VS Code即可。或更新Package里的vscode扩展
 https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/UIBasicLayout.html
+}
+UnityEngine.EventSystems{
+	EventSystem	->   事件发送器
+	EventTrigger	->   添加该组件，设置其UnityEvent
+	IPointerClickHandler, IPointerEnterHandler, IPointExitHandler  ...
 }
 
 渲染

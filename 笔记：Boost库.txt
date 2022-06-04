@@ -254,11 +254,11 @@ std::cout << boost::format("%05d - %10.6f = %x")%a%b%c; //%1% %2% 通用的占�
 
 --C++标准库中的正则
 #include <regex>
-regex r(R"(/d+)");	//wregex
+regex re(R"(/d+)");	//wregex
 cmatch result;	//cmath：char  smatch：string
 //regex_search	子串匹配即可
 //regex_replace	替换$1,$2...
-bool ok = regex_match("123str456sxx789", result,r);	完全匹配
+bool ok = regex_match("123str456sxx789", [result,] re);	完全匹配
 //sregex_iterator(str.cbegin(), str.cend(),re,flag=default),end;	for(;i!=end;++i) cout << i->str(0) << i->str(1) ...
 //sregex_token_iterator(str.cbegin(), str.cend(),re,sub),end;	for(;i!=end;++i) cout << i->str()
 

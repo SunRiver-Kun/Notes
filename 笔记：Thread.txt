@@ -56,7 +56,20 @@ global:
 }
 
 <atomic>{  global  //无法并行的数据，相对于存取的时候自动锁了
-	atomic_xxx
+	atomic_xxx  整形，不含*、/
+	atomic<T>  //T ：存储连续，无虚函，无noexpect构函，无“拷贝/移动的构函及赋值”
+	fetch_add、fetch_sub、fetch_and、fetch_or、fetch_xor	操作并返回操作前的值
+	++、--、=
+	+=、-=、%=、|=、^=
+	operator T
+	exchange()  操作并返回操作前的值
+	//if( menber_equal(atomic_value, expected) )  atomic_value=value; else expected = value
+	//内存比较atomic_value和expected，相等则atomic_value=value，不相等expected=atomic_value
+	compare_exchange_weak(&expected, value)	//用在循环好，有虚假返回false（相等时还是返回false）
+	compare_exchange_strong(&expected, value)    //用在非循环算法比较好，虚假返回false
+	store() 存储、load() 获取
+
+	std::atomic_function
 }
 
 <condition_variable>{   global		//当前线程可被其他线程唤醒，wait时会暂时解锁
@@ -71,6 +84,33 @@ global:
 }
 
 <future>{
+	promise<T>{	//与future分享状态，当set后时future的get()才返回，当promise和它的所有future无了才释放。
+		get_future()
+		set_value()
+		set_exception()
+		set_value_at_thread_exit()
+		set_exception_at_thread_exit()
+		swap()、std::swap()
+	}
+	promise_task<Return(T1,T2)>{ //存储函数和参数	thread(move(promise_task), args...).detach()
+		valid()  //默构返回false，其他返回true
+		get_future()
+		operator()、make_ready_at_thread_exit()
+		reset()   //重置share state，让future.get()能再次阻塞
+		swap()、std::swap()
+	}
+	future<Return>{	//用 async()、primise/promise_task::get_future来构造
+		get()	//一次性，阻塞，直到当其他线程set时才返回
+		wait()、wait_for()、wait_until()	   //阻塞当前线程，直到其他线程set或超时
+		valid()    	//是否联系shared state，默构或get()后返回false，其他返回true
+		share()	//return shared_future
+	}
+	future_share{
+		future_share(future)
+		get()	//可多次，阻塞，直到当其他线程set时才返回
+		wait()、wait_for()、wait_until()	   //阻塞当前线程，直到其他线程set或超时
+		valid()    	//是否联系shared state，默构或get()后返回false，其他返回true
+	}
 }
 
 <chrono>{ 时钟

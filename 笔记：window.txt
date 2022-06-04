@@ -2,8 +2,19 @@
 mspaint.exe	画图
 services.msc
 
+后缀
+.url	修改属性，快速打开网址
+
+网络：ipconfig  --all
+
+查看端口  
+netstat -aon | findstr "5037"
+tasklist | findstr "5037对应的进程号"
+
 开始菜单：C:/ProgramData/Microsoft/Windows/Start Menu/Programs
 桌面：C:/Users/Administrator/Desktop
+
+重新定位按键：https://blog.csdn.net/lhdalhd1996/article/details/90741092
 
 LPCWSTR : CONST WCHAR*
 LPCSTR : CONST CHAR*

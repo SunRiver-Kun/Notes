@@ -18,7 +18,8 @@ C++：
 1. 写模版时，可以用begin()、end()，来代替成员函数
 2. 尽量用智能指针、make_xxx，来代替new和delete。unique_ptr、shared_ptr、weak_ptr，不要用auto_ptr!!!
 3. 避免环依赖，实在不行，建议用  weak_ptr
-
+4. 容器的size()返回的是unsigned，小心隐性转换和负数(-1 -> UINT_MAX)
+5. 比较从最小，或最右开始，避免条件覆盖
 
 算法：
 

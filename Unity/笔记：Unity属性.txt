@@ -4,11 +4,11 @@
 System{
 	[Serializable]	//可以被unity编辑器编辑
 	[NonSerialized]	//忽略序列号，默认只序列化public
+	[Flags]  	//用于enum，在编辑器上可以实现枚举多选
 }
 
 System.Security{
 	[SecuritySafeCritical]  // public int GetInstanceID();
-	
 }
 
 UnityEngine{
@@ -18,15 +18,23 @@ UnityEngine{
 	
 	[RequireComponent(typeof(Animator))]		//class，若没有该组件，自动添加上去
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]	//static fn，在加载场景后自动运行。if (!Debug.isDebugBuild || !DebugManager.instance.enableRuntimeUI || FindObjectOfType<DebugUpdater>() != null) }{return;}
+	[ExecuteInEditMode]	//class，让脚本在Editor下开始运行
 
 	[CreateAssetMenu(fileName = "Preset", menuName = "Character Preset")]	--建立文件，用于ScriptObject保存 
 	[AddComponentMenu("XX/x")]
+
+	[TextArea(minline, maxline)]  	//用于string，方便string的编辑	
+
 }
 
-UnityEditor{
+UnityEditor{	floder Editor
 	[MenuItem("MyTools/fn")]	//static void fn(){...}	//在菜单栏上点击运行
 	[CustomEditor(typeof(XXX))]	//class : Editor	//XXX为可在Inspector显示的组件或ScriptObject
 	[CustomPropertyDrawer(typeof(Data))]  class : SerializableDictionaryPropertyDrawer	//自定义数据绘制
+
+	[InitializeOnLoad]	//编译进入unity时，static class A{  static A(){...} }
+	[InitializeOnLoadMethod]	//编译进入unity时，fn
+	[InitializeOnEnterPlayMode]    //fn
 }
 
 UnityEditor.AssetImporters{

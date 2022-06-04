@@ -48,7 +48,7 @@ MonoBehaviour enabled = false
 
 14. damage用正数表示，Delta时取反即可
 15. event 在Destroy GameObject时不会自动取消，要注意！！
-16. 切换场景时static的不会重置
+16. 切换场景时数值型static的不会重置，除了DontDestroyOnLoad的obj都会变null
 17. 
 Instantiate，不要在Start或Awake中克隆自身，Awake()立即调用，Start()下一帧调用
 AddComponent，不会调用Reset()，也不会自动初始化变量
@@ -61,6 +61,17 @@ Outline Tolerance控制误差范围，通过Generate快速生成。Secondary Tex
 20. 渲染管线：
 Edit > Project Settings > Quality > Render Pipeline
 Edit > Project Settings > Graphics > Scriptable Render Pipeline Setting
+21.  小心unsigned与负数  x+1 ? size()
+22.  time -= maxtime || time+=maxtime 代替 time=0	避免时间错位
+23. 脚本没写Start、Update等函数时会没有勾，适合写GLOBAL.cs
+24. ScriptObject的物体返回时注意是返回副本还是共用的！
+25. 判断GameObject是否被删除可以用  ==null 来判断，Component用 this==null 来判断，
+用被销毁组件的this.gameObject会报错，但是如果先用个参数保存this.gameObject，就可以跳过this，直接判断gameObject
+这个是重载与Object的==，被销毁了，但数值数据还没被销毁掉。
+报错的条件：component被摧毁，用(this.)gameObject访问物体或其身上的组件。但如果用局部参数先存起来就不会报错
+26. 跨Scene存数据
+* 用PersistentScene（不被卸载的场景）做媒介
+* 用static bool/event/引用	不过引用在使用前最好判断是否被销毁 ==null，其他正常使用即可
 
 -特殊的文件夹：根目录在Asserts
 -Editor：存放编辑器代码, EditorGUIUtility.Load 函数可从 Editor 文件夹中的 Resources 文件夹加载资源。这些资源只能通过 Editor 脚本加载，并会从构建中剥离。
@@ -74,6 +85,7 @@ GameManager
 导入时会忽略的东西：隐藏的文件夹、.头or~尾的文件和文件夹、.tmp的文件、名为cvs的文件和文件夹
 
 - 优化：
+材质：https://blog.csdn.net/qq_29266497/article/details/81515326
 大小：纹理和音频，动画等压缩好。注：用不到的文件，在构建时不会包含进去，不用担心
 速度：代码尽量不使用 var。不做少做做更好
 Trace.WatchTime(()=>{...},1000000次)	--观察代码运行时间
@@ -93,13 +105,14 @@ Components{
 	遮挡 → Cookie，在Point Light里
 }
 
-- 特效 *先添加Volume组件*
+- 特效 *先添加Volume组件*   Camera的Post Processing记得开
 也可以导入Post Processing包
-Bloom：灯光效果
-Tonemapping：色调映射
+Bloom：曝光效果
+Tonemapping：色调映射   ACES/Neutral/None
 Color Adjustments：曝光、对比度等
 Shadows xxx：阴影颜色控制等
 Depth Of Field：景深
+Vignette：晕映，让摄像机四周变黑之类的，增加恐怖效果
 
 -分析：Window -> Analysis -> Profiler/Physics Debugger/Frame Debugger/IMGUI Debugger
 
@@ -170,9 +183,9 @@ Alt+左键：顶点旋转视角
 Alt+右键：缩放
 旋转和移动时，按住Ctrl，每次移动固定单元，可在Edit中设置单元
 移动时，按住V，可选择顶点进行对齐
-移动时，按住Ctrl+Shift，可进行表面快速对齐
+移动时轴中心点，按住Ctrl，按住Shift，可进行表面快速对齐
 移动时，开启Global+右边的网格，可开启网格对齐；也可在Edit设置单元时点击轴来实现对齐
-
+旋转时中心点，按住Ctrl+Shift，可进行朝向旋转
 多边形碰撞器按Ctrl可清除多余连线
 
 可在inspector中为物体选择图标，打开Gizmos就可以看见了（3D Icons调大小）
