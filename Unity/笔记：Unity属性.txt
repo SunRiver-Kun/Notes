@@ -1,31 +1,49 @@
+参考：脚本API.UnityXXX.Attributes
 属性：[...]  继承System.ComponentModel. 类名为XXXAttribute, 实际使用 XXX[(...)]
-注记：下面的默认用于函数
+isValidateFunction ->  bool fn()   //第一个名字记得一样
 
 System{
 	[Serializable]	//可以被unity编辑器编辑
-	[NonSerialized]	//忽略序列号，默认只序列化public
+	[NonSerialized]	//忽略序列化，默认只序列化public。可避免ScriptObject被序列化而不能判null
 	[Flags]  	//用于enum，在编辑器上可以实现枚举多选
 }
 
-System.Security{
-	[SecuritySafeCritical]  // public int GetInstanceID();
-}
-
 UnityEngine{
-	[SelectionBase]  class/struct	
-	[SerializeField] private  //value	
-	[SerializeReference]  private  //reference
+	[SelectionBase]  //class，选子对象时自动跳转到根
+	[SerializeReference]  //base class value，让基类对象可以序列化派生类，但不同脚本间不能共享数据，考虑用ScriptObject
+	[SerializeField]  //private value，显示并序列化私有成员		
+
+	[RequireComponent(typeof(Animator))] //class，若没有该组件，自动添加上去
+	[DisallowMultipleComponent]  //禁止多个相同类型（或子类型）的脚本挂在同一个GameObject上	
+
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.XXX)]	//static fn
 	
-	[RequireComponent(typeof(Animator))]		//class，若没有该组件，自动添加上去
-	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]	//static fn，在加载场景后自动运行。if (!Debug.isDebugBuild || !DebugManager.instance.enableRuntimeUI || FindObjectOfType<DebugUpdater>() != null) }{return;}
-	[ExecuteInEditMode]	//class，让脚本在Editor下开始运行
+	[ExecuteInEditMode]  //MonoBehaviours，让脚本在Editor下开始运行，不考虑预制件模式
+	[ExecuteAlways]  //MonoBehaviours，让脚本在Eidtor和Play下都运行
 
-	[CreateAssetMenu(fileName = "Preset", menuName = "Character Preset")]	--建立文件，用于ScriptObject保存 
-	[AddComponentMenu("XX/x")]
+	[CreateAssetMenu(fileName = "", menuName = ")]  //建立文件，用于ScriptObject保存 
+	[AddComponentMenu("XX/x")]  //class
+	[ContextMenu("")]	 //fn，在Inspector的脚本...处添加方法
 
-	[TextArea(minline, maxline)]  	//用于string，方便string的编辑	
+	[TextArea(minline, maxline)]  //string的多行编辑，自动调整高度，超过maxline显示滚动条	
+	[ColorUsage] //Color，HDR还是LDR，以及alpha是否显示
+	[GradientUsage]  //Gradient，渐变配置HDR/LDR，颜色空间
+	[Delayed]	  //float、int、string，在回车或失去焦点时才会重新赋值。运行时改参数很管用
 
-}
+	[Header("")]、[ToolTip("")]、[Space()]  //value
+	[Min()]、[Max()]、[Range()]  //value
+
+	[HelpURL("")]  //class
+	[InspectorName("")]  //enum item，替换枚举值的显示名称
+
+	[PreferBinarySerialization]  //ScriptableObject，强制二进制序列化保存，在大量数据时好用。多个资源时遵循主文件的序列方式
+
+	[ExcludeFromObjectFactory]  //class，避免ObjectFactory 创建该类及其继承类。
+	[ExcludeFromPreset]  //class，防止从该类的实例创建 Preset。
+
+	[Property]  //class，用于给UnityEditor.PropertyDrawer，[CustomPropertyDrawer(type)]自定义Inspector
+	[SharedBetweenAnimators]  //StateMachineBehaviour，所以Animator共享 
+}	
 
 UnityEditor{	floder Editor
 	[MenuItem("MyTools/fn")]	//static void fn(){...}	//在菜单栏上点击运行
@@ -41,21 +59,8 @@ UnityEditor.AssetImporters{
 	[ScriptedImporter(1, "cube")]	//class, ScriptedImporter
 }
 
-UnityEngine.Bindings{
-    [NativeHeader("Runtime/GameCode/CloneObject.h")]    //class
-    [RequiredByNativeCode(GenerateProxy = true)]    //class
-
-}
-
 UnityEngine.Internal{
-    [ExcludeFromDocsAttribute]
-    [NativeMethod(Name = "Scripting::DestroyObjectFromScriptingImmediate", IsFreeFunction = true, ThrowsException = true)]
-    [Obsolete("use Object.Destroy instead.")]
-    [DefaultValue("0.0F")]  //paragm
-    [FreeFunction("GetSceneManager().DontDestroyOnLoad")]
+   	[Obsolete("use Object.Destroy instead.")]  //fn、sfn
+   	[DefaultValue("0.0F")]  //paragm
 }
 
-UnityEngineInternal{
-     [TypeInferenceRule(TypeInferenceRules.TypeReferencedByFirstArgument)]  //第一个参数的类型，Object/Type
-
-}

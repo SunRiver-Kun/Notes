@@ -1,19 +1,19 @@
 ﻿1. 欧拉角：Quaternion.Euler(x, y, z); 	 //xyz为°，左手螺旋 0 1 0
 2. Plane用MeshCollider。两个MeshCollider中至少有一个是Convex才会碰撞
 3. GameObject可以从Scane中选，也可以从Prefab中。   
-4. Instantiate：生成新实例，并返回游戏对象/对象上的组件<T>。
+4. Instantiate：生成（激活的）新实例，并返回游戏对象/对象上的组件<T>。
 Awake()立即调用，Start()下一帧调用 
 5. 静止的物体可以借助Empty Object构成组，同时设为static。
 经常运行的物体就少设parent，因为要执行局部全局坐标转换！
 6. 非一致缩放：某些组件不支持，子对象在选择时不会自动更新缩放比例。	倾斜的__盒型碰撞体 (Box Collider)__ 无法准确匹配渲染网格的形状
-7. 一般支持多选的都是按位0b发布的，使用时可以用<<确定具体值，如摄像机的Layout
+7. 一般支持多选的都是按位0b发布的，使用时可以用<<确定具体值，如摄像机的Layout。[System.Flag] enum XXX{}
 8. Relative Force：局部空间力，受物体旋转的影响。 
 Force：全局力，不受物体影响
 9. 复合碰撞体：根物体添加Rigibody[2D]，子物体添加Collider。
 这样把脚本挂在根物体也可以 OnCollider/TriggerXXX
 10. 默认两个Mesh Collider 不会发生碰撞，除非开了Convex（凸面外壳）
 11.将网格碰撞体用于场景几何体，并使用复合原始碰撞体近似得出移动游戏对象的形状。
-12. Collider interactions	注：两个触发器也会相互触发
+12. Collider interactions	注：两个触发器也会相互触发，可在Project Settings>Physics->Contact Pairs Mode里更改碰撞组
 (dynamic)Rigidbody Collider：完全由引擎控制，与其他都发生碰撞和触发
 
 Kinematic Rigidbody Collider：
@@ -39,7 +39,8 @@ gameObject.active = false
 MonoBehaviour enabled = false 
 不能停止协程；对比 update却是可以在MonoBehaviour enabled = false 就中止
 
--IEnumerator 类型的方法不能带 ref 或者 out 型的参数，但可以带被传递的引用
+-IEnumerator 类型的（协程）方法不能带 ref 或者 out 型的参数，但可以带被传递的引用
+-yield return null 跳过当前帧
 -在函数 Update 和 FixedUpdate 中不能使用 yield 语句，否则会报错， 但是可以启动协程
 -在一个协程中，StartCoroutine()和 yield return StartCoroutine()是不一样的。
 前者仅仅是开始一个新的Coroutine，这个新的Coroutine和现有Coroutine并行执行。
@@ -48,9 +49,9 @@ MonoBehaviour enabled = false
 
 14. damage用正数表示，Delta时取反即可
 15. event 在Destroy GameObject时不会自动取消，要注意！！
-16. 切换场景时数值型static的不会重置，除了DontDestroyOnLoad的obj都会变null
+16. 切换场景时数值型static的不会重置，Unity的Object引用会被消除null，除了DontDestroyOnLoad的obj都会变null
 17. 
-Instantiate，不要在Start或Awake中克隆自身，Awake()立即调用，Start()下一帧调用
+Instantiate，不要在Start或Awake中克隆自身，激活状态下，Awake()立即调用，Start()下一帧调用
 AddComponent，不会调用Reset()，也不会自动初始化变量
 Unity Editor只会在手动挂脚本时，帮忙初始化要显示的变量，并调用Reset()
 18. 透明队列中的 2D 渲染器
@@ -63,22 +64,36 @@ Edit > Project Settings > Quality > Render Pipeline
 Edit > Project Settings > Graphics > Scriptable Render Pipeline Setting
 21.  小心unsigned与负数  x+1 ? size()
 22.  time -= maxtime || time+=maxtime 代替 time=0	避免时间错位
-23. 脚本没写Start、Update等函数时会没有勾，适合写GLOBAL.cs
+23. 脚本没写Start、Update等函数时会没有勾，适合写GLOBAL.cs。Awake里初始化单例，其他时候使用。
 24. ScriptObject的物体返回时注意是返回副本还是共用的！
-25. 判断GameObject是否被删除可以用  ==null 来判断，Component用 this==null 来判断，
+25. 判断GameObject是否被删除可以用  ==null 来判断，Component用 this==null 来判断，本质是C++层对象被销毁，C#判断函数重载
 用被销毁组件的this.gameObject会报错，但是如果先用个参数保存this.gameObject，就可以跳过this，直接判断gameObject
 这个是重载与Object的==，被销毁了，但数值数据还没被销毁掉。
 报错的条件：component被摧毁，用(this.)gameObject访问物体或其身上的组件。但如果用局部参数先存起来就不会报错
 26. 跨Scene存数据
 * 用PersistentScene（不被卸载的场景）做媒介
 * 用static bool/event/引用	不过引用在使用前最好判断是否被销毁 ==null，其他正常使用即可
+27. 百分比与分贝dB	scale [0f, 1f]	
+currentdB = 10 * lg(scale) + maxdB  
+scale = 10 ^ [ (currentdB - maxdB)/10 ]
+28. 自定义脚本启动顺序：GLOBAL.cs必备！！不影响[RuntimeInitializeOnLoadMethod]
+Editor -> Project Settings -> Script Execution Order	
+负数先执行-> 其他 -> 正数，全部Awake完再次到Start等
+
+
+-中文文档	docscloudstorage -> localized_docs/zh-cn
+https://storage.googleapis.com/localized_docs/zh-cn/2020.3/UnityDocumentation.zip
+扔到Unity/版本/Editor/Data/Documentation/en里
+把下面的都删了，用Notepad++的在文件中查找会快一点（Ctrl+Shift+F），第一句第9行，第二在30行
+<link href="https://fonts.googleapis.com/css....
+<script cdn.cookielaw...
 
 -特殊的文件夹：根目录在Asserts
 -Editor：存放编辑器代码, EditorGUIUtility.Load 函数可从 Editor 文件夹中的 Resources 文件夹加载资源。这些资源只能通过 Editor 脚本加载，并会从构建中剥离。
 -Resources：游戏必备的资源，是除代码外不会被Unity优化掉的东西，Resources.Load
 -Editor Default Resources：必须位于Assets下，EditorGUIUtility.Load可以收到
 -Gizmos： 必须位于Assets下，Gizmos.DrawIcon()加载图像
--StreamingAssets：让资源以其原始格式作为单独的文件提供，如IOS上Handheld.PlayFullScreenMovie 播放视频
+-StreamingAssets：让资源以其原始格式作为单独的文件提供，如IOS上Handheld.PlayFullScreenMovie 播放视频。放在Assets/下
 
 特殊的代码名：
 GameManager
@@ -94,7 +109,8 @@ Trace.WatchTime(()=>{...},1000000次)	--观察代码运行时间
 分数等下次加载时还用到的东西的保存。
 [CreateAssetMenu(menuName="Settings",fileName="Settings")]
 
--版本控制：
+-版本控制：meta文件也要保存！
+must only: Assets、Packages、ProjectSettings
 ignore: Library、Logs、obj、UserSettings、.vs
 
 -光线
@@ -178,12 +194,13 @@ GUI类：
 -PoolManager：内存池
 
 ---------------------------------------------快捷键
+按住右键旋转，鼠标中键平移，鼠标滚轮缩放
 鼠标右键+WSAD：在透视模式下愉快地浏览Scene
 Alt+左键：顶点旋转视角
 Alt+右键：缩放
 旋转和移动时，按住Ctrl，每次移动固定单元，可在Edit中设置单元
 移动时，按住V，可选择顶点进行对齐
-移动时轴中心点，按住Ctrl，按住Shift，可进行表面快速对齐
+移动时轴中心点，按住Ctrl，按住Shift，可进行表面快速？
 移动时，开启Global+右边的网格，可开启网格对齐；也可在Edit设置单元时点击轴来实现对齐
 旋转时中心点，按住Ctrl+Shift，可进行朝向旋转
 多边形碰撞器按Ctrl可清除多余连线

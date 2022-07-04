@@ -1,4 +1,4 @@
-常用软件：Win+R		文件路径：C:/Windows/System32
+﻿常用软件：Win+R		文件路径：C:/Windows/System32
 mspaint.exe	画图
 services.msc
 
@@ -15,6 +15,10 @@ tasklist | findstr "5037对应的进程号"
 桌面：C:/Users/Administrator/Desktop
 
 重新定位按键：https://blog.csdn.net/lhdalhd1996/article/details/90741092
+
+CMD命令：
+打开文件/程序：start xxx.txt	||	??.exe  xxx.txt
+文件夹打开：explorer [/select,xxx.txt] || [/root,folder]	https://blog.csdn.net/yunyu5120/article/details/6024506
 
 LPCWSTR : CONST WCHAR*
 LPCSTR : CONST CHAR*

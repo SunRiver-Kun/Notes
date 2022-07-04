@@ -6,10 +6,9 @@ octotree：支持单文件下载，搜索。但网不好还是下不了……
 单文件夹克隆：Git1.7.0之后的Sparse Checkout模式，
 例如：下载 codes.git里的C文件夹，也可以是C/XXX，  别写 " "
 git init
-
 git remote add origin git@github.com:SunRiver-Kun/DST_Notes.git
 git config core.sparsecheckout true
-echo C >> .git/info/sparse-checkout
+echo C空格>>空格.git/info/sparse-checkout
 git pull origin master
 
 
@@ -42,7 +41,7 @@ cd ./Desktop/xxx
 git init
 git add .		//git add xxx.cpp xxx.h	git add -v 
 git add --all	//all包括删除的，. 不包括
-git commit-m "HelloWorld"
+git commit -m "HelloWorld"
 //git commit -a -m "..."	直接一步到位
 
 //git pull	可能需要先同步下数据

@@ -63,41 +63,7 @@ UnityEngine.SceneManagement{
 Animator{
 	IK、SetValue、GetValue、Play
 }
-
---音/视频
-AudioPlayer、AudioSource、VideoPlayer
-UnityEngine.Audio{ 
-	AudioMixer、AudioMixerGroup、AudioMixerPlayable
-}
---截屏
-ScreenCapture{
-	CaptureScreenshot(filename)
-	Texture2D CaptureScreenshotAsTexture()
-}
-
---物理
-Physics{		
-	public const int IgnoreRaycastLayer = 4;
-        	public const int DefaultRaycastLayers = -5;	//除IgnoreRaycastLayer外的所有图层
-        	public const int AllLayers = -1;
-	//LayerMask  Nothing=0  Default = 1   1<<x   
-
-	bool RayCast( pos, direction[,out hitobjs], distance[, layout] )	--check colliseder
-	bool CheckBox(Vector3 center, Vector3 halfExtents, Quaternion orientation);
-	bool SphereCast(Vector3 origin, float radius, Vector3 direction, out RaycastHit hitInfo);
-}	
-ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-XXCollider.Raycast(Ray ray, out RaycastHit hitInfo, float maxDistance);
-
-
-Rigidbody{	//relative 物体坐标系，否则全局坐标系
-	SetDensity(float density)	--设置密度
-	AddForce(Vector3 force, mode = ForceMode.Force)	--添加力
-	AddTorque(Vector3 torque, mode = ForceMode.Force)	--添加力(转/扭)矩
-	Sleep()	--强制让刚体睡眠至少一帧
-	velocity(速度)、mass(质量,一般为0.1-10)、drag(摩擦力)
-	
-}
+UnityEditor.Animation{...}
 
 Transform{
 	LookAt(Transform target, Vector3 worldUp)
@@ -126,6 +92,42 @@ static:
 	[S]Lerp()、[S]LerpUnclamped()、RotateTowards(from,to,maxdelta)
 	Vector3 operator *(Quaternion rotation, Vector3 point);	//旋转后的另一个点
         	Quaternion operator *(Quaternion a, Quaternion b);	//∠a + ∠b
+}
+
+--音/视频
+AudioPlayer、AudioSource、VideoPlayer
+UnityEngine.Audio{ 
+	AudioMixer、AudioMixerGroup、AudioMixerPlayable
+}
+--截屏
+ScreenCapture{
+	CaptureScreenshot(filename)
+	Texture2D CaptureScreenshotAsTexture()
+}
+
+--物理
+Physics{		
+	public const int IgnoreRaycastLayer = 4;
+        	public const int DefaultRaycastLayers = -5;	//除IgnoreRaycastLayer外的所有图层
+        	public const int AllLayers = -1;
+	public Vector3 gravity
+	//LayerMask  Nothing=0  Default = 1   1<<x   	(x&1<<n) == 0
+
+	bool RayCast( pos, direction[,out hitobjs], distance[, layout] )	--check colliseder
+	bool CheckBox(Vector3 center, Vector3 halfExtents, Quaternion orientation);
+	bool SphereCast(Vector3 origin, float radius, Vector3 direction, out RaycastHit hitInfo);
+}	
+ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+XXCollider.Raycast(Ray ray, out RaycastHit hitInfo, float maxDistance);
+
+
+Rigidbody{	//relative 物体坐标系，否则全局坐标系
+	SetDensity(float density)	--设置密度
+	AddForce(Vector3 force, mode = ForceMode.Force)	--添加力
+	AddTorque(Vector3 torque, mode = ForceMode.Force)	--添加力(转/扭)矩
+	Sleep()	--强制让刚体睡眠至少一帧
+	velocity(速度)、mass(质量,一般为0.1-10)、drag(摩擦力)
+	
 }
 
 XXX Constraint{
@@ -158,6 +160,7 @@ Joint{	*表示有电机
 *铰链	Hinge：物体可绕某点旋转，门
 弹簧	Spring：沿轴线施力，尝试让物体保持一定距离
 }
+Constant Force 恒定力
 
 Joint 2D{	关节
 距离	Distance：保持该刚体和另一个刚体或位置(None)的固定或最大距离
@@ -170,7 +173,6 @@ Joint 2D{	关节
 目标	Target：尝试把物体移动到某点
 *车轮	Wheel：弹簧让锚点沿Angle线重合，Motor让Connected Rigidbody转起来。挂车身上，车身把旋转关了避免翻车，车身用多边形碰撞器
 }
-
 Effector2D{  效应器，同一物体无法添加多个效应器
 	Platform：控制碰撞图层、单向碰撞、消除侧向摩擦/弹性等
 	Surface：传送带，通过可随机speed来控制的，和人物移动冲突
@@ -187,6 +189,7 @@ Character Controller：不使用刚体的玩家角色。
 Terrin Collider
 Wheel Collider
 Mesh Collider
+Cloth：布料，与蒙皮网格渲染器一起使用。添加碰撞体（球/胶囊）体后只能响应力，不能施力。Obi Cloth
 
 2D显示排序
 SortGroup：对子物体按父物体来设置渲染
@@ -256,6 +259,10 @@ UnityEditor{
 	EditorUtility{
 		SaveFilePanel、SaveFolderPanel	...
 	}
+	ObjectFactory{  自动Undo注册
+		AddComponent、CreateGameObject、CreateInstance、CreatePrimitive	
+	}
+	Presets.Preset{...}
 }
 
 --时间
@@ -263,6 +270,21 @@ Time{
 	deltaTime	--帧之间的间隔
 	fixedDeltaTime
 }
+
+--设置（默认在UnityEngine）
+UnityEngine{
+	AudioSettings	--只能得到一些参数
+	QualitySettings
+Rendering.GraphicsSettings
+	Physics、Physics2D
+	SortingLayer  ->  LayerMask
+	Time 
+}
+UnityEditor{
+	EditorSettings
+	PlayerSettings
+}
+
 
 --绘制/GUI
 GUI{	--坐标系采用屏幕坐标系（左上角）  	(0,0) ↓y →x	--写在 OnGUI，每帧至少执行2次（一绘制，二响应）
@@ -287,10 +309,11 @@ Gizmos：{	--写在 OnDrawGizmos	OnDrawGizmoSelected
 Handles{ --自定义Editor时，绘画用	}
 
 UI
-UnityEngine.UI{	//找不到命名空间，把代码打开方式改为VS，打开一次，再改回VS Code即可。或更新Package里的vscode扩展
+UnityEngine.UI{	基本的UI控件
+//找不到命名空间，把代码打开方式改为VS，打开一次，再改回VS Code即可。或更新Package里的vscode扩展
 https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/UIBasicLayout.html
 }
-UnityEngine.EventSystems{
+UnityEngine.EventSystems{	管理点击等事件的触发，包含自定义UI接口
 	EventSystem	->   事件发送器
 	EventTrigger	->   添加该组件，设置其UnityEvent
 	IPointerClickHandler, IPointerEnterHandler, IPointExitHandler  ...
