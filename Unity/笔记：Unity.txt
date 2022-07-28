@@ -79,7 +79,7 @@ scale = 10 ^ [ (currentdB - maxdB)/10 ]
 28. 自定义脚本启动顺序：GLOBAL.cs必备！！不影响[RuntimeInitializeOnLoadMethod]
 Editor -> Project Settings -> Script Execution Order	
 负数先执行-> 其他 -> 正数，全部Awake完再次到Start等
-
+PlayerLoop.GetCurrentPlayerLoop()  自定义每帧子系统执行步骤
 
 -中文文档	docscloudstorage -> localized_docs/zh-cn
 https://storage.googleapis.com/localized_docs/zh-cn/2020.3/UnityDocumentation.zip

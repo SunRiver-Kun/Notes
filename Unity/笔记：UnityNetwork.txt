@@ -1,0 +1,20 @@
+--网络 	Unity2021及以上
+packages: Netcode for GameObjects、Multiplayer Tools
+docs: https://docs-multiplayer.unity3d.com/netcode/current/about
+特点：服务器客户端都跑Unity，运行同一套代码的不同逻辑分支；状态同步（区别帧同步）
+
+using Unity.Netcode;
+
+NetworkManager{  注册可动态生成的网络对象
+
+}
+NetworkObject{  标识网络对象（ID索引）
+
+}
+NetworkBehaviour{
+
+}
+
+--属性
+[ServerRpc]   //void XXServerRpc(ServerRpcSendParams sendParams = default)，客户端调用服务器执行
+[ClientRpc]  //void XXClientRpc(ClientRpcParams rpcParams = default)，服务器调用客户端执行

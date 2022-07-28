@@ -1,19 +1,20 @@
- core 核心, CRT C runtime library(part of the C standard library), declarations 声明, implementation 实现,deprecated 被弃用
-调用外部程序/控制台命令， system("xxx")
-<vadefs.h> //为第一个一定被包含的头文件，包含了很多一些基于系统的调整
-{
+﻿core 核心, CRT C runtime library(part of the C standard library), declarations 声明, implementation 实现,deprecated 被弃用
+1. static_cast可在函数外使用
+2. new (&pos) _Ty(args...)    不申请内存，直接构建，溢出不报错
+3. 调用外部程序/控制台命令， system("xxx")    pause
+4. 析构函数可以手动调用，不过销毁内存时是系统自动调用的
+
+<vadefs.h>{ //为第一个一定被包含的头文件，包含了很多一些基于系统的调整
 	_ADDRESSOF(v) // 宏,返回地址
 	using uintptr_t = unsigned __int64(64位系统) || unsigned int(其他)
 	using va_list =   System::ArgIterator va_list() || char* 
-         
 }
 <yvals_core.h> //这里是处理c++版本的，声明增加了什么，弃用了什么，以及一些错误提示，CXX17表示是支持c++17标准
-<yvals.h> //里面有一些关于运行时的宏，也有报错处理，debug时的宏定义
-{
+<yvals.h>{ //里面有一些关于运行时的宏，也有报错处理，debug时的宏定义
 	宏：__PURE_APPDOMAIN_GLOBAL 全局定义域
 	宏函数：
 		#define _STL_REPORT_ERROR(mesg) 	// 在运行时弹出错误窗口，显示信息
-		#define _STL_VERIFY(cond, mesg)	//如果 cond 为假就	_STL_REPORT_ERROR(mesg);		
+		#define _STL_VERIFY(cond, mesg)	//如果 cond 为假就_STL_REPORT_ERROR(mesg);		
 		#define _STL_ASSERT(cond, mesg)	//如果定义有 _DEBUG 就和上面那个一样，不然就是 _Analysis_assume_(cond)
 		#define _STL_INTERNAL_CHECK(cond, mesg)  //要使用要在文件一开始就  #define _ENABLE_STL_INTERNAL_CHECK , 然后它就变为了 _STL_VERIFY(cond, "STL internal check: " mesg)
 		#define _WARNING_MESSAGE(NUMBER, MESSAGE)  //注意，NUMBER与MESSAGE都必须是 "常字符串"
@@ -28,26 +29,24 @@
 		#define _THROW(x)	throw x 或者是其他的一些
 }
 <xkeycheck.h> // 关键字(其实也是宏)检查, CXX17必须在之前定义
-<cassert>
-{
+<cassert>{
 	<yvals.h>
-	<assert.h>
-	{
+	<assert.h>{
 		assert( bool )
 	}
 }
 <sal.h> // _IN_之类的
-{
-
-}
 <vcruntime.h> //一些十分有用的宏定义
 {
 	包含有宏：_CRT_BEGIN_C_HEADER, _CRT_END_C_HEADER, _HAS_EXCEPTIONS
-	这行的宏最后的一个_可去掉：     _CRT_STRINGIZE_(x)  (#x)	//x->"x"，简单加个"",不运行x的内容
-				 _CRT_WIDE_(s)  (L#x)	//给s加个L, s->Ls ,一般s为字符串, "hello" -> L"hello" 变wchar_t
-				 _CRT_CONCATENATE_(a,b) ((a)##(b))	 // 把a,b连起来  ("hello"," world")->"hello world"   (123,456)->123456
-				 _CRT_UNPARENTHESIZE_(...)	 // 表示 __VA_ARGS__
-	宏：__crt_countof(_Array) //得到数组长度
+	这行的宏最后的一个_可去掉：    
+		_CRT_STRINGIZE_(x)  (#x)	//x->"x"，简单加个"",不运行x的内容
+		_CRT_WIDE_(s)  (L#x)	//给s加个L, s->Ls ,一般s为字符串, "hello" -> L"hello" 变wchar_t
+		_CRT_CONCATENATE_(a,b) ((a)##(b))	 // 把a,b连起来  ("hello"," world")->"hello world"   (123,456)->123456
+		_CRT_UNPARENTHESIZE_(...)  // 表示 __VA_ARGS__
+	宏：__crt_countof(_Array)  //得到数组长度，传arr[Size]，而不是指针
+	char (*__countof_helper( _Ty(&arr)[_Size]) )[_Size];   
+	//函数声明，参数是数组的引用，返回值char(*)[_Size]，数组指针
 
 	弃用时使用的宏：
 		_CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))
@@ -96,7 +95,7 @@
 	template<bool _Test,class _Ty = void> struct  enable_if  //只有成立时才有 type
 	template<bool _Test,class _Ty1,class _Ty2> struct  conditional // type = _Test?_Ty1:_Ty2
 	template<class _Ty> struct  remove_const、remove_volatile、remove_cv // type
-	template<class _Ty> struct  remove_reference //type
+	template<class _Ty> struct  remove_reference //type，移除所以&
 
 	remove_reference<_Types>(args)...
 }
@@ -107,6 +106,8 @@
 	_Conjunction<bool,class,class...>::type //第一个错误类型，或最后一个类型
 	_Disjunction<bool,class,class...>::type //第一个正确类型，或最后一个类型
 	可在后面加_t: add_const、add_volatile、_Add_reference、add_lvalue_reference、add_rvalue_reference、remove_extent、remove_pointer、_Add_pointer等
+	move(v)  //把v变为右值引用
+	forward<_Ty>(v)  //把v变为左值/右值引用
 }
 <stdlib.h>
 {
@@ -237,6 +238,15 @@
 }}
 <xiosfwd>  using ios = basic_ios<char, char_traits<char>>;  等
 <string_view>  处理const char*的好帮手！
+<iomanip>{  //输入输出格式化 <<
+	setiosflags、resetiosflags、setbase
+	setfill、setw、setprecision
+	get/put_money、get/put_time
+基本的iostream有的，精度不加fixed，会算小数点前面的
+	width(n)、precision(n)
+	<< fixed
+}
+
 
 <csignal> //终止处理
 {
@@ -253,6 +263,14 @@ signal(信号,void(*fn)(int))
 #define SIGBREAK        21  // Ctrl-Break sequence  快捷键的终止
 #define SIGABRT         22  // abnormal termination triggered by abort call  abort的非常规终止
 }
+
+<stdint.h>{  最小临界用max，最大临界用min
+	int8_t、...、int64_t、intmax_t
+	uint8_t、...、uint64_t、uintmax_t
+	INT8_MAX、...、INT64_MAX、INTMAX_MAX
+	UINT8_MAX、....、UINT64_MAX、UINTMAX_MAX
+}
+
 1. 常见预处理命令，不用加 ；
 //C++17
 #if __has_include(<charconv>)    //判断是否include过一个头文件
@@ -405,11 +423,17 @@ T	int	int	int	int*	cm int*	int	int	int		值类型，只有指针有cm
 T&	int	int	\	int*	cm int*	cm int	cm int	cm int		左引用，值也可有cm
 T&&	int&	int&	int	int*&	cm int*&	cm int&	cm int&	cm int		全引用，lvalue or rvalue，值也可有cm
 //注：
-1. _Ty&：不能传入字面值（如：123），但可以在“不改变其值”的条件下传入常量（如：const int a）
-2. _Ty&&：可以传字面值，且可以改变其值（自动建临时变量）。也可以传常量，不过试图改变其值的时候会报错
-
+1. _Ty&：参数本身是左值引用，同auto&
+不能传入字面值（如：123），但可以在“不改变其值”的条件下传入常量（如：const int a）
+2. _Ty&&：参数本身是左值/右值引用，同auto&&
+可以传字面值，且可以改变其值（自动建临时变量）。也可以传常量，不过试图改变其值的时候会报错
 T t(arg)总结： T同arg_type，T&无引用，T&&右值无引其他&
 注意：int&& arg = move(a)，实际上arg是int&，因为 rvalue不能出现在 = 左边！不过可以用()来构建，不过真正传递还是用 static_cast好
+
+_Ty  -> _Ty&&   forward<_Ty>)(v)
+int	int&&
+int&	int&
+int&&	int&&
 ------------------
 附录：
 一些通用(不用包含任何库)的宏：
@@ -443,7 +467,7 @@ allocator_type = _Alloc（除array外）
 map/set:  key_compare=_Compare、value_compare= 仿函数<key_compare>、key_type、[map: mapped_type]
 
 <array>{  array<_Ty, _Size>  swap() //交互真实数据，其他容器交互内部数据（指针等） }
-<deque>{
+<deque>{   偏移量      map[block][off]
 	deque<_Ty>{
 		iterator emplace(const_iterator pos, _Arg&&... args)  //在pos位置插入用args构造的_Ty
 		void emplace_front(_Args&&... args)、void emplace_back(_Args&&... args)
@@ -533,6 +557,11 @@ map/set:  key_compare=_Compare、value_compare= 仿函数<key_compare>、key_typ
 	shared_ptr<_Ty>   <-  make_shared<>()
 	weak_ptr(shared_ptr)
 }
+<string.h>{
+	//c只去后8位，0,-1 -> 0,-1     127或0x7f较大值    128或0x80较小值
+	void* memset(void* s, int c, size_t n)   //将指针变量 s 所指向的前 n 字节的内存单元用一个“整数” c 替换
+	void* memcpy(void* out, void* in, size_t n)  //把in的n个字节拷贝到out上
+}
 <string>{
 	class: string(char)、u16string(char16_t)、u32string(char32_t)、wstring(wchar_t)
 	//API一样，以string为例。sizeof: 1、2、4、2.
@@ -567,10 +596,14 @@ random_access：bidirectional and +-,+-=, [n], <,>,<=,>=, size=end-begin	_RanIt	
 #include <cstdint> <cstdlib> <limits> <new> <xatomic.h>
 #include <xutility> {#include <climits> <cstdlib> <cstring> <utility>}}
 
-//迭代器
+//迭代器 iterator
 begin()、end()、cbegin()、cend()、rbegin()、rend()、crbegin()、crend()
-_Diff distance(_InIt _First, _InIt _Last)	//迭代器之间的差值.  end()-begin() = size()
+_Diff distance(first, last) //迭代器之间的差值.  end()-begin() = size()
 advance(&it, n)  //移动it，n > 0后移，n<0，前移。  random: +-   other: ++、--
+
+反向迭代：for( decltype(rbegin(xx)) rit(it); rit!=rend(xx); ++rit ) 
+索引迭代器：deque、vector、array
+指针迭代器：list、map、set
 
 //遍历
 _Fn for_each(_InIt _First, _InIt _Last, _Fn _Func)

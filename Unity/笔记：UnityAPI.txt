@@ -85,8 +85,8 @@ static:
 Quaternion{
 	eulerAngles、normalized、Set()、SetFromToRotation、SetLookRotation()、ToAngleAxis()、ToEulerAngles()
 static:
-	identity、、、
-	Angle()、AngleAxis()、
+	identity
+	Angle()、AngleAxis()
 	Euler(x,y,z)	--按°来旋转，左手螺旋
 	FromToRotation()、Inverse()、LookRotation(direction, upward)、
 	[S]Lerp()、[S]LerpUnclamped()、RotateTowards(from,to,maxdelta)
@@ -181,7 +181,7 @@ Effector2D{  效应器，同一物体无法添加多个效应器
 	Area：定向可加随机力
 }
 
-特殊的碰撞体：
+--特殊的碰撞体
 Character Controller：不使用刚体的玩家角色。
 	不会对力作出反应，也不会自动推开刚体，不会触发OnCollideXXX，但可以触发Trigger
 	回调：OnControllerColliderHit(other)	
@@ -191,7 +191,7 @@ Wheel Collider
 Mesh Collider
 Cloth：布料，与蒙皮网格渲染器一起使用。添加碰撞体（球/胶囊）体后只能响应力，不能施力。Obi Cloth
 
-2D显示排序
+--2D显示排序
 SortGroup：对子物体按父物体来设置渲染
 Sprite Render{
 	DrawMode: Simple(非9切片、全缩放)，Sliced(拉伸不重复) and Tiled(可限制的重复)，用Full Rect，改Size，仅支持Box/Polygon Collider2D    
@@ -204,7 +204,7 @@ Sprite Shape Render、Sprite Controller(package: Sprite Shape)	https://www.jians
 --输入/控制
 Input{
 	默认：下上全过程多次调用	Down：按下，一次	Up：弹起，一次
-	bool GetButton(string)		bool GetKey(KeyCode)		bool GetMouseButton()
+	bool GetButton(string)		bool GetKey(KeyCode)		bool GetMouseButton()	0 左键 1 右键 2 中键
 	bool GetButtonDown(string)		bool GetKeyDown(KeyCode)		bool GetMouseButtonDown()
 	bool GetButtonUp(string)		bool GetKeyUp(KeyCode)		bool GetMouseButtonUp()
 	float GetAxis("Horizontal" or "Vertical")  //float
@@ -214,6 +214,7 @@ Input{
 	acceleration	//以主屏幕按钮为底部，竖直，右x上y前z
 }
 TouchScreenKeyboard.Open() 	//打开移动键盘
+Cursor{ lockedState、visible}
 //XR输入
 UnityEngine.XR{  InputDevices、Input.CommonUsages  }
 
@@ -224,10 +225,11 @@ CharacterController{		不是很好用……
 	velocity、slopeLimit、stepOffset(将影响刚体的下落速度！)
 	、radius、height、center
 }
-
---文件、保存、加载	
+--文件、保存、加载、资源管理	
 PlayerPrefs：通过key来保存数据，简单
-ScriptObject：单独存数据，配合[CreateAssetMenu(menuName="Settings",fileName="Settings")]
+ScriptObject：单独存数据，Reset,    Awake->OnEnable->OnDisable->OnDestroy  
+	OnValidate，Editor only，当脚本被加载或值在Inspector中改变时调用
+	配合[CreateAssetMenu(menuName="Settings",fileName="Settings")]
 System.IO{
 	FileInfo  => 
 		if (!info.Directory.Exists) { info.Directory.Create(); 
@@ -245,7 +247,21 @@ UnityEngine{
 	--Shader
 	 Material material = new Material (Shader.Find("Specular"));
 	--File
-	Resources.Load	//加载"Assets/Resources"里的资源
+	Resources{  "Assets/**/Resources"里的资源全部包含进打包，名字不能重复
+		FindObjectsOfTypeAll(type)  //返回已加载的Unity对象，包括场景的和磁盘中的
+		InstanceIDToObject(id)、InstanceIDTOObjectList(ids,objs)
+		//path相对于Resources文件夹的，不包含后缀
+		//txt,json->TextAsset  png->Texture2D/Sprite...  mp3->AudioClip
+		Load<T>(path)
+		LoadAll(filename || resourcespath, type)
+		LoadAsync(path, type)  //异步   yield return 	
+		//某些资源(纹理)在场景中不存在其实例时，也会占用内存
+		UnLoadAsset(assetobject)
+		UnLoadUnusedAssets()   //异步
+	}	
+	UnityWebRequest{   加载网络或StreamingAssets的资源
+		
+	}
 	AssetBundle.LoadFromFile	//加载AssetBundle的资源
 }
 UnityEditor{
@@ -258,6 +274,7 @@ UnityEditor{
 	}
 	EditorUtility{
 		SaveFilePanel、SaveFolderPanel	...
+		IsPersistent(Object target)  //确定对象是否存储在磁盘中。场景中的返false
 	}
 	ObjectFactory{  自动Undo注册
 		AddComponent、CreateGameObject、CreateInstance、CreatePrimitive	
@@ -308,7 +325,7 @@ Gizmos：{	--写在 OnDrawGizmos	OnDrawGizmoSelected
 }
 Handles{ --自定义Editor时，绘画用	}
 
-UI
+--UI
 UnityEngine.UI{	基本的UI控件
 //找不到命名空间，把代码打开方式改为VS，打开一次，再改回VS Code即可。或更新Package里的vscode扩展
 https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/UIBasicLayout.html
@@ -319,8 +336,10 @@ UnityEngine.EventSystems{	管理点击等事件的触发，包含自定义UI接�
 	IPointerClickHandler, IPointerEnterHandler, IPointExitHandler  ...
 }
 
-渲染
+--渲染
 UnityEngine.Rendering{
 	RenderPipelineAsset 
 	GraphicsSettings.renderPipelineAsset 
 }
+
+

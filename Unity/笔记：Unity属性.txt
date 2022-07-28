@@ -7,6 +7,9 @@ System{
 	[NonSerialized]	//忽略序列化，默认只序列化public。可避免ScriptObject被序列化而不能判null
 	[Flags]  	//用于enum，在编辑器上可以实现枚举多选
 }
+System.Runtime.InteropServices{   
+	[DllImport("DllName")]   //static extern fn，DllName.dll放在Assets/Plugins
+}
 
 UnityEngine{
 	[SelectionBase]  //class，选子对象时自动跳转到根
@@ -14,7 +17,7 @@ UnityEngine{
 	[SerializeField]  //private value，显示并序列化私有成员		
 
 	[RequireComponent(typeof(Animator))] //class，若没有该组件，自动添加上去
-	[DisallowMultipleComponent]  //禁止多个相同类型（或子类型）的脚本挂在同一个GameObject上	
+	[DisallowMultipleComponent]  //class, 禁止多个相同类型（或子类型）的脚本挂在同一个GameObject上	
 
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.XXX)]	//static fn
 	
@@ -26,6 +29,7 @@ UnityEngine{
 	[ContextMenu("")]	 //fn，在Inspector的脚本...处添加方法
 
 	[TextArea(minline, maxline)]  //string的多行编辑，自动调整高度，超过maxline显示滚动条	
+	[Multiline]   //string的多行编辑，没有滚动条，全部显示
 	[ColorUsage] //Color，HDR还是LDR，以及alpha是否显示
 	[GradientUsage]  //Gradient，渐变配置HDR/LDR，颜色空间
 	[Delayed]	  //float、int、string，在回车或失去焦点时才会重新赋值。运行时改参数很管用
@@ -46,13 +50,18 @@ UnityEngine{
 }	
 
 UnityEditor{	floder Editor
-	[MenuItem("MyTools/fn")]	//static void fn(){...}	//在菜单栏上点击运行
-	[CustomEditor(typeof(XXX))]	//class : Editor	//XXX为可在Inspector显示的组件或ScriptObject
-	[CustomPropertyDrawer(typeof(Data))]  class : SerializableDictionaryPropertyDrawer	//自定义数据绘制
+	[MenuItem("MyTools/fn")]	//static void fn(){...}  //在菜单栏上点击运行
+	[FilePath("path", location)]	//ScriptableSingleton<T>，单例ScriptObject
 
+	[CustomEditor(typeof(XXX))]	//class : Editor  XXX为可在Inspector显示的组件或ScriptObject
+	[CustomPropertyDrawer(typeof(Data))]  //PropertyDrawer，自定义数据绘制
+	[DrawGizmo(GIzmoType.XX|...)]  //static fn(T scr, GizmoType type) ，绘制T类型的Gizmo，OnGizmo的另一种写法
+	
 	[InitializeOnLoad]	//编译进入unity时，static class A{  static A(){...} }
 	[InitializeOnLoadMethod]	//编译进入unity时，fn
 	[InitializeOnEnterPlayMode]    //fn
+
+	[SettingsProvider]、[SettingsProviderGroup]
 }
 
 UnityEditor.AssetImporters{

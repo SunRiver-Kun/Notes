@@ -132,6 +132,7 @@ public static [implicit/explicit] operator targettype(T a)
 13. 
 Console.Write("{0:4}")
 Console.Write($"{1+2} + {str}")	//{str}里的会执行
+nameof(param)  //把变量的名变为字符串，为什么不直接copy呢
 
 14. 委托
 System
