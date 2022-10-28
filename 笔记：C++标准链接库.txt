@@ -1,11 +1,25 @@
 ﻿core 核心, CRT C runtime library(part of the C standard library), declarations 声明, implementation 实现,deprecated 被弃用
 1. static_cast可在函数外使用
-2. new (&pos) _Ty(args...)    不申请内存，直接构建，溢出不报错
+2. new (&pos) _Ty(args...)    不申请内存，直接构建，溢出不报错		不初始化new int[]      初始化new int()/new int[]{}/new Class
 3. 调用外部程序/控制台命令， system("xxx")    pause
 4. 析构函数可以手动调用，不过销毁内存时是系统自动调用的
 
+ //改变结构体/类的字节对齐，对齐值
+ #pragma pack(push,[identified],n) // n =1,2,4,8(_CRT_PACKING) ; 栈存储，只有n时是改变当前值
+ #pragma pack(show)
+ #pragma pack(pop,[identified])
+
+内存：堆↑	栈↓
+低地址		高地址
+_vfptr 占4或8字节(64位或有double时)   char[]不影响对齐值
+其他必须是sizeof(_Ty)*n的地址开头，即b大时，a要补齐
+最后，补齐为对齐值的整数倍
+this->  [void** _vfptr]a b c		class A{a, b, c; virtual fn} 	 void** _vfptr = *(void***)this;	void* fn = _vfptr[0];
+arr-> [0][1][...]
+b	a	//main(){ int a; int b; }	
+
 <vadefs.h>{ //为第一个一定被包含的头文件，包含了很多一些基于系统的调整
-	_ADDRESSOF(v) // 宏,返回地址
+	_ADDRESSOF(v) // 宏,返回地址	address_of
 	using uintptr_t = unsigned __int64(64位系统) || unsigned int(其他)
 	using va_list =   System::ArgIterator va_list() || char* 
 }
@@ -207,7 +221,7 @@
 						<limits.h>		
 						{
 							<vcruntime.h>//一些有用的宏定义
-							各个类型的最大最小值的宏： INT_MIN、INT_MAX 之类的  
+							各个类型的最大最小值的宏： INT32_MIN、INT32_MAX 之类的  
 						}
 					 }
 					 <cmath>
@@ -236,6 +250,17 @@
 	}
 	cin,cout,cerr,clog. wcin,wcout,wcerr,wlog
 }}
+<sstream>{
+	istringstream、ostringstream
+	stringstream{
+		str() const
+		str(const char* str)	//设置字符串
+		clear()	//设置新字符串要clear掉之前的标志
+		<<  any
+		>>  value   //默认忽视空白字符
+		operator bool()
+	}
+}
 <xiosfwd>  using ios = basic_ios<char, char_traits<char>>;  等
 <string_view>  处理const char*的好帮手！
 <iomanip>{  //输入输出格式化 <<
@@ -245,6 +270,7 @@
 基本的iostream有的，精度不加fixed，会算小数点前面的
 	width(n)、precision(n)
 	<< fixed
+	skipws、noskipws	 是否跳过空白字符=true
 }
 
 
@@ -467,7 +493,7 @@ allocator_type = _Alloc（除array外）
 map/set:  key_compare=_Compare、value_compare= 仿函数<key_compare>、key_type、[map: mapped_type]
 
 <array>{  array<_Ty, _Size>  swap() //交互真实数据，其他容器交互内部数据（指针等） }
-<deque>{   偏移量      map[block][off]
+<deque>{   偏移量      map[block][pos]	   block=off/BLOCKSIZE   pos=off%BLOCKSIZE
 	deque<_Ty>{
 		iterator emplace(const_iterator pos, _Arg&&... args)  //在pos位置插入用args构造的_Ty
 		void emplace_front(_Args&&... args)、void emplace_back(_Args&&... args)
@@ -531,7 +557,7 @@ map/set:  key_compare=_Compare、value_compare= 仿函数<key_compare>、key_typ
 		remove()、remove_if()、unique()、sort()
 	}
 }
-//set和map类会自动排序，默认是less<_Ty>升序
+//set和map类会自动排序，默认是less<_Ty>升序，继承红黑树_Tree 
 <set> {
 	set<_Ty, less<_Ty>>
 	insert()、erase()、clear()、emplace()/emplace_hint()
@@ -551,6 +577,19 @@ map/set:  key_compare=_Compare、value_compare= 仿函数<key_compare>、key_typ
 	lower_bound(key) --> iterator   begin() min 第一个<=的it max end()
  	upper_bound(key)  --> iterator begin() min 第一个给>的it max end()
 	equal_range(key)  --> pair<it,it>  nofind: first==second;   for(it = first; it!=second; ++it)
+}
+//unorder系列继承哈希_Hash
+<unordered_set>{
+    _Traits _Traitsobj; // traits to customize behavior
+    _Mylist _List;  // list of elements, must initialize before _Vec
+    _Hash_vec<_Aliter> _Vec; // "vector" of list iterators for buckets:
+                             // each bucket is 2 iterators denoting the closed range of elements in the bucket,
+                             // or both iterators set to _Unchecked_end() if the bucket is empty.
+    size_type _Mask; // the key mask
+    size_type _Maxidx; // current maximum key value, must be a power of 2
+
+    hash -> frontindex = ((hash&mask) << 1)   backindex = frontindex + 1		
+
 }
 <memory>{
 	unique_ptr<_Ty>   unique_ptr<_Ty[]>    <-  make_unique<>()
@@ -619,10 +658,13 @@ _FwdItHaystack search(_FwdItHaystack _First1, _FwdItHaystack _Last1, const _FwdI
 _FwdIt search_n(const _FwdIt _First, _FwdIt _Last, const _Diff _Count_raw, const _Ty& _Val, _Pr _Pred)
  _FwdIt1 find_end(_FwdIt1 _First1, const _FwdIt1 _Last1, const _FwdIt2 _First2, const _FwdIt2 _Last2, _Pr _Pred)
 _FwdIt1 find_first_of(_FwdIt1 _First1, const _FwdIt1 _Last1, const _FwdIt2 _First2, const _FwdIt2 _Last2, _Pr _Pred)
+
 //要求用Cmp排序过容器，返回 >Val的第一个迭代器，end()比任何都大，无时返回begin()
-_FwdIt upper_bound(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, Cmp=less)  
+_FwdIt upper_bound(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, Cmp=less)  	if(data[mid] <= target ) {left=mid+1} else { right=mid-1; }   return left;
 //要求用Cmp排序过容器，返回 <= Val的第一个迭代器，无时返回begin()
-_FwdIt lower_bound(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, Cmp=less)   
+_FwdIt lower_bound(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, Cmp=less)   	if(data[mid] <= target ) {left=mid+1} else { right=mid-1; }   return right;
+//  <= 时，data[right]  <= val < data[left]     <时，data[right] < val <= data[left] 
+
 pair<_FwdIt, _FwdIt> equal_range(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, _Pr _Pred)   // find range equivalent to _Val
 bool binary_search(_FwdIt _First, _FwdIt _Last, const _Ty& _Val, _Pr _Pred)
 _FwdIt max_element(_FwdIt _First, _FwdIt _Last)   //返回迭代器，不要和max搞混了
@@ -650,7 +692,7 @@ _OutIt merge(_InIt1 _First1, _InIt1 _Last1, _InIt2 _First2, _InIt2 _Last2, _OutI
 //移除
 _FwdIt remove(_FwdIt _First, const _FwdIt _Last, const _Ty& _Val)
  _FwdIt remove_if(_FwdIt _First, const _FwdIt _Last, _Pr _Pred)
-_FwdIt unique(_FwdIt _First, _FwdIt _Last, _Pr _Pred)
+_FwdIt unique(_FwdIt _First, _FwdIt _Last, _Pr _Pred)	//排序后的，返回新的last，要手动resize
 
 //排序(<search.h>里也有点)
 void sort(const _RanIt _First, const _RanIt _Last, _Pr _Pred)

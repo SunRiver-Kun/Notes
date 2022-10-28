@@ -1,12 +1,16 @@
 ﻿--C++标准库中的正则
 #include <regex>
-regex re(R"(/d+)");	//wregex
-cmatch result;	//cmath：char  smatch：string
-//regex_search	子串匹配即可
-//regex_replace	替换$1,$2...
-bool ok = regex_match("123str456sxx789", [result,] re);	完全匹配
-//sregex_iterator(str.cbegin(), str.cend(),re,flag=default),end;	for(;i!=end;++i) cout << i->str(0) << i->str(1) ...
-//sregex_token_iterator(str.cbegin(), str.cend(),re,sub),end;	for(;i!=end;++i) cout << i->str()
+regex re("...")	//R"()"
+smatch/cmatch  results;	
+regex_match(str, [&results,] re)	--完全匹配
+regex_search(str, [&results,] re)	--子串匹配即可
+regex_replace()
+
+smatch{	最后再赋值给str
+//第一个sub是全部，其次就是()里匹配的
+	begin()、end()、size()
+	length(i=0) //第i个匹配字符串的长度
+}
 
 正则表达式笔记：Regular Expression
 特殊字符： .^$()*+?{}[]\|
@@ -21,7 +25,7 @@ $ 匹配行的结尾
 +?尽量少地重复一次或多次
 ??尽可能地重复0/1次
 {}指定元素重复的次数{n}{n,}{,n}{m,n}  m<=x<=n
-[]定义范围，表示里面的一个字符,在里面可以不使用转移字符,例如：[abc] [0-9] [\w] [+]		[^xxx]不匹配之一
+[]定义范围，表示里面的一个字符, 例如：[abc] [0-9] [\w] [+] [^xxx]不匹配之一		
 \ 转移字符, \"表示" , C++11中的 R"(...)"来减少转移字符的数量 R"(\d)" == \\d
 | 或，匹配两侧字符串之一
 str\b：空白字符左边的字符串		--\bstr：空白字符右边的字符串
@@ -36,8 +40,12 @@ replace：$num	表示子正则表达式()，$0是整个串，$1开始是子串
 (?!...)  ...的内容不出现才匹配
 
 常用的：
-\d(数字) \w(字母/汉字/俄语/日语等/下划线/数字) \s(空白字符，空格/制表符/换行等)  \b
-\D(非数字)\W	  \S       \D
+\d(数字)
+\w(字母/汉字/俄语/日语等/下划线/数字) 
+\s(空白字符，空格/制表符/换行等)  
+\b   和^&一样表位置，即\b的前后不能都是 \w   str1|str2
+大小表示非
+\D(非数字)    \W	  \S       \D
 
 数字：
 ^-?\d*$ : 任意数字
@@ -63,15 +71,6 @@ end$ : 以end结尾
 三目(←)：? :
 赋值(←)：=, +=, -=, *=, /=, %=, ...
 逗号：,
-
---位逻辑的妙用
-flag一般是2的n次方
-&：
-	hasflag (flags&flag)!=0     
-	2的次方  v!=0 && (v&(v-1))==0	x = x&(x-1)  去掉开头的1，最终一直是0
-	统计位1的个数   count=0;  while(x) { ++count;  x = x&(x-1); }
-| ：addflag flags = flags|flag
-^ ：x^x = 0,  0^y =y , x^y^x = y
 
 --UML
 基类△—派生类

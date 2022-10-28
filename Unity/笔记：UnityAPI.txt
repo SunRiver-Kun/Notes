@@ -1,7 +1,7 @@
 ﻿
 --事件转发
 UnityEngine.Events.UnityEvent<>，编辑器可以添加public的参数或最多带一个参数的函数。添加时，最上面的dynamic表示代码传入对应参数
-简单的也可以用System.Action<>，不过Action可能为空，而UnityEvent不为空
+简单的也可以用System.Action<>，不过Action可能为空，而UnityEvent不为空(public的编辑器自动实例化，不过建议手动new)
 注：Action要判空，物体摧毁时要手动取消。
 编辑器的UnityEvent会自己创建，在物体销毁后，只有函数无关物体才会调用！
 子物体的析构函数在GameObject.Destroy时不会马上调用！ 
@@ -28,7 +28,7 @@ Mathf{
 }
 
 GameObject{
-	static FindGameObjectWithTag(tag)
+	static FindGameObjectWithTag(tag)	
 	static Find(name)
 
 	CompareTag(tag)	//tag必须是已注册过的，不会会报错
@@ -67,7 +67,10 @@ UnityEditor.Animation{...}
 
 Transform{
 	LookAt(Transform target, Vector3 worldUp)
-	Vector3D TransformDirection( xxx.forward/right/up )
+	Vector3 TransformDirection(Vector3 direction)  //局转世，返长度一样，不受缩放或位置影响
+	Vector3 InverseTransformDirection(direction)  //世转局，不受缩放影响
+	Vector3 TransformPoint (Vector3 position)  //局转世，返回点受缩放影响
+	Vector3 InverseTransformPoint (position);  //世转局，返回点受缩放影响
 	position、eulerAngles、forward、right、up、rotation(四元素)
 }
 
@@ -182,10 +185,13 @@ Effector2D{  效应器，同一物体无法添加多个效应器
 }
 
 --特殊的碰撞体
-Character Controller：不使用刚体的玩家角色。
+Character Controller{   不使用刚体的玩家角色，需要自己模拟重力
 	不会对力作出反应，也不会自动推开刚体，不会触发OnCollideXXX，但可以触发Trigger
 	回调：OnControllerColliderHit(other)	
 	skinwidth最好是radius的10%左右
+	CollisionFlags Move(Vector3 motion)   //世系，位移，不加重力
+	bool SimpleMove(Vector3 speed)  //世系，速度，忽略y轴输入，自动加重力
+}
 Terrin Collider
 Wheel Collider
 Mesh Collider
@@ -220,7 +226,7 @@ UnityEngine.XR{  InputDevices、Input.CommonUsages  }
 
 CharacterController{		不是很好用……
 	CollisionFlags Move(Vector3 motion)	--不考虑重力，返回碰撞到的碰撞器
-	SimpleMove(Vector3 speed)	--以 m/s 的速度移动(初速度)，自动添加重力
+	SimpleMove(Vector3 speed)	--以 m/s 的速度移动(初速度)，自动添加重力(忽视传入的speed的y)
 	isGrounded	--最后一次移动后，是否碰到地面
 	velocity、slopeLimit、stepOffset(将影响刚体的下落速度！)
 	、radius、height、center
@@ -342,4 +348,7 @@ UnityEngine.Rendering{
 	GraphicsSettings.renderPipelineAsset 
 }
 
-
+--对象池	 2021以上
+UnityEngine.Pool{
+	ObjectPool<_Ty>
+}

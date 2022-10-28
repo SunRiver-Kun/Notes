@@ -1,5 +1,11 @@
-*莫名其妙报错？
+﻿*莫名其妙报错？
 重启防火墙试试
+
+申请key	https://blog.csdn.net/w47_csdn/article/details/87564029
+cd .android
+keytool -genkeypair -keyalg DSA  -alias showmap -keystore showmap
+keytool -v -list -keystore showmap
+
 
 * 获取SHA1
 public static String sHA1(Context context){

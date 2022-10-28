@@ -17,6 +17,7 @@
 -可重入性(Reentrancy)：多个线程并行访问时，即使不按照调用顺序重叠运行代码，也必须保证结果
 -线程优先级：高优先的线程先运行，CPU会自动根据需要升降优先级
 -堆区域、数据区域、代码区域       每个线程(寄存器区域、栈区域)   --线程内部寄存器区域不共享，栈区域与其他线程共享
+-临界区：共享数据的代码段
 《原始》
 <thread>{
 	namespace this_thread { get_id()、sleep_until(time_point)、sleep_for(time_span) 、

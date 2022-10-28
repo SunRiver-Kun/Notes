@@ -133,7 +133,10 @@ Vignette：晕映，让摄像机四周变黑之类的，增加恐怖效果
 -分析：Window -> Analysis -> Profiler/Physics Debugger/Frame Debugger/IMGUI Debugger
 
 -输入系统 Input System    package: Input System
-Create Input Actions Asset -> New Action Map and Type -> Binding Input -> Add PlayerInput component 
+Create Input Actions Asset -> New Action Map and Type -> 
+Binding Input -> Add PlayerInput component 
+启用/禁用
+Edit => Project Setting => Player => Other Settings => Active Input Handling
 
 ------------------------------------------辅佐工具
 package manager → Unity Registry（官方工具）

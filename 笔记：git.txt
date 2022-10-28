@@ -1,14 +1,15 @@
 ﻿git-brash command: TAB补全
 
+github：按 . 打开vscode
+
 谷歌插件
 octotree：支持单文件下载，搜索。但网不好还是下不了……
 
 单文件夹克隆：Git1.7.0之后的Sparse Checkout模式，
-例如：下载 codes.git里的C文件夹，也可以是C/XXX，  别写 " "
 git init
-git remote add origin git@github.com:SunRiver-Kun/DST_Notes.git
+git remote add origin git@github.com:SunRiver-Kun/DSTMods.git
 git config core.sparsecheckout true
-echo C空格>>空格.git/info/sparse-checkout
+echo sollyz >> .git/info/sparse-checkout
 git pull origin master
 
 
@@ -23,12 +24,18 @@ gitignore
 /Assets/local/
 /[Ll]ogs/
 *.xxx
+A/**/F/
 
 git
 加速：
 1.镜像	https://github.com.cnpmjs.org/x
 
 第一次使用：
+//本地ssh和绑定到github 
+ssh-keygen [-t rsa] -C "comment"
+在C:\Users\Administrator\.ssh找id_rsa.pub，添加到github基本信息里，Ctrl+C/V
+允许别人参与到public里，repository → Settings → Manage and access → Invite a collaborator
+ 
 git config --global user.name "SunRiver-NEU"
 git config --global user.email "sunriver_kun@qq.com"
 或者在.git/config里加入
@@ -54,18 +61,14 @@ git remote --v	//显示fetch and push 的远程仓库
 git remote show origin	//查看远程仓库信息
 git remote prune origin	//刷新本地仓库
 
-//本地ssh和绑定到github 
-ssh-keygen [-t rsa] -C "comment"
-在C:\Users\Administrator\.ssh找id_rsa.pub，添加到github基本信息里，Ctrl+C/V
-允许别人参与到public里，repository → Settings → Manage and access → Invite a collaborator
- 
 初始化或下载：
 git init
 git clone https://github.com/SunRiver-NEU/sollyz.git
-git fetch [branch=all]  //把远程所有分支都拷贝下来，包括log等
+git fetch [branch=all]  //把远程所有分支都拷贝下来，包括log等	如果冲突时可以先fetch再比较
 
 添加/提交/撤销：
-git add .		git add -v		git add xx.cpp	
+git add .		git add -v		git add xx.cpp
+git add --all	//包括删除，add . 不包括删除的
 git commit -m "xxx"		
 git commit -a -m "xxx"  自动add
 git commit --amend -m "new xxx"
@@ -74,14 +77,26 @@ git checkout -- xxx.cpp 或 git reset
 远程同步/发布：origin/xxx
 git pull	获取
 git pull --rebase origin master     //解决non-fast-forward
-git push [--set-upstream origin <branchname>]	推送
+git push [--set-upstream origin <branchname>]	推送，等于  fetch + merge
 git push -u origin master
 
-文件查看：
+文件查看：用~	HEAD上次提交	HEAD^  HEAD^^ HEAD~num  前几次提交
 git ls [-al|-s|-m|-l]		显示文件目录
 git diff [--staged(缓版) | HEAD(工版)]	比较文件差异(默认在工作目录与暂存区，--staged在暂存区和本地git版本库)
 git diff <branch1> <branch2> [filename]
-	
+
+git log --oneline  看日志，
+git diif --name-status HEAD~num    你提交的那时起到现在的工作区的变化
+
+git diff	未暂存的更改
+git diff --cached	暂存和上次提交的差异
+git diff HEAD [current]	上次提交和当前工作树的差异
+git diff HEAD^ HEAD [filepath]  比较上上次提交和上次提交的更改
+git diff --name-status [from  to]  仅显示名称和更改的类型
+
+git diff dev master	  比较分支
+git diff dev...master   在分支启动以来的更改
+
 状态查看：
 git status [-s]	 
 
@@ -93,20 +108,23 @@ git reflog [[<branchname|HEAD>]@{num}] [<branchname>@{yyyy.MM.dd | yesterday}]
 git shortlog [-s|-n|-e]	
 
 创建/移动/删除：
+ls	dir	显示路径
 git mkdir src
 git mv xx.cpp src/
 git rm xxx.cpp
 --rm后回复
 1.not commit：git reset → git checkout filename 
 2.commit：git commit → git reset --hard <有文件的版本> → Ctrl+A/V → git reflog --online → git reset --hard <最新版本> → Ctrl+A/V 
+git revert <id>	回退版本，但head向前，而reset向后
+git checkout [HEAD~num] <file>	git log <file>
 
-分支：
-git branch [<brachname>]  创建或显示分支
-git merge origin/<branchname>  与当前分支合并
-git merge <branchname> --allow-unrelated-histories	与非同源分支合并
-git checkout -b <brachname>	 创建并切换分支	
+分支：切换分支，文件也会切换
+git branch [<brachname>]  创建或显示分支	至少有一次提交后才能建分支
+git checkout -b <brachname> 创建并切换分支	
 git checkout -b <brachname> --track origin/<branchname>	 创建、切换分支并跟踪远程分支	
-git checkout <branchname>	切换分支		- 表示上一个分支,在切换本地没有的分支的情况下，会新建个并试着联系远程同名分支	
+git checkout <branchname>	切换分支	- 表示上一个分支,在切换本地没有的分支的情况下，会新建个并试着联系远程同名分支	
+git merge <branchname>  与当前分支合并，合并后就可以把删除分支了
+git merge <branchname> --allow-unrelated-histories	与非同源分支合并
 git branch -d <branchname>	删除分支	-D 强制
 git branch -m <newname>	重命名分支
 
@@ -127,9 +145,16 @@ git reset --hard HEAD^	改变工作目录文件！完全回退！
 git checkout --filename 	刷新文件
 
 子模块：
-git submodule add https://.../xxx.git
+git submodule add git@github.com:...		//需要切换branch！
+git submodule update //子模块需要手动刷新
+ git submodule update --remote name	//
 = git submodule init + git submodule update	空文件夹时用
-git submodule update	//子模块需要手动刷新
+git clone --recurse-submodules <remote>	//克隆包含子模块的项目
+git pull --recurse-submodules	//更新全部，包括子模块
+git config --global submodule.recurse true	//默认自动更新子模块
+git diff --submodule
+git config --global diff.submodule log	//默认打印子模块的差异 
+
 
 标签：
 git tag -a -m "First Realse" v1

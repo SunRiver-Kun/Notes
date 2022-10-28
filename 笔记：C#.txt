@@ -1,4 +1,6 @@
-﻿1.比较char[]与string
+﻿dotnet --info
+
+1.比较char[]与string
 bool ok = str.Equal(new string(char*))   //注意char[]不需要'\0'结尾！
 
 2.启动外部程序
@@ -55,13 +57,14 @@ string fn(string v) =>
 };
 
 delegate(args...){ ... }
+(args...)=>{...}
 
 9. 文件、序列化、Xml、Json
 System.IO{
 	File -> Read|Write|Exists
 	File.OpenRead()	File.OpenWrite并不会自动清空，要情况请用 Open(path, FileMode.Write)
 	TextReader/Writer
-	BinaryReader/Writer	PeekChar()==-1  并不能准确判断EOF，就离谱！
+	BinaryReader/Writer	PeekChar()==-1
 	Path{ HasExtension()、IsPathRooted()、GetFullPath()、GetTempPath()、GetTempFileName()、GetDirectoryName()、GetExtension }
 	FileInfo -> Directory(目录) -> Create
 	Directory.Exists/ GetFiles / Delete(path, true)
@@ -98,6 +101,7 @@ public bool x
 public bool x {get; private set;}
 public bool y {get; set;}	--和 public bool y; 一样
 public T x => xxx
+public T fn(v) => {...}
 
 public event Action x
 {
@@ -194,4 +198,24 @@ $"{value[,alignment][:formatString]}"   其中：{{, }}表单括号。 { (bool ?
 
 https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/standard-numeric-format-strings
 
-19. 序列化和反序列化
+19. 接口和接口可以多继承，类可以继承一个基类和多个接口。C#继承只有public的
+
+
+CLI：Common Language Infrastructure，通用语言框架，包括CIL/CLR
+IL：Intermediate Language 中间语言		
+CIL：Common Intermediate Language 通用中间语言，.Net下的IL标准
+CLR：Common Language RunTime 通用语言运行，编译CIL到机械语言
+
+高级语言 -编译器> IL -即时编译JIT> CLR -> 虚拟机(.Net Framework / Mono VM) 执行
+
+编译链接：
+ECMA标准（Ecma- 334和Ecma-335），CLI就可以在.Net上用
+.Net Framework：只运行在Window
+Mono：开源项目，运行在各平台
+
+
+
+
+
+
+

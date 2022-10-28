@@ -9,8 +9,8 @@ XSLT：Extensible Stylesheet Language Transformations
 <?xml-stylesheet type="text/xsl" href="simple.xsl"?>
 
 1. 在 XML 中，有 5 个预定义的实体引用：
-&lt;	<	小于
-&gt;	>	大于
+&lt;	<	小于  less than
+&gt;	>	大于  greater than
 &amp;	&	和号
 &apos;	'	单引号
 &quot;	"	引号

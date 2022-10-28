@@ -3,8 +3,8 @@
 isValidateFunction ->  bool fn()   //第一个名字记得一样
 
 System{
-	[Serializable]	//可以被unity编辑器编辑
-	[NonSerialized]	//忽略序列化，默认只序列化public。可避免ScriptObject被序列化而不能判null
+	[Serializable]	//class 可以被unity编辑器编辑
+	[NonSerialized]	//value 忽略序列化，默认只序列化public。可避免ScriptObject被序列化而不能判null
 	[Flags]  	//用于enum，在编辑器上可以实现枚举多选
 }
 System.Runtime.InteropServices{   
@@ -13,7 +13,7 @@ System.Runtime.InteropServices{
 
 UnityEngine{
 	[SelectionBase]  //class，选子对象时自动跳转到根
-	[SerializeReference]  //base class value，让基类对象可以序列化派生类，但不同脚本间不能共享数据，考虑用ScriptObject
+	[SerializeReference]  //baseclass value，让基类对象可以序列化派生类，但不同脚本间不能共享数据，考虑用ScriptObject
 	[SerializeField]  //private value，显示并序列化私有成员		
 
 	[RequireComponent(typeof(Animator))] //class，若没有该组件，自动添加上去

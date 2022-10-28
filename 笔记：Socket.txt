@@ -1,4 +1,4 @@
-查询ip：ping 域名     本机ip：ipconfig
+﻿查询ip：ping 域名     本机ip：ipconfig
 查询dns：https://www.ping.cn/
 刷新host、dns：ipconfig /flushdns
 
@@ -47,7 +47,7 @@ qint64 writeDatagram(const QByteArray & datagram, const QHostAddress & host, qui
 
 广播：若 host==QHostAddress::Broadcast，QHostAddress("255.255.255.255")，则局域网的其他UDP用户都接到广播的信息，只能在局域网使用
 组播：接收方注册到组播地址才收信息，可在Internet中使用。  
-组播的host可选：
+组播的host可选：Ipv4 32位   Ipv6 48位
 224.0.0.0～224.0.0.255为预留的组播地址（永久组地址），地址224.0.0.0保留不做分配，其它地址供路由协议使用；
 224.0.1.0～224.0.1.255是公用组播地址，可以用于Internet；
 224.0.2.0～238.255.255.255为用户可用的组播地址（临时组地址），全网范围内有效；

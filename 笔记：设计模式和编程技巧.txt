@@ -57,7 +57,8 @@ IExpression△--TerminalExpression/AndExpression{ IExpression a,b }/OrExpression
 迭代器模式(Iterator Pattern)：提供一种方法顺序访问一个聚合对象中各个元素, 而又无须暴露该对象的内部表示。? iterator
 deque:  _Ty* data[block][off]   block = (pos/blocksize) & (mapsize-1)  off = pos%blocksize     blocksize和mapsize是2的若干次方	 
 list：_Ty*prev, *next;
-map/set (tree):  _Ty* left, *right, *parent; 
+map/set (tree):  _Ty* left, *right, *parent; 	红黑树 logN
+unordered_map/set: list<_Ty> data;   vector<pair<list_iterator, list_iterator>> iterators;	key -> hash -> iterators[index] -list_iterator> value
 
 中介者模式(Mediator Pattern)：封装一系列的对象交互，使各对象不需要显式地相互引用。一对多变一对一！庞大难维护？聊天室，不应当在职责混乱的时候使用。
 user -send message> ChatRoom -broadcast> user1, user2, ...
@@ -171,3 +172,37 @@ C++：
 
 分治法：大而化小，分散聚合，问题独立
 动态规划：复杂问题换简单问题，相互影响
+
+--位逻辑的妙用
+flag一般是2的n次方
+&：
+	hasflag (flags&flag)!=0     
+	2的次方  v!=0 && (v&(v-1))==0	x = x&(x-1)  去掉开头的1，最终一直是0
+	统计位1的个数   count=0;  while(x) { ++count;  x = x&(x-1); }
+| ：addflag flags = flags|flag
+^ ：x^x = 0,  0^y =y , x^y^x = y
+
+--%
+(a%p op b%p)%p = (a op b)%p 
+
+--快速幂
+int res = 1;	
+while(b){
+if(b&1) { res = (res*a)%p; } 
+a = (a*a)%p;   b >>= 1;
+}
+
+--常见解法
+子序列:从从字符串中删除一些字符后不更改剩余字符串字符顺序而生成的序列！
+子 串:原序列中必须连续的一段！
+
+BFS(广度优先)：queue，最长/最短路径
+DFS(深度优先)：递归
+N皇后，树，全排列：递归
+字符串修改：动态规划，删/改，三方向
+链表：it，flag
+合并、unique：双指针
+跳台阶：动态规划
+最长公共子序列：二维动态规划
+最长上升子序列：动态规划，dp[i] = 1 or 1 + max(dp[j])  --j<i && arr[j] < [i]，
+零钱问题：for(auto& m : money) { for(v=m; v<V; ++v)  dp[v] = min(dp[v], dp[v-m]+1);   }
