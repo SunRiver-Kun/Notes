@@ -85,3 +85,5 @@ C:\Users\Administrator\.vscode\extensions\kleber-swf.unity-code-snippets-1.3.0\s
 C:\Users\Administrator\.vscode\extensions\ms-dotnettools.csharp-1.24.0\snippets
 ++i
 --i
+
+预览打开  Link Opens In Peek

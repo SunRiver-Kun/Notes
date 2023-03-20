@@ -41,7 +41,7 @@ MonoBehaviour enabled = false
 
 -IEnumerator 类型的（协程）方法不能带 ref 或者 out 型的参数，但可以带被传递的引用
 -yield return null 跳过当前帧
--在函数 Update 和 FixedUpdate 中不能使用 yield 语句，否则会报错， 但是可以启动协程
+-在函数 Update 和 FixedUpdate 中不能使用 yield 语句，否则会报错， 但是可以启动协程	不过Start可以写成协程
 -在一个协程中，StartCoroutine()和 yield return StartCoroutine()是不一样的。
 前者仅仅是开始一个新的Coroutine，这个新的Coroutine和现有Coroutine并行执行。
 后者是返回一个新的Coroutine，是一个中断指令，
@@ -50,7 +50,7 @@ MonoBehaviour enabled = false
 14. damage用正数表示，Delta时取反即可
 15. event 在Destroy GameObject时不会自动取消，要注意！！
 16. 切换场景时数值型static的不会重置，Unity的Object引用会被消除null，除了DontDestroyOnLoad的obj都会变null
-17. 
+17.  克隆可以把要克隆的对象放到子物体并设为不激活，也可以从Prefab拖拽或根据路径动态加载
 Instantiate，不要在Start或Awake中克隆自身，激活状态下，Awake()立即调用，Start()下一帧调用
 AddComponent，不会调用Reset()，也不会自动初始化变量
 Unity Editor只会在手动挂脚本时，帮忙初始化要显示的变量，并调用Reset()
@@ -65,14 +65,14 @@ Edit > Project Settings > Graphics > Scriptable Render Pipeline Setting
 21.  小心unsigned与负数  x+1 ? size()
 22.  time -= maxtime || time+=maxtime 代替 time=0	避免时间错位
 23. 脚本没写Start、Update等函数时会没有勾，适合写GLOBAL.cs。Awake里初始化单例，其他时候使用。
-24. ScriptObject的物体返回时注意是返回副本还是共用的！
+24. ScriptObject的物体返回时注意是返回副本(手动克隆)还是共用的(直接返回)！
 25. 判断GameObject是否被删除可以用  ==null 来判断，Component用 this==null 来判断，本质是C++层对象被销毁，C#判断函数重载
 用被销毁组件的this.gameObject会报错，但是如果先用个参数保存this.gameObject，就可以跳过this，直接判断gameObject
 这个是重载与Object的==，被销毁了，但数值数据还没被销毁掉。
 报错的条件：component被摧毁，用(this.)gameObject访问物体或其身上的组件。但如果用局部参数先存起来就不会报错
 26. 跨Scene存数据
 * 用PersistentScene（不被卸载的场景）做媒介
-* 用static bool/event/引用	不过引用在使用前最好判断是否被销毁 ==null，其他正常使用即可
+* 用static 值类型/event/引用	不过引用在使用前最好判断是否被销毁 ==null，其他正常使用即可
 27. 百分比与分贝dB	scale [0f, 1f]	
 currentdB = 10 * lg(scale) + maxdB  
 scale = 10 ^ [ (currentdB - maxdB)/10 ]
@@ -80,6 +80,7 @@ scale = 10 ^ [ (currentdB - maxdB)/10 ]
 Editor -> Project Settings -> Script Execution Order	
 负数先执行-> 其他 -> 正数，全部Awake完再次到Start等
 PlayerLoop.GetCurrentPlayerLoop()  自定义每帧子系统执行步骤
+29. UI可以建个Layer表，调整Z轴，用固定的API来在特定的层上打开Window
 
 -中文文档	docscloudstorage -> localized_docs/zh-cn
 https://storage.googleapis.com/localized_docs/zh-cn/2020.3/UnityDocumentation.zip
@@ -111,7 +112,7 @@ Trace.WatchTime(()=>{...},1000000次)	--观察代码运行时间
 
 -版本控制：meta文件也要保存！
 must only: Assets、Packages、ProjectSettings
-ignore: Library、Logs、obj、UserSettings、.vs
+ignore: Library、Logs、obj、UserSettings、.vs、.vscode
 
 -光线
 Window → Rendering → LightingSetting(添加天空盒)
@@ -169,7 +170,7 @@ package manager → Unity Registry（官方工具）
 
 脚本类：
 -Playmaker：可视化编程工具
--Lua Framework：
+-Lua Framework：ToLua
 
 GUI类：
 -TextMesh Pro：创建多变的文本，作为模型渲染
@@ -178,6 +179,8 @@ GUI类：
 -Pro Chart：创建传统的图表
 -UGUI Minimap：小地图制作
 -DOTween Pro：一些简单的动作，也可用于其他非UI物体
+-TextPacker：图集打包工具
+-NGUI：高度自定义的插件（对比UGUI）
 
 着色器：
 -Cool Mobile Water：移动设备专用水面效果，两个摄像机，一个渲染水上，一个渲染水下

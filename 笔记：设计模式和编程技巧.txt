@@ -88,7 +88,7 @@ Slots : ISlot{ vector<ISlot> slots;  accept(IVisitor){ foreach v : slots { v.acc
 
 4. J2EE模式：表示层
 MVC 模式(MVC Pattern)：背包系统
--Model 模型代表存储数据的对象    		List<InventoryItem>   
+-Model 模型代表存储数据的对象    	List<InventoryItem>   
 -View 视图代表模型数据的可视化(UI)	InventorySlot
 -Controller 控制器控制/更新模型和视图   	Inventory
 
@@ -204,5 +204,5 @@ N皇后，树，全排列：递归
 合并、unique：双指针
 跳台阶：动态规划
 最长公共子序列：二维动态规划
-最长上升子序列：动态规划，dp[i] = 1 or 1 + max(dp[j])  --j<i && arr[j] < [i]，
+最长上升子序列：动态规划，dp[i] = 1 or 1 + max(dp[j])  //j<i && arr[j] < [i]，
 零钱问题：for(auto& m : money) { for(v=m; v<V; ++v)  dp[v] = min(dp[v], dp[v-m]+1);   }

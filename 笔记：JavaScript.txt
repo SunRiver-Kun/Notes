@@ -1,0 +1,73 @@
+1. 数据
+var tb = {
+	num : 1.5,
+	str : 'string'  或  "string"
+	arr : [ 'str1', 'str2', 'str3' ]	
+};
+var x, y = 1;   
+var x = 10;  //可重复var但不推荐
+
+//ES2015(ES6)
+let x, y = 1;         //{ }中的局部变量，默认都是全局作用域
+const PI=3.14;	//常量
+
+
+值类型(基本类型)：String、Number、Boolean、Null、Undefined、Symbol(ES6，独一无二的值)
+引用数据类型（对象类型）：Object、Array、Function，RegExp(正则)、Date
+任意赋值
+var arr = new Array();    arr[i] = i;	var arr = ["1","2","3"]      arr = null;    arr = false
+obj.xx  ==	 obj["xx"]
+
+
+2. 打印  
+print(...);
+window.alert(...)    //弹出警告框  
+console.log(str)    //打印到控制台
+document.write(str)    //写成HTML元素	   
+document.getElementById("name").innerHTML = "str";	//修改元素
+
+3. HTML 中的 Javascript 脚本代码必须位于 <script> 与 </script> 标签之间。
+Javascript 脚本代码可被放置在 HTML 页面的 <body> 和 <head> 部分中。
+在 HTML 中, 全局变量是 window 对象，所以window 对象可以调用函数内的全局变量。
+注意：所有数据变量都属于 window 对象。
+
+4. 调用外部文件 <script src="myScript.js"></script>
+5. document{    //HTML中的JS
+	getElementById("name")	//对应 <p id="name"> </p>
+	write(str)	//<h1>标题    <p>新行
+}
+6. function fn(){}   函数通常在head里，或body的最下面的<script></script>
+<button type="button" onclick="fn()">尝试一下</button>
+<button onclick="this.innerHTML=Date()">现在的时间是?</button>
+7. 常见HTML回调
+onchange	HTML 元素改变
+onclick	用户点击 HTML 元素
+onmouseover	鼠标指针移动到指定的元素上时发生
+onmouseout	用户从一个 HTML 元素上移开鼠标时发生
+onkeydown	用户按下键盘按键
+onload	浏览器已完成页面的加载
+8. 字符串
+var str  = "string"    //String
+var str2 = new String("str2")   //Object
+str[index]    str + str + number	
+9. 
+10 == "10"    -->  true，离谱
+===	绝对等于（值和类型均相等）
+10. if、for、while、switch等同C
+11.  typeof x       --> string ，括号可省
+12. try{}  catch(err){}  finally{}     throw "XX"
+13. "use strict";   使用严格模式
+14.   var tb = []
+tb[0] = 1		-->   可用tb.length
+tb["name"] = xxx	-->   tb.length变0了
+15. 定义数组时最后的, 不能多加
+16. 在 JavaScript 中, null 用于对象, undefined 用于变量，属性和方法。
+对象只有被定义才有可能为 null，否则为 undefined。
+if (typeof myObj !== "undefined" && myObj !== null)
+17. this
+在方法(在{}中的函数)中，this 表示该方法所属的对象。
+如果单独使用，this 表示全局对象。
+在函数中，this 表示全局对象。
+在函数中，在严格模式下，this 是未定义的(undefined)。
+在事件中，this 表示接收事件的元素。
+类似 call() 和 apply() 方法可以将 this 引用到任何对象。

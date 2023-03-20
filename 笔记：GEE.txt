@@ -1,0 +1,45 @@
+*UI*
+print(ui)   可以在控制台那显示，但不会在发布上的网站上显示
+ ui{	//返回一个新实例
+	root()	-->  根Panel，默认只有个map，且layout是水平
+	Map()	--> Map是这个的一个实例
+	style().set()   -->  设置属性    key:str, value:str
+	
+	Panel{
+		layout: ui.Panel.Layout.flow("horizontal"/"vertical")		absolute
+		 style: {width: '300px'}
+	}
+
+	Label("string")
+	Button({ label:"str",  onClick: function(){ ... } })
+	Panel()
+	Checkbox("string", true)  -->   onChange( function(checked){ ... } )
+	Slider()	-->  settValue(1)     onChange( function(value){ ... } )
+	DateSlider
+	Textbox(placeholder:"str")   -->  onChange(text){  } 
+	Select({ items: Object.keys(tb) })  -->  onChange(key)
+	Chart
+	Thumbnail	-->  预览图片	
+	SplitPanel
+}
+
+*几何*
+ee.Geometry.Polygon
+
+
+Image{	//基本光栅化图像
+	Image('JAXA/ALOS/AW3D30/V2_2')
+}
+ImageCollection{	//图片的集合
+ee.ImageCollection('COPERNICUS/S2_SR')
+	.filterBounds(ee.Geometry.Point(-70.48, 43.3631))
+	.filterDate('2019-01-01', '2019-12-31')
+	.sort('CLOUDY_PIXEL_PERCENTAGE')
+	.first() -> Image
+}
+Geometry基本矢量数据
+Feature,有属性的矢量数据
+FeatureCollectionFeature的集合
+Reducer统计和分类的对象
+Join集合分类
+Array数组->多维分析

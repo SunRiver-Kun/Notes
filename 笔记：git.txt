@@ -5,6 +5,8 @@ github：按 . 打开vscode
 谷歌插件
 octotree：支持单文件下载，搜索。但网不好还是下不了……
 
+fork：可以代替git GUI使用
+
 单文件夹克隆：Git1.7.0之后的Sparse Checkout模式，
 git init
 git remote add origin git@github.com:SunRiver-Kun/DSTMods.git
@@ -127,6 +129,7 @@ git merge <branchname>  与当前分支合并，合并后就可以把删除分�
 git merge <branchname> --allow-unrelated-histories	与非同源分支合并
 git branch -d <branchname>	删除分支	-D 强制
 git branch -m <newname>	重命名分支
+git rebase <branch>  把当前分支rebase到branch上，看上去就像当前分支是在branch上新开的。如果要推送到远端只能强推，要么强推前让大家本地没提交，要么等最后开发完直接rebase dev，再切到dev rebase下
 
 git cherry --pick <brachname>  合并分支修改到当前分支
 
@@ -151,7 +154,7 @@ git submodule update //子模块需要手动刷新
 = git submodule init + git submodule update	空文件夹时用
 git clone --recurse-submodules <remote>	//克隆包含子模块的项目
 git pull --recurse-submodules	//更新全部，包括子模块
-git config --global submodule.recurse true	//默认自动更新子模块
+git config --global submodule.recurse true	//默认fetch子模块
 git diff --submodule
 git config --global diff.submodule log	//默认打印子模块的差异 
 

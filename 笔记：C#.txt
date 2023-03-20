@@ -167,8 +167,8 @@ System{
 System.Collections.Generic{
 	IComparer<T>	--Comparer<T>.Default  
 	IEqualityComparer<T>	--EqualityComparer<T>.Default 
-	IEnumerable<T>
-	IEnumerator<T> 
+	IEnumerable<T>  class  - foreach > GetEnumerator() -> IEnumerator<T>    当实现IEnumerable时，也应该建个迭代器实现IEnumerator
+	IEnumerator<T>  return
 	ICollection<T> : IEnumerable<T>
 	IList<T> : ICollection<T>, IEnumerable<T>
 	IDictionary<TKey,TValue> : ICollection<KeyValuePair<TKey,TValue>>, IEnumerable<KeyValuePair<TKey,TValue>>
@@ -183,7 +183,7 @@ System.Linq{
 
 17. 泛型修饰符
 in：类型可逆变 ( object -> int )
-out：类型可协变( int -> object )
+out：类型可协变( int -> object )6*
 
 18. String.Format和字符串内插$	
 https://docs.microsoft.com/zh-cn/dotnet/api/system.string.format?view=net-6.0

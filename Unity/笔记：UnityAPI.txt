@@ -72,6 +72,8 @@ Transform{
 	Vector3 TransformPoint (Vector3 position)  //局转世，返回点受缩放影响
 	Vector3 InverseTransformPoint (position);  //世转局，返回点受缩放影响
 	position、eulerAngles、forward、right、up、rotation(四元素)
+	childCount, parent, root,  
+	Find("sub/subb"), GetChild(index), SetParent()
 }
 
 Vector3{
@@ -106,6 +108,8 @@ UnityEngine.Audio{
 ScreenCapture{
 	CaptureScreenshot(filename)
 	Texture2D CaptureScreenshotAsTexture()
+
+	SDK ->  LoadImage(...) -> Texture
 }
 
 --物理

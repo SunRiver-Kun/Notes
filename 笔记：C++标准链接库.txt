@@ -67,6 +67,9 @@ b	a	//main(){ int a; int b; }
 		_CRT_INSECURE_DEPRECATE(_Replacement)
 	typedef: size_t(uint/u__int64), ptrdiff_t(int/__int64), intptr_t(int/__int64), __vcrt_bool, wchar_t, NULL
 }
+<stdint.h>{
+	int16_t,  uint64_t, ..., INT32_MAX, UINT32_MIN, ...
+}
 <corecrt.h>
 {
 	c++: template<bool _Enable, typename _Ty> struct  _CrtEnableIf; //_Enable为false直接报错，为true时 typedef _Ty _Type;
