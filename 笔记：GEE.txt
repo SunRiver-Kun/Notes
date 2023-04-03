@@ -1,8 +1,21 @@
+*多文件调用*
+//module.js
+exports.str = "";
+exports.fn = function() { ... };
+
+//main.js
+var std = require('users/sunriverkun/gee_test:module');
+std.fn( std.str )
+
+
 *UI*
 print(ui)   可以在控制台那显示，但不会在发布上的网站上显示
  ui{	//返回一个新实例
 	root()	-->  根Panel，默认只有个map，且layout是水平
-	Map()	--> Map是这个的一个实例
+	Map(){	--> Map是这个的一个实例	 Map.drawingTools()
+		var ndviParams = {min: -1, max: 1, palette: ['blue', 'white', 'green']};
+		Map.addLayer(image.select('BandName'), ndviParams, 'LayerName');
+	}
 	style().set()   -->  设置属性    key:str, value:str
 	
 	Panel{
@@ -26,9 +39,12 @@ print(ui)   可以在控制台那显示，但不会在发布上的网站上显�
 *几何*
 ee.Geometry.Polygon
 
-
+//ee.Object（服务器对象）是不可变的，一般返回的是copy
 Image{	//基本光栅化图像
 	Image('JAXA/ALOS/AW3D30/V2_2')
+	select('BandName', 'B2', ...)  -->获得此波段的 Image
+	select(['BandName1','BandName2'], ['NewName1, NewName2'])  -->重命名 Image
+	set('属性名', 'value') --> copy Image
 }
 ImageCollection{	//图片的集合
 ee.ImageCollection('COPERNICUS/S2_SR')
@@ -36,6 +52,7 @@ ee.ImageCollection('COPERNICUS/S2_SR')
 	.filterDate('2019-01-01', '2019-12-31')
 	.sort('CLOUDY_PIXEL_PERCENTAGE')
 	.first() -> Image
+	.map(function(Image){ return Image; })	--> map服务器并行每个元素(无法用print)，并要求返回同类型或Image, ImageCollection, Feature, FeatureCollection之一
 }
 Geometry基本矢量数据
 Feature,有属性的矢量数据
@@ -43,3 +60,38 @@ FeatureCollectionFeature的集合
 Reducer统计和分类的对象
 Join集合分类
 Array数组->多维分析
+
+*Filter*
+ee.Filter.eq/neq/gt/gte/lt/lte('字段','字段值');
+ee.Filter.maxDifference('最大差值','字段','字段数值');
+ee.Filter.stringStartsWith('字段'，'起始字符串')  
+ee.Filter.stringEndsWith('字段'，'末尾字符串')
+ee.Filter.stringEndsWith('字段'，'末尾字符串')
+ee.Filter.rangeContains('字段'，'起始字母', '终止字母');
+ee.Filter.listContains('字段'，'列表内包含值');
+ee.Filter.inlist('字段'ee.List('A', 'B'));
+ee.Filter.calendarRange(day1, day2, 'day_of_year');
+ee.Filter.calendarRange(day1, day2, 'day_of_year');
+ee.Filter.day_Of_Year(day1, day2);
+ee.Filter.and(filter_A, filter_B);
+ee.Filter.or(filter_A, filter_B);
+filter_1.not();
+
+*NDVI*
+NDVI = (NIR - red)/(NIR + red)
+
+var nir = image.select('B5');
+var red = image.select('B4');
+var ndvi = nir.subtract(red).divide(nir.add(red)).rename('NDVI');
+//var ndvi = image.normalizedDifference(['B5', 'B4']).rename('NDVI');
+Map.centerObject(image, 9);
+var ndviParams = {min: -1, max: 1, palette: ['blue', 'white', 'green']};	//blue:-1  green:1
+Map.addLayer(ndvi, ndviParams, 'NDVI image');
+var addNDVI = function(image) {
+  var ndvi = image.normalizedDifference(['B5', 'B4']).rename('NDVI');
+  return image.addBands(ndvi);
+};
+
+// Test the addNDVI function on a single image.  
+//var ndvi = addNDVI(image).select('NDVI');
+var withNDVI = ImageCollection.map(addNDVI);

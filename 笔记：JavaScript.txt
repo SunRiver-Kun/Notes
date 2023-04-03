@@ -4,6 +4,11 @@ var tb = {
 	str : 'string'  或  "string"
 	arr : [ 'str1', 'str2', 'str3' ]	
 };
+
+var tb = []
+tb[0] = 1		-->   可用tb.length
+tb["name"] = xxx	-->   tb.length变0了
+
 var x, y = 1;   
 var x = 10;  //可重复var但不推荐
 
@@ -96,7 +101,19 @@ class Runoob extends A {
 let runoob = new Runoob("菜鸟教程", 2018);
 document.getElementById("demo").innerHTML =
 "菜鸟教程 " + runoob.age() + " 岁了。";
-19. 常用
+19. 多文件调用
+export function fn() { ... }
+export{ fn, str, ... }
+export default { name: value } //let default={name: value}  export{ default }
+
+
+import { export1 [, export2 as alias2[, ...]] } from "module.js";  //导出特定的函数，变量(一般深拷贝)等      
+import std_default from "module.js";  //导出default到std命名空间
+import * as std from 'std.js';  //导出全部内容到std命名空间
+import "init.js" //导入的时候会运行代码
+import('module.js').then((std) => { ... });  //动态导入
+
+* 常用
 Number{   //static
 	MAX_VALUE
 	MIN_VALUE

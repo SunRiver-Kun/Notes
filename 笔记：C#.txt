@@ -66,7 +66,7 @@ System.IO{
 	TextReader/Writer
 	BinaryReader/Writer	PeekChar()==-1
 	Path{ HasExtension()、IsPathRooted()、GetFullPath()、GetTempPath()、GetTempFileName()、GetDirectoryName()、GetExtension }
-	FileInfo -> Directory(目录) -> Create
+	FileInfo -> Directory.GetFiles(目录) -> Create
 	Directory.Exists/ GetFiles / Delete(path, true)
 }
 using System.Runtime.Serialization.Formatters.Binary;
@@ -157,6 +157,15 @@ System
 15. 
  System.Collections.Generic;
 Comparer<T>.Defult  ||  Comparer<T>.Creat(Comparison<T> fn)
+List<T>   -->  vector
+Stack<T>  --> stack
+PriorityQueue<T, TPriority>  --> priority_queue
+Queue<T>  --> queue
+LinkedList<T>  --> list 
+Dictionary<TKey,T Value>  --> map
+HashSet<T>   --> set
+SortedDictionary<TKey, TValue>
+SortList<T>
 
 16. 接口
 System{
