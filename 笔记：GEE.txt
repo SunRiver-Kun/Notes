@@ -1,12 +1,21 @@
+*限制的使用*
+class, import, export, let
+
+
 *多文件调用*
 //module.js
 exports.str = "";
 exports.fn = function() { ... };
+exports:
+1. 引用还是引用
+2. 返回值是obj时容易栈溢
 
 //main.js
-var std = require('users/sunriverkun/gee_test:module');
-std.fn( std.str )
-
+var sr = require('users/sunriverkun/gee_test:module.js');
+sr.fn( std.str )
+require: 
+1. 无法在函数内require新的文件
+2. 
 
 *UI*
 print(ui)   可以在控制台那显示，但不会在发布上的网站上显示
@@ -16,7 +25,8 @@ print(ui)   可以在控制台那显示，但不会在发布上的网站上显�
 		var ndviParams = {min: -1, max: 1, palette: ['blue', 'white', 'green']};
 		Map.addLayer(image.select('BandName'), ndviParams, 'LayerName');
 	}
-	style().set()   -->  设置属性    key:str, value:str
+	style().set()   -->  设置属性    key:str, value:...    
+	style().key获取值
 	
 	Panel{
 		layout: ui.Panel.Layout.flow("horizontal"/"vertical")		absolute
