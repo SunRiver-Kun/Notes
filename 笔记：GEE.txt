@@ -1,5 +1,5 @@
 *限制的使用*
-class, import, export, let
+class, import, export, let, for(var v of arr), ...agrs, const
 
 
 *多文件调用*
@@ -7,15 +7,19 @@ class, import, export, let
 exports.str = "";
 exports.fn = function() { ... };
 exports:
-1. 引用还是引用
+1. 引用还是引用，但不会变化
 2. 返回值是obj时容易栈溢
 
+
 //main.js
+Number.prototype._G = {};
+var _G = Number.prototype._G;
+
 var sr = require('users/sunriverkun/gee_test:module.js');
 sr.fn( std.str )
 require: 
 1. 无法在函数内require新的文件
-2. 
+2. require的参数只能是常量，即"..."，不接受任何path
 
 *UI*
 print(ui)   可以在控制台那显示，但不会在发布上的网站上显示
@@ -25,8 +29,28 @@ print(ui)   可以在控制台那显示，但不会在发布上的网站上显�
 		var ndviParams = {min: -1, max: 1, palette: ['blue', 'white', 'green']};
 		Map.addLayer(image.select('BandName'), ndviParams, 'LayerName');
 	}
-	style().set()   -->  设置属性    key:str, value:...    
-	style().key获取值
+	style(){
+		set(key, value)   -->  设置属性    key:str, value:...    
+		set({ key:value })
+		.key获取值
+		{
+			position: "top/middle/bottom-left/center/right"
+			layout(Panel): ui.Panel.Layout.flow("horizontal"/"vertical")		absolute
+			stretch: "horizontal/vertical/both",  //hL-hS只占一页  hL-vS匹配高滚动条
+			height, maxHeight, minHeight (e.g. '100px')
+			width, maxWidth, minWidth (e.g. '100px')
+			padding, margin (e.g. '4px 4px 4px 4px' or simply '4px')
+			color, backgroundColor (e.g. 'red' or '#FF0000')
+			border (e.g. '1px solid black')
+			fontSize (e.g. '24px')
+			fontWeight (e.g. 'bold' or '100')
+			fontFamily (e.g. 'monospace' or 'serif')
+			textAlign (e.g. 'left' or 'center')
+			textDecoration (e.g. 'underline' or 'line-through')
+			whiteSpace (e.g. 'nowrap' or 'pre')
+			shown (true or false)
+		}
+	}
 	
 	Panel{
 		layout: ui.Panel.Layout.flow("horizontal"/"vertical")		absolute

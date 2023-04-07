@@ -10,7 +10,7 @@ var arr = []
 arr[0] = 1		-->   可用tb.length
 arr["name"] = xxx	-->   tb.length变0了
 for(var i=0; i<arr.length; ++i)
-for(var v of arr)  不遍历私有属性
+for(var v of arr)  不遍历私有属性（即只遍历数字索引0~N）
 arr.forEach( (value, index)=>{} )
 
 var x, y = 1;   
@@ -45,9 +45,20 @@ Javascript 脚本代码可被放置在 HTML 页面的 <body> 和 <head> 部分�
 	getElementById("name")	//对应 <p id="name"> </p>
 	write(str)	//<h1>标题    <p>新行
 }
-6. function fn(){}   函数通常在head里，或body的最下面的<script></script>
+6. function fn(value = 0){}   函数通常在head里，或body的最下面的<script></script>
 <button type="button" onclick="fn()">尝试一下</button>
 <button onclick="this.innerHTML=Date()">现在的时间是?</button>
+(a, b) => {}
+参数同Lua可省略，为undefined
+
+省略参数
+function(...args){
+	for(var v of args){
+
+	}
+}
+print( ...arr )  展开arr为 v1, v2这样的输入
+
 7. 常见HTML回调
 onchange	HTML 元素改变
 onclick	用户点击 HTML 元素
@@ -123,6 +134,12 @@ for (var key in obj) {
   console.log('键名：', key);
   console.log('键值：', obj[key]);
 }
+21. 扩展函数/属性  https://www.runoob.com/js/js-object-prototype.html
+所有的JavaScript对象都会从一个 prototype（原型对象）中继承属性和方法：会一层层向上找prototype
+Array.prototype.fn = function(){ };
+Array.prototype.value = 1;
+[1,3].fn()
+
 
 * 常用
 Number{   //static
