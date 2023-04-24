@@ -139,9 +139,18 @@ for (var key in obj) {
 Array.prototype.fn = function(){ };
 Array.prototype.value = 1;
 [1,3].fn()
+22. null, undefined, "", "0", 0, false, NaN为false，其他为true  if(x)     null==undefined为true
 
+23. JavaScript中判断是很宽松的，i < arr.length，就算length未定义也仅仅是返回false而已！
+24. 弹窗
+alert(str)	只有个确认建
+confirm(str)  -->  bool  确定/取消
+prompt("sometext","defaultvalue")  --> str 输入框
 
 * 常用
+字符串转数字
+1. Number(str), parseInt(str), parseFloat(str)，失败返回NaN -->  isNaN() 会转数字, Number.isNaN(), value!=value(NaN返回true)
+
 Number{   //static
 	MAX_VALUE
 	MIN_VALUE

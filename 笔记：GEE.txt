@@ -1,5 +1,5 @@
 *限制的使用*
-class, import, export, let, for(var v of arr), ...agrs, const
+class, import, export, let, for(var v of arr), ...agrs, const, function(arg=1)
 
 
 *多文件调用*
@@ -25,7 +25,7 @@ require:
 print(ui)   可以在控制台那显示，但不会在发布上的网站上显示
  ui{	//返回一个新实例
 	root()	-->  根Panel，默认只有个map，且layout是水平
-	Map(){	--> Map是这个的一个实例	 Map.drawingTools()
+	Map(){	--> Map是这个的一个实例	 Map.drawingTools()   设置position后，只有一个UI无法调整位置
 		var ndviParams = {min: -1, max: 1, palette: ['blue', 'white', 'green']};
 		Map.addLayer(image.select('BandName'), ndviParams, 'LayerName');
 	}
@@ -39,8 +39,9 @@ print(ui)   可以在控制台那显示，但不会在发布上的网站上显�
 			stretch: "horizontal/vertical/both",  //hL-hS只占一页  hL-vS匹配高滚动条
 			height, maxHeight, minHeight (e.g. '100px')
 			width, maxWidth, minWidth (e.g. '100px')
-			padding, margin (e.g. '4px 4px 4px 4px' or simply '4px')
-			color, backgroundColor (e.g. 'red' or '#FF0000')
+			padding(向外填充backgroundColor),   auto 自动匹配子widget的框   10%  百分百
+			margin(距离上个widget) ('4px 4px 4px 4px' or  '4px')  上右下左  |  上下 左右     margin auto 居中
+			color, backgroundColor (e.g. 'red' or '#FF0000')  可以有透明度
 			border (e.g. '1px solid black')
 			fontSize (e.g. '24px')
 			fontWeight (e.g. 'bold' or '100')
@@ -57,9 +58,9 @@ print(ui)   可以在控制台那显示，但不会在发布上的网站上显�
 		 style: {width: '300px'}
 	}
 
-	Label("string")
-	Button({ label:"str",  onClick: function(){ ... } })
 	Panel()
+	Label("string")		
+	Button({ label:"str",  onClick: function(){ ... } })	color改text颜色，backgroundColor改外框颜色，内框改不了
 	Checkbox("string", true)  -->   onChange( function(checked){ ... } )
 	Slider()	-->  settValue(1)     onChange( function(value){ ... } )
 	DateSlider
@@ -68,7 +69,27 @@ print(ui)   可以在控制台那显示，但不会在发布上的网站上显�
 	Chart
 	Thumbnail	-->  预览图片	
 	SplitPanel
+
+	图片：使用imageURL   https://fonts.google.com/icons
+	1. 图标 -> ui.Label("", { padding: "24px", backgroundColor:"red"  })  --color无用
+	2. 图片 -> ui.Label("hover", { backgroundColor:"FFFFFFF0" } , imageURL)   ui.Button... 无法改图片的大小，有些图有边框
+	3. 表情 -> 按window+. 或在Edge中按右Ctrl左边的列表🚗
+
+	data{
+		ActiveList{
+			ActiveList(list)
+			add(element)
+			insert(index,element)
+			get(index)
+			length()
+			remove(element)
+			reset(list={}) 用list覆盖当前的列表
+			set(index, element)
+			getJsArray() --> List<Object>
+		}
+	}
 }
+
 
 *几何*
 ee.Geometry.Polygon
