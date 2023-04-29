@@ -88,7 +88,7 @@ git diff [--staged(缓版) | HEAD(工版)]	比较文件差异(默认在工作目
 git diff <branch1> <branch2> [filename]
 
 git log --oneline  看日志，
-git diif --name-status HEAD~num    你提交的那时起到现在的工作区的变化
+git diff --name-status HEAD~num    你提交的那时起到现在的工作区的变化
 
 git diff	未暂存的更改
 git diff --cached	暂存和上次提交的差异
