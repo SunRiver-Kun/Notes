@@ -34,7 +34,7 @@ git
 
 第一次使用：
 //本地ssh和绑定到github 
-ssh-keygen [-t rsa] -C "comment"
+ssh-keygen -t rsa -C "comment"
 在C:\Users\Administrator\.ssh找id_rsa.pub，添加到github基本信息里，Ctrl+C/V
 允许别人参与到public里，repository → Settings → Manage and access → Invite a collaborator
  

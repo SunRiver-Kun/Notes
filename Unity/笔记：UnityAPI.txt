@@ -269,10 +269,17 @@ UnityEngine{
 		UnLoadAsset(assetobject)
 		UnLoadUnusedAssets()   //异步
 	}	
-	UnityWebRequest{   加载网络或StreamingAssets的资源
-		
+	UnityWebRequest{   加载网络或StreamingAssets的资源  }
+	--AssetBundle
+	AssetBundle{
+		LoadFromFile(Path.Combine(Application.streamingAssetsPath, "myassetBundle"))	//加载失败返回null
+		LoadAsset<T>("MyObject")
+		Unload(unloadAllLoadedObjects)	//当不需要的时候需要释放内存
 	}
-	AssetBundle.LoadFromFile	//加载AssetBundle的资源
+	--网络的AssetBundle，需要使用协程
+	var request = Networking.UnityWebRequestAssetBundle.GetAssetBundle(url, 0);
+	yield return request.Send();
+	AssetBundle bundle = UnityEngine.Networking.DownloadHandlerAssetBundle.GetContent(request);
 }
 UnityEditor{
 	--path = "Assets/XXX";
