@@ -82,6 +82,12 @@ Editor -> Project Settings -> Script Execution Order
 PlayerLoop.GetCurrentPlayerLoop()  自定义每帧子系统执行步骤
 29. UI可以建个Layer表，调整Z轴，用固定的API来在特定的层上打开Window
 
+# UI 工具包#
+1. 所有元素都继承VisualElement(样式、布局、事件)，在panel上才显示
+2. 渲染次序是先父后子，即越深的显示在越上面。可以用BringToFront、SendToBack | PlaceBehind、PlaceFront 来改变父子|同级的渲染次序
+
+
+
 -中文文档	docscloudstorage -> localized_docs/zh-cn
 https://storage.googleapis.com/localized_docs/zh-cn/2020.3/UnityDocumentation.zip
 扔到Unity/版本/Editor/Data/Documentation/en里

@@ -272,7 +272,7 @@ UnityEngine{
 	UnityWebRequest{   加载网络或StreamingAssets的资源  }
 	--AssetBundle
 	AssetBundle{
-		LoadFromFile(Path.Combine(Application.streamingAssetsPath, "myassetBundle"))	//加载失败返回null
+		LoadFromFile("Assets/AssetBundles/prefab"))	//加载失败返回null
 		LoadAsset<T>("MyObject")
 		Unload(unloadAllLoadedObjects)	//当不需要的时候需要释放内存
 	}
@@ -297,6 +297,7 @@ UnityEditor{
 		AddComponent、CreateGameObject、CreateInstance、CreatePrimitive	
 	}
 	Presets.Preset{...}
+	PrefabUtil
 }
 
 --时间
@@ -352,6 +353,7 @@ UnityEngine.EventSystems{	管理点击等事件的触发，包含自定义UI接�
 	EventTrigger	->   添加该组件，设置其UnityEvent
 	IPointerClickHandler, IPointerEnterHandler, IPointExitHandler  ...
 }
+坐标系转换：WorldToLocal、LocalToWorld、ChangeCoordinatesTo 本地Vector2/Rect与Panel坐标空间转换
 
 --渲染
 UnityEngine.Rendering{

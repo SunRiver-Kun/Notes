@@ -37,9 +37,9 @@ EditorWindow	新窗口
 
 EditorGUIlayout
 
-属性：
-[MenuItem("MyTools/fn", true)] //static bool ValidFn() { Menu.SetCheck("MyTools/fn", bool); return true;  }   //同步函数，在点击之前完成，按钮会自己处理的
-[MenuItem("MyTools/fn")]	//static void fn(){ if(Menu.GetCheck("MyTools/fn")){...} else{...}  }	//在菜单栏上点击运行
+属性：GameObject/ 下的会自动添加到右键菜单
+[MenuItem("MyTools/Fn", true)] //static bool ValidFn() { Menu.SetCheck("MyTools/fn", bool); return true;  }   //同步函数，在点击之前完成，按钮会自己处理的
+[MenuItem("MyTools/Fn")]	//static void fn(){ if(Menu.GetCheck("MyTools/fn")){...} else{...}  }	//在菜单栏上点击运行
 [CustomEditor(typeof(XXX))]	//class : Editor	//XXX为可在Inspector显示的组件
 [CustomPropertyDrawer(typeof(Data))] class : SerializableDictionaryPropertyDrawer	//自定义数据绘制
 
@@ -86,4 +86,4 @@ C:\Users\Administrator\.vscode\extensions\ms-dotnettools.csharp-1.24.0\snippets
 ++i
 --i
 
-预览打开  Link Opens In Peek
+预览打开  Link Opens In Peek   ->  true

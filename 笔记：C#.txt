@@ -209,6 +209,14 @@ https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/standard-numeric-for
 
 19. 接口和接口可以多继承，类可以继承一个基类和多个接口。C#继承只有public的
 
+20. public static class Defs{
+	public static const string name = "";
+	public static const string value => ... ;
+}
+
+21. 反射
+AppDomain.CurrentDomain.GetAssemblies() -> Assembly[] -> GetType() -type> Type.GetProperty() -PropertyInfo> GetGetMethod().Invoke(null, new object[]{}).ToString()
+
 
 CLI：Common Language Infrastructure，通用语言框架，包括CIL/CLR
 IL：Intermediate Language 中间语言		
