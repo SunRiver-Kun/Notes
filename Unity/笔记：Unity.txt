@@ -3,6 +3,7 @@
 3. GameObject可以从Scane中选，也可以从Prefab中。   
 4. Instantiate：生成（激活的）新实例，并返回游戏对象/对象上的组件<T>。
 Awake()立即调用，Start()下一帧调用 
+Destroy() 下一帧执行，只有Go链激活时才调用OnDestroy()    //Go链，从根节点开始一直到Go节点都是激活的
 5. 静止的物体可以借助Empty Object构成组，同时设为static。
 经常运行的物体就少设parent，因为要执行局部全局坐标转换！
 6. 非一致缩放：某些组件不支持，子对象在选择时不会自动更新缩放比例。	倾斜的__盒型碰撞体 (Box Collider)__ 无法准确匹配渲染网格的形状
