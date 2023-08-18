@@ -1,6 +1,8 @@
 ﻿常用软件：Win+R		文件路径：C:/Windows/System32
 mspaint.exe	画图
-services.msc
+services.msc	服务
+shell:startup	启动菜单
+
 
 后缀
 .url	修改属性，快速打开网址
