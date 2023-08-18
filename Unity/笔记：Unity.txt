@@ -86,7 +86,19 @@ PlayerLoop.GetCurrentPlayerLoop()  自定义每帧子系统执行步骤
 1. 所有元素都继承VisualElement(样式、布局、事件)，在panel上才显示
 2. 渲染次序是先父后子，即越深的显示在越上面。可以用BringToFront、SendToBack | PlaceBehind、PlaceFront 来改变父子|同级的渲染次序
 
+# TextMeshProUGUI #  TMP    RichText->true   https://www.jianshu.com/p/86e347c776c6
+<align="left"> </align>     <align="center"> </align>   <align="right"> </align>
+<color="red"> </color>     <color=#005500> </color>   red green blue white black orange purple yellow
+<alpha=#FF> </alpha>
+<i> 斜体 </i>
+<b> 加粗 </b>
+<b><i> 粗斜  </i></b>
+<cspace=1em> 字间距 </cspace>     <cspace=1px> 字间距 </cspace>
+<font="Impact SDF">  </font>
 
+# 粒子 #
+一次性：最长时间 = startDelay + startLifeTime
+持续：最长时间 = Duration +  startDelay + startLifeTime
 
 -中文文档	docscloudstorage -> localized_docs/zh-cn
 https://storage.googleapis.com/localized_docs/zh-cn/2020.3/UnityDocumentation.zip

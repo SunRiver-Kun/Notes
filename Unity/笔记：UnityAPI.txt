@@ -344,9 +344,28 @@ Gizmos：{	--写在 OnDrawGizmos	OnDrawGizmoSelected
 Handles{ --自定义Editor时，绘画用	}
 
 --UI
+Resolution.width/height
+Screen{
+	width/height 
+	Screen.SetResolution(screenWidth, screenHeight, isFullScene);
+	fullScreen
+	currentResolution
+}    
+Cursor{
+	lockState
+	visible
+}
+Button、Text、Image、RawImage(Texture)ScrollRect、Scrollbar、Slider、Toggle、DropDown
+TMPro{ TextMeshProUGUI、TMP_Dropdown  }
+Selectable、ToggleGroup、InputField 
+HorizontalLayoutGroup、VerticalLayoutGroup、GridLayoutGroup
+AspectRatioFitter(等比)、ContentSizeFitter(子内容调大小，pivot位置不动)
+Effects/Outline、PositionAsUV1、Shadow
+
 UnityEngine.UI{	基本的UI控件
 //找不到命名空间，把代码打开方式改为VS，打开一次，再改回VS Code即可。或更新Package里的vscode扩展
 https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/UIBasicLayout.html
+	
 }
 UnityEngine.EventSystems{	管理点击等事件的触发，包含自定义UI接口
 	EventSystem	->   事件发送器
