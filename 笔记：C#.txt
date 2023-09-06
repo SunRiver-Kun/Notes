@@ -176,7 +176,7 @@ SortList<T>
 
 16. 接口
 System{
-	IComparable<T>
+	IComparable<T>	-->  int (a, b)  a.CompareTo(b)   对a来说，1后  0不动 -1先前
 	IEquatable<T>
 	Predicate<T>	-->   bool fn(T)
 }

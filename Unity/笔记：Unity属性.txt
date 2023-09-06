@@ -20,7 +20,8 @@ UnityEngine{
 	[DisallowMultipleComponent]  //class, 禁止多个相同类型（或子类型）的脚本挂在同一个GameObject上	
 
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.XXX)]	//static fn
-	
+	-->执行顺序  BeforeSceneLoad -> Awake() -> Enable() -> AfterSceneLoad(Default) ->Start()	
+
 	[ExecuteInEditMode]  //MonoBehaviours，让脚本在Editor下开始运行，不考虑预制件模式
 	[ExecuteAlways]  //MonoBehaviours，让脚本在Eidtor和Play下都运行
 

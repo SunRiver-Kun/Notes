@@ -86,6 +86,27 @@ PlayerLoop.GetCurrentPlayerLoop()  自定义每帧子系统执行步骤
 # UI 工具包#
 1. 所有元素都继承VisualElement(样式、布局、事件)，在panel上才显示
 2. 渲染次序是先父后子，即越深的显示在越上面。可以用BringToFront、SendToBack | PlaceBehind、PlaceFront 来改变父子|同级的渲染次序
+3. Canvas{
+	RenderMode: Overlay在任何摄像机(无Go)，Camera指定摄像机(可见Go)，World世界(同Go，降维打击)
+}
+4. ScrollRect{  滚动是用EventTrigger的，所以子物体要用Button来点击
+	view_port: Image+Mask,  Button{
+		item: Image, Button
+		grid: GridLayoutGroup, ContentSizeFitter
+	}
+}
+5. CanvasGroup: 控制Alpha, Interactable(连同子Canvas), blocks(只能控制同一Canvas)
+
+# Camera #
+GuiCamera{  多场景UI摄像机需要设置的参数
+	RenderType: Base
+	CullingMask: UI
+	Priority: 100    -->  最高
+	BackgroundType: Uninitialized（透明，非Skybox/SolidColor）
+	Tag: GuiCamera
+	OcclusionCulling: True
+	Stack: 同一场景的子摄像机(RenderType=Overlay)
+}
 
 # TextMeshProUGUI #  TMP    RichText->true   https://www.jianshu.com/p/86e347c776c6
 <align="left"> </align>     <align="center"> </align>   <align="right"> </align>

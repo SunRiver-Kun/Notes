@@ -93,7 +93,7 @@ static:
 	identity
 	Angle()、AngleAxis()
 	Euler(x,y,z)	--按°来旋转，左手螺旋
-	FromToRotation()、Inverse()、LookRotation(direction, upward)、
+	*FromToRotation()*、Inverse()、LookRotation(direction, upward)、
 	[S]Lerp()、[S]LerpUnclamped()、RotateTowards(from,to,maxdelta)
 	Vector3 operator *(Quaternion rotation, Vector3 point);	//旋转后的另一个点
         	Quaternion operator *(Quaternion a, Quaternion b);	//∠a + ∠b
@@ -188,6 +188,10 @@ Effector2D{  效应器，同一物体无法添加多个效应器
 	Area：定向可加随机力
 }
 
+Bounds{
+	bool IntersectRay(Ray ray, out float distance)  -->  Ray.GetPoint(Math.Abs(distance))
+}
+
 --特殊的碰撞体
 Character Controller{   不使用刚体的玩家角色，需要自己模拟重力
 	不会对力作出反应，也不会自动推开刚体，不会触发OnCollideXXX，但可以触发Trigger
@@ -250,6 +254,13 @@ System.IO{
 	Path
 }
 UnityEngine{
+	[System.Serializable] class Data{}
+	ScriptableObject{
+		public List<Data> values= new();
+		[System.NonSerialized] privat Data current;   //不加System.NonSerialized则会序列化，但在编辑器下看不见
+	}
+
+	--.json放Application.streamingAssetsPath，也可放Resources->TextAssets->JsonUtility.FromJson<T>
 	JsonUtility{ --使用Unity 序列化器，要创建的自定义结构体……public、[SerializeField]， not : static、private、[System. NonSerialized]
 		Type FromJson<Type>(string json)	--Type: 只支持普通类和结构，不支持派生自 UnityEngine.Object 的类（如 MonoBehaviour 或 ScriptableObject）。
 		string ToJson(object obj, bool prettyPrint = false)  --obj必须是 MonoBehaviour、ScriptableObject、[Serializable] 的类/结构体
@@ -257,7 +268,7 @@ UnityEngine{
 	--Shader
 	 Material material = new Material (Shader.Find("Specular"));
 	--File
-	Resources{  "Assets/**/Resources"里的资源全部包含进打包，名字不能重复
+	Resources{  "Assets/**/Resources"里的资源全部包含进打包，名字不能重复，会压缩！
 		FindObjectsOfTypeAll(type)  //返回已加载的Unity对象，包括场景的和磁盘中的
 		InstanceIDToObject(id)、InstanceIDTOObjectList(ids,objs)
 		//path相对于Resources文件夹的，不包含后缀
@@ -266,20 +277,30 @@ UnityEngine{
 		LoadAll(filename || resourcespath, type)
 		LoadAsync(path, type)  //异步   yield return 	
 		//某些资源(纹理)在场景中不存在其实例时，也会占用内存
-		UnLoadAsset(assetobject)
-		UnLoadUnusedAssets()   //异步
+		UnLoadAsset(assetobject)   //从磁盘中销毁Asset，但之后还有引用则用到时重新加载回来
+		UnLoadUnusedAssets()   //异步，必须是无任何引用的!  (AB.Unload(),  prefab=null)
 	}	
 	UnityWebRequest{   加载网络或StreamingAssets的资源  }
 	--AssetBundle
-	AssetBundle{
-		LoadFromFile("Assets/AssetBundles/prefab"))	//加载失败返回null
-		LoadAsset<T>("MyObject")
-		Unload(unloadAllLoadedObjects)	//当不需要的时候需要释放内存
+	AssetBundle{	
+		加载的AssetBundle是总内存，LoadAsset后分配新内存并反序列化给Asset
+		AB包不会自动加载引用的Asset，而Resources和直接拖拽的会自动加载
+
+		LoadFromFile(Path.Combine(Application.streamingAssetsPath, "AssetBundles"))	//加载失败返回null
+		LoadAsset<T>("MyObject")	--> Resources.UnLoadAsset(assetobject)     UnLoadUnusedAssets()
+		Unload(unloadAllLoadedObjects)	//卸载AB包，以及是否卸载从AB包出来的Asset       只有卸载AB包后，用Resources.UnLoadUnusedAssets()才能销毁从AB包出来的无用资源
 	}
+
 	--网络的AssetBundle，需要使用协程
 	var request = Networking.UnityWebRequestAssetBundle.GetAssetBundle(url, 0);
 	yield return request.Send();
 	AssetBundle bundle = UnityEngine.Networking.DownloadHandlerAssetBundle.GetContent(request);
+
+	--管理AssetBundle之间的依赖关系的     AssetBundleManifest
+	AssetBundle assetBundle = AssetBundle.LoadFromFile(Defs.AssetBundlePath + "/manifestFile".ToLower());
+	AssetBundleManifest manifest = assetBundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
+	string[] dependencies = manifest.GetAllDependencies(“assetBundle");
+	foreach(string dependency in dependencies){ AssetBundle.LoadFromFile(Path.Combine(assetBundlePath, dependency)); }
 }
 UnityEditor{
 	--path = "Assets/XXX";
@@ -374,11 +395,15 @@ UnityEngine.EventSystems{	管理点击等事件的触发，包含自定义UI接�
 }
 坐标系转换：WorldToLocal、LocalToWorld、ChangeCoordinatesTo 本地Vector2/Rect与Panel坐标空间转换
 
---渲染
+--渲染，摄像机
 UnityEngine.Rendering{
 	RenderPipelineAsset 
 	GraphicsSettings.renderPipelineAsset 
 }
+
+--是否被渲染，性能消耗较大
+var planes = GeometryUtility.CalculateFrustumPlanes(mainCamera);
+GeometryUtility.TestPlanesAABB(planes, GetComponent<Collider2D>().bounds)
 
 --对象池	 2021以上
 UnityEngine.Pool{

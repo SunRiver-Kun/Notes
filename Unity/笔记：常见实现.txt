@@ -1,5 +1,11 @@
-*背包系统*
+# 背包系统 #
 inventory
 inventory_item
 inventory_bar
 container
+
+# 寻路 #  https://github.com/recastnavigation/recastnavigation
+寻路放在服务器，把点列表发给客户端
+Recast：生成 NavMesh
+Detour：使用 NavMesh
+Unity Navigation -> NavMesh，Y=0 -obj> RacastDemo -> NavMesh.bin -服务器> bin, Detour    
