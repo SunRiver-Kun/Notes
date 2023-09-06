@@ -38,7 +38,7 @@ ssh-keygen -t rsa -C "comment"
 在C:\Users\Administrator\.ssh找id_rsa.pub，添加到github基本信息里，Ctrl+C/V
 允许别人参与到public里，repository → Settings → Manage and access → Invite a collaborator
  
-git config --global user.name "SunRiver-NEU"
+git config --global user.name "夏湾"
 git config --global user.email "sunriver_kun@qq.com"
 或者在.git/config里加入
 [user]
