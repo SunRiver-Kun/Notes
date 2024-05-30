@@ -13,6 +13,9 @@ shell:startup	启动菜单
 netstat -aon | findstr "5037"
 tasklist | findstr "5037对应的进程号"
 
+查看Wifi密码
+netsh wlan show profile name="WifiName" key=clear
+
 开始菜单：C:/ProgramData/Microsoft/Windows/Start Menu/Programs
 桌面：C:/Users/Administrator/Desktop
 
