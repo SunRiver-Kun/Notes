@@ -1,0 +1,39 @@
+# 点在线段内
+left <= x and x<=right
+ 
+# 线段相交
+not ( right1<left2 or right2 <left1  )
+right1>=left2 and right2>=left1
+
+left1<=right2 and left2<=right1
+
+# AABB 矩阵检测
+水平线段相交 且 垂直线段相交
+rect1.left<=rect2.right and rect2.left<=rect1.right
+and
+rect1.down<=rect2.up and rect2.down<=rect1.up
+
+# 点在圆内
+(x-x0)^2 + (y-y0)^2 <= radius^2
+
+# 圆O和矩阵A
+## 圆心不在矩阵内时，矩阵边上距离圆心最近的点H(碰撞算法通用)
+*AO* = (xO-xA, yO-yA)
+*AH* = ( clamp(AO.x, -widthA/2, widthA/2), clamp(AO.y, -heightA/2, heightA/2) ) 
+
+*OH* = *AH* - *AO*
+|OH|^2 <= R^2  碰撞
+
+# 分类轴定理
+以下图中的两个多边形 A 和 B 为例，分离轴定理的具体步骤为：
+
+1.首先根据边1的两个顶点位置坐标，计算出边1的向量，设为（x，y）；
+2.进而求出边1的法向量，作为分离轴，为（y, -x）或（-y，x）。若需要求两个多边形的最小分离距离，这里的法向量还需要化为单位向量；若只需判断两个多边形是否相交，则不需要化为单位向量；
+3.依次将多边形 A 和 B 的所有顶点与原点组成的向量投影到这个分离轴上，并记录两个多边形顶点投影到分离轴上的最小值和最大值（Pmin，Pmax），形成一个投影线段；
+4.判断这两个投影线段是否发生重叠，若不重叠，则有 （PAmax < PBmin）||（PAmin > PBmax）；
+5.若两个投影线段不重叠，则代表存在这样一条直线将两个多边形分开，两个多边形不相交，可以直接退出循环；
+6.若两个投影线段重叠，则回到步骤1，继续以边2的法向量作为分离轴，进行投影计算；
+7.当两个多边形的所有边都检查完之后，找不到这样一条分离的直线，则意味着两个多边形相交。
+
+# 线性差值
+Lerp(from, to, t)  = from + (to-from)*t = (1-t)*from + t*to

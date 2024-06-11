@@ -108,6 +108,8 @@ git log [--graph|--addrev-commit]
 git show
 git reflog [[<branchname|HEAD>]@{num}] [<branchname>@{yyyy.MM.dd | yesterday}]
 git shortlog [-s|-n|-e]	
+git reflog --date=iso
+
 
 创建/移动/删除：
 ls	dir	显示路径

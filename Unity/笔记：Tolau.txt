@@ -1,0 +1,10 @@
+GC: C#(Unity) Wrap Lua
+1. lua的gc只影响lua本身
+2. Wrap定期检查Object==null，来删除引用
+3. C# 当Object引用为0时，清空Object的实际内存(Destroy)
+
+Lua调用C#
+lua函数 -> Wrap -new C#的值> C#
+
+C#调用Lua
+LuaState 编译运行等，push等接口

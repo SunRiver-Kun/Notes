@@ -74,7 +74,8 @@ delegate(args...){ ... }
 System.IO{
 	File -> Read|Write|Exists
 	File.OpenRead()	File.OpenWrite并不会自动清空，要情况请用 Open(path, FileMode.Write)
-	TextReader/Writer
+
+	StreamReader/Writer
 	BinaryReader/Writer	PeekChar()==-1
 	Path{ HasExtension()、IsPathRooted()、GetFullPath()、GetTempPath()、GetTempFileName()、GetDirectoryName()、GetExtension }
 	FileInfo -> Directory.GetFiles(目录) -> Create

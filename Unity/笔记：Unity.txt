@@ -12,7 +12,7 @@ Destroy() 下一帧执行，只有Go链激活时才调用OnDestroy()    //Go链�
 Force：全局力，不受物体影响
 9. 复合碰撞体：根物体添加Rigibody[2D]，子物体添加Collider。
 这样把脚本挂在根物体也可以 OnCollider/TriggerXXX
-10. 默认两个Mesh Collider 不会发生碰撞，除非开了Convex（凸面外壳）
+10. 默认两个Mesh Collider 不会发生碰撞，除非开了Convex（凸面外壳）。少用，静态的用Mesh，动态用复合
 11.将网格碰撞体用于场景几何体，并使用复合原始碰撞体近似得出移动游戏对象的形状。
 12. Collider interactions	注：两个触发器也会相互触发，可在Project Settings>Physics->Contact Pairs Mode里更改碰撞组
 (dynamic)Rigidbody Collider：完全由引擎控制，与其他都发生碰撞和触发
@@ -21,8 +21,8 @@ Kinematic Rigidbody Collider：
 -触发不受影响
 -可通过Tranform组件改变位置而不触发碰撞和力。但也可以通过rigidbody.MovePosition来移动并产生碰撞
 -常用与只在必要时运动，其他时候静止的物体（如：自动门）
--2D默认只与dynamic碰撞，不过可以勾选full rect与其他物体碰撞；
--3D只与dynamic碰撞
+-2D默认只与dynamic碰撞事件，不过可以勾选full rect与其他物体碰撞事件；
+-3D只与dynamic碰撞事件，但还是可以和静态碰撞体碰撞
 -触发器与全部反应
 
 Static Collider：a Collider but no Rigidbody. 
