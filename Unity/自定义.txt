@@ -87,3 +87,9 @@ C:\Users\Administrator\.vscode\extensions\ms-dotnettools.csharp-1.24.0\snippets
 --i
 
 预览打开  Link Opens In Peek   ->  false		minimap: false
+Unity代码提示：安装C#扩展, Use Omnisharp -> true     禁用C# Dev Kit, Unity 扩展
+禁用某些C#检查：Assembly-CSharp.csproj
+<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <NoWarn>0169;USG0001;IDE0051;IDE0044</NoWarn>
+</PropertyGroup>
+
