@@ -14,7 +14,12 @@ git config core.sparsecheckout true
 echo sollyz >> .git/info/sparse-checkout
 git pull origin master
 
+少克隆历史记录
+git clone --depth 1 https://github.com/SunRiver-Kun/Notes.git
+git clone --depth 1 --shallow-submodules https://github.com/SunRiver-Kun/Notes.git
 
+文件瘦身
+git gc
 
 只下某种文件：echo *.cpp >> .git/info/sparse-checkout		前面也可以加路径，如  XXX/*.cpp
 排除某文件夹（如C）：echo !C >> .git/info/sparse-checkout
