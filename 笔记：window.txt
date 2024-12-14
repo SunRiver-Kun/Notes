@@ -8,6 +8,8 @@ shell:startup	启动菜单
 .url	修改属性，快速打开网址
 
 网络：ipconfig  --all
+刷新dns：
+ipconfig /flushdns
 
 查看端口  
 netstat -aon | findstr "5037"

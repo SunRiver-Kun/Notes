@@ -33,7 +33,7 @@ using System.Drawing;
 -Graphics.FromXXX
 -this.CreatGraphics()
 
-5. 委托和事件
+5. 委托和事件    不要用?.Invoke() ， 而要用 if(){}，否则空event的时候可能会报错
 委托：类，包含+-=等，可以通过其他类Invoke
 事件：类，类外只能+-=，不能Invoke
 
