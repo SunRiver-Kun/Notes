@@ -2,7 +2,7 @@
 mspaint.exe	画图
 services.msc	服务
 shell:startup	启动菜单
-
+msconfig		启动项管理
 
 后缀
 .url	修改属性，快速打开网址

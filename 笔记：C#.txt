@@ -58,7 +58,7 @@ p?.fn()	<-->	p!=null ? p.fn() : null	//注：fn是事件或委托时可能为空
 8. 
 if( dir.TryGetValue(key, out _TValue v) ) { v... }  
 if( x is int num ) { print(num); }  //当x可以转为num时进入if	//is not
-using(int x) { ... }  //自动析构x
+using(int x) { ... }  //自动析构x，Dispose
 string fn(string v) => 
  v switch
 {
@@ -152,6 +152,7 @@ public static [implicit/explicit] operator targettype(T a)
 引入的 == 比较引入，Equals重载后比较内容，所以用泛型时用Equals
 
 13. 
+Console.Write 尽量避免传值的object进去
 Console.Write("{0:4}")
 Console.Write($"{1+2} + {str}")	//{str}里的会执行
 nameof(param)  //把变量的名变为字符串，为什么不直接copy呢
@@ -213,6 +214,13 @@ System.Linq{
 in：类型可逆变 ( object -> int )
 out：类型可协变( int -> object )
 
+引用参数，不能在async, yield return, yield break 中使用
+ref：在调用方法之前必须初始化参数。 该方法可以将新值赋给参数，但不需要这样做。
+out：该调用方法在调用方法之前不需要初始化参数。 该方法必须向参数赋值。
+ref readonly：在调用方法之前必须初始化参数。 该方法无法向参数赋新值。
+in：在调用方法之前必须初始化参数。 该方法无法向参数赋新值。 
+编译器可能会创建一个临时变量来保存 in 参数的自变量副本。调用时可以不加in
+
 18. String.Format和字符串内插$	
 https://docs.microsoft.com/zh-cn/dotnet/api/system.string.format?view=net-6.0
 "{index[,alignment][:formatString]}"
@@ -243,6 +251,49 @@ return default;  ("Name", 11)
 23. DLL
 [DllImport("user32.dll", SetLastError = true)]
 private static extern int GetSystemMetrics(int nIndex);
+
+25. 
+String 是不可变的，线程安全；
+用StringBuilder来创建复杂的字符串相加；
+$"{xxx} is run"
+
+26. object 会创建值类型的副本，并存在堆上，和原本的栈上的值类型不再相关。装箱拆箱值类型有内存消耗。
+拆箱会进行类型检测，需要尽量避免装箱拆箱。
+lambda 捕获的变量不会作为垃圾回收直至lambda可回收。
+
+27. 记录（record）是类(record class)或结构(record struct)，值相等性(值比较)、不可变性、ToString
+public record Person(string FirstName, string LastName);
+
+public record Person(string FirstName, string LastName){
+    public required string[] PhoneNumbers { get; init; }
+}	-->    Person person1 = new("Nancy", "Davolio") { PhoneNumbers = new string[1] };
+public record Teacher(string FirstName, string LastName, int Grade): Person(FirstName, LastName);
+
+Person person = new("Nancy", "Davolio");    
+Console.WriteLine(person);
+Person person2 = person with { 【FirstName = "John"】 };   //副本   
+
+28. 
+using forwpf = System.Windows;
+forwpf::Point	global::System.Console
+
+using System;
+using (StreamReader reader = File.OpenText("numbers.txt")) { ...  }	//自动 reader.dispose()
+
+29. 指针
+unsafe
+{
+    int number = 27;
+    int* pointerToNumber = &number;
+
+    byte[] bytes = { 1, 2, 3 };  --  byte[] bytes = new byte[3]{ 1, 2, 3 };	堆
+    fixed (byte* pointerToFirst = &bytes[0]){ ... }	--fixed 获取在堆上的地址，class、数组等
+
+    char* pointerToChars = stackalloc char[123];	--栈  stackalloc 
+}
+
+
+其他：
 
 CLI：Common Language Infrastructure，通用语言框架，包括CIL/CLR
 IL：Intermediate Language 中间语言		
