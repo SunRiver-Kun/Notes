@@ -1,6 +1,9 @@
 <!-- TOC -->
 
+- [API](#api)
+    - [添加组件](#添加组件)
 - [信息](#信息)
+- [Gameplay框架](#gameplay框架)
 - [快速搜索](#快速搜索)
 - [编辑器操作](#编辑器操作)
 - [Config](#config)
@@ -11,8 +14,37 @@
 
 <!-- /TOC -->
 
+# API #
+
+## 添加组件 ##
+如果组件应默认附加到Actor上，则应在Actor的构造函数中添加该组件。
+UObject::CreateDefaultSubObject 函数添加组件。
+点击蓝图编辑器 组件（Components） 面板中的 + 添加（+ Add） 
+点击细节面板（Details Panel）中的 + 添加（+ Add） 按钮
+
 # 信息 #
 1. x轴是前，y轴是右，z轴是高。左手坐标系
+
+# Gameplay框架 #
+Actor: Entity，可以给它添加Component，本身不含位移等。添加网络同步
+    -> World->SpawnActor
+Pawn: 物理实体，Npc，角色。放血条等通用组件
+    -> DefaultPawn：带有移动。球体碰撞组件、静态网格体组件
+        -> SpectatorPawn：观察机制的移动。球体碰撞组件、无静态网格体组件
+    -> Character：角色，CapsuleComponent、CharacterMovementComponent、SkeletalMeshComponent、SpringArmComponent、CameraComponent、ArrowComponent
+Controller: 控制Pawn，Pawn销毁时Controller也可继续存在。
+    -> AIController: 控制Npc及相关内容。BehaviorTree、AIMove(Nav)
+    -> PlayerController: HUD、Input、PlayerCameraManager，玩家相关
+HUD: Heads-up Display，抬头显示器。覆盖在显示器上，不可交互
+UI: User Interface，用户界面，菜单等可交互。可以用UMG创建
+GameMode：仅服务器，每关一个，加载关卡时最早实例化的Actor，定义一些默认类，项目->地图和模式（全局） || 世界场景设置（某关）
+    :GetGameMode()，一关内的全局数据
+GameState: 服务器&&客户端，网络同步，非实体Actor，游戏整体状态，仅一个由GameMode创建，所有玩家数据逻辑
+GameInstance: 服务器和客户端单独存在，引擎启动时创建，并一直Active直到引擎关闭，
+    不同关卡中都用到的数据, 存档等, 
+    创建多个游戏子系统SubSystems，OnlineSubSystems等。生命周期和GameInstance一致
+PlayerState: 非实体Actor，关联的玩家数据逻辑
+
 
 # 快速搜索 #
 鼠标悬浮在资源上可以看元数据，在资源搜索条那里可以搜索。不区分大小写，不需要空格
@@ -74,4 +106,4 @@ Content Browser -> Filters -> Other Filters -> Other Developers
 5. 使用*Alt+拖拽*或*Ctrl+D*来复制选中的物体
 6. Scene视图的上面的网格、角度、缩放量的时候，会按照后面的数值每次变化
 7. Scene视图右上角可以设置摄像机移动速度，切换成4视图。
-8. 可以在Scene视图的上面，设置表面对齐，在移动物体时贴合表面
+8. 可以在Scene视图的上面，设置表面对齐，在移动物体时贴合表面。或者*V+拖拽*
