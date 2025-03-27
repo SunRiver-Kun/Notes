@@ -8,7 +8,14 @@ System{
 	[Flags]  	//用于enum，在编辑器上可以实现枚举多选
 }
 System.Runtime.InteropServices{   
-	[DllImport("DllName")]   //static extern fn，DllName.dll放在Assets/Plugins
+	[DllImport("DllName")]   //_Ty static extern fn(...)，DllName.dll放在Assets/Plugins
+
+	/*C++
+		.h   .cpp   导出
+		_Ty __declspec(dllexport) fn(...){....}
+
+		__declspec(dllimport)  导入
+	*/
 }
 
 UnityEngine{

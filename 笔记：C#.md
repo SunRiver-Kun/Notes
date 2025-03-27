@@ -1,5 +1,45 @@
-﻿dotnet --info
+﻿<!-- TOC -->
 
+- [环境](#环境)
+- [字符串](#字符串)
+- [枚举](#枚举)
+- [事件](#事件)
+- [元组](#元组)
+- [格式](#格式)
+- [其他](#其他)
+    - [启动外部程序](#启动外部程序)
+    - [Winform绘图](#winform绘图)
+
+<!-- /TOC -->
+
+# 环境 #
+dotnet --info
+
+# 字符串 #
+C#的字符串是只读的、线程安全的，修改、拼接字符串会生成新的字符串。在拼接字符串多的情况下要用 StringBuilder
+1. 比较char[]与string
+bool ok = str.Equal(new string(char*))   //注意char[]不需要'\0'结尾！
+2. 字符串内插， $" {表达式} " 
+3. 逐字文本， @"c:\documents"
+
+# 枚举 #
+System.Enum.GetName ...
+
+# 事件 #
+委托和事件    不要用?.Invoke() ， 而要用 if(){}，否则空event的时候可能会报错
+委托：类，包含+-=等，可以通过其他类Invoke
+事件：类，类外只能+-=，不能Invoke
+
+# 元组 #
+元组，是值类型
+var x = new ("sss",1,0f)  --> x.Item1  x.Item2
+(string Name, int Value) x = new ("SSS", 0)   --> x.Name   x.Value
+var (_,_,n) = fn();	//_表示弃用
+public (string,int,int) fn() { return ("",1,0); }
+
+
+
+# 格式 #
 Class{
 	public static T Instance => _Instance;
 	static T _Instance;
@@ -10,19 +50,14 @@ Class{
 	void Fn(){} 
 }
 
-1.比较char[]与string
-bool ok = str.Equal(new string(char*))   //注意char[]不需要'\0'结尾！
-
-2.启动外部程序
+# 其他 #
+## 启动外部程序 ##
 using System.Diagnostics;
 Process proc = new Process();
 proc.StartInfo.FileName = "BuiltGame.exe";
 proc.Start();
 
-3. Enum与Sring
-System.Enum.GetName ...
-
-4.Winform绘图
+## Winform绘图 ##
 System.Drawing
 using System.Drawing;
 
@@ -33,14 +68,8 @@ using System.Drawing;
 -Graphics.FromXXX
 -this.CreatGraphics()
 
-5. 委托和事件    不要用?.Invoke() ， 而要用 if(){}，否则空event的时候可能会报错
-委托：类，包含+-=等，可以通过其他类Invoke
-事件：类，类外只能+-=，不能Invoke
 
-6.元组，类似tuple。编译器从Object派生的类
-var x = new ("sss",1,0f)
-var (_,_,n) = fn();	//_表示弃用
-public (string,int,int) fn() { return ("",1,0); }
+
 
 集合初始值设定项
 Student s = new  Student[(...)]{ Name="Tom", Age = 18 }
