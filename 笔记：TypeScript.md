@@ -115,6 +115,10 @@ for(let v of tuple){ ... }
 tuple.forEach( v => console.log(v) )
 
 # 容器 #
+注：
+for of: 有序，不会遍历prop里的，推荐使用，使用可迭代对象，遍历值
+for in: 无序，会遍历prop里的，配合 hasOwnProperty 用，适用对象，遍历键名
+
 -- get(), set(), size, for of
 new Map<K, V>()
 new ReadOnlyMap<K, V>([ [k1, v1], [k2, v2] ])
