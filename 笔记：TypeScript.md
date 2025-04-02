@@ -161,15 +161,30 @@ import "init.js" //导入的时候会运行代码
 import('module.js').then((std) => { ... });  //动态导入
 
 # 命名空间 #
-namespace Runoob { 
-   export namespace invoiceApp { 
-      export class Invoice { 
-         public calculateDiscount(price: number) { 
-            return price * .40; 
-         } 
-      } 
-   } 
+//cc.d.ts
+export namespace _decorator { 
+    export const ccclass: ((name?: string) => ClassDecorator) & ClassDecorator;
+    
+    export function property(options?: __private._cocos_core_data_decorators_property__IPropertyOptions): __private._cocos_core_data_decorators_utils__LegacyPropertyDecorator;
+    export function property(type: __private._cocos_core_data_decorators_property__PropertyType): __private._cocos_core_data_decorators_utils__LegacyPropertyDecorator;
+    export function property(...args: Parameters<__private._cocos_core_data_decorators_utils__LegacyPropertyDecorator>): void;
+
+    export namespace math {
+        export class Vec3 extends ValueType {
+            static ZERO: Readonly<Vec3>;
+            static squaredDistance(a: IVec3Like, b: IVec3Like): number;
+            x: number;
+            constructor(v: Vec3);
+            constructor(x?: number, y?: number, z?: number);
+            set(other: Vec3): Vec3;
+            normalize(): this;
+        }
+    }
 }
+
+//test.js
+import { _decorator, Component, math, Node } from 'cc';
+const { ccclass, property } = _decorator;
 
 # 异步 #
 async function getData(url:string): Promise<string> {
