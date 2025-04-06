@@ -30,13 +30,16 @@ export class test extends Component{ }
 
 
 ## 属性 ##
-CCInteger、CCFloat、CCBoolean、CCString、
+CCInteger、CCFloat、CCBoolean、CCString: 可以直接@property，但其数组需要[Type]
+其他cc类型：需要 @property({ type: Type })
 其他@ccclass(name)并继承CCObject的数据
 只有@property({type: tp})的属性才能被识别并序列化
+注意：数组初始化并改类型后，需要先清楚数据再重新赋值，否则将导致数据错乱
 
+@property({type: Type, visible: true})
 
-@property({type: CCInteger})
-value: number = 0;
+@property({type: CCInteger})    --> @property   ||  @CCInteger  ||  @property(CCInteger)
+value: number = 0;              --> value: number = 0;    
 
 @property({type: [CCInteger]})
 arr: number[] = [];
