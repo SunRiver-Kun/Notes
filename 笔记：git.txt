@@ -23,6 +23,9 @@ git fetch --tags
 git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
 git fetch --unshallow
 
+克隆分支
+git clone --branch Name xxx.git
+
 文件瘦身
 git gc
 

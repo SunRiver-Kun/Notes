@@ -1,4 +1,49 @@
-﻿
+﻿<!-- TOC -->
+
+- [Event](#event)
+- [Application](#application)
+- [Mathf](#mathf)
+- [GameObject](#gameobject)
+- [UnityEngine](#unityengine)
+    - [UnityEngine.Assertions.Assert](#unityengineassertionsassert)
+    - [UnityEngine.Random](#unityenginerandom)
+    - [UnityEngine.SceneManagement](#unityenginescenemanagement)
+- [Animator](#animator)
+- [Transform](#transform)
+- [Vector3](#vector3)
+- [Quaternion](#quaternion)
+- [音/视频](#音视频)
+- [截屏](#截屏)
+- [物理](#物理)
+    - [Physics](#physics)
+    - [Rigidbody](#rigidbody)
+    - [XXX Constraint](#xxx-constraint)
+    - [Articulation Body](#articulation-body)
+    - [Joint](#joint)
+    - [Joint 2D](#joint-2d)
+    - [Effector2D](#effector2d)
+    - [Other](#other)
+- [2D显示排序](#2d显示排序)
+- [输入/控制](#输入控制)
+    - [System.IO](#systemio)
+    - [UnityEngine](#unityengine-1)
+    - [UnityEditor](#unityeditor)
+- [设置](#设置)
+- [GUI](#gui)
+- [UGUI](#ugui)
+- [渲染](#渲染)
+- [Job System](#job-system)
+    - [NativeArray](#nativearray)
+    - [IJob](#ijob)
+    - [IJobParallelFor](#ijobparallelfor)
+    - [IJobFor](#ijobfor)
+    - [ParallelForTransform](#parallelfortransform)
+- [优化](#优化)
+
+<!-- /TOC -->
+
+
+# Event #
 --事件转发
 UnityEngine.Events.UnityEvent<>，编辑器可以添加public的参数或最多带一个参数的函数。添加时，最上面的dynamic表示代码传入对应参数
 简单的也可以用System.Action<>，不过Action可能为空，而UnityEvent不为空(public的编辑器自动实例化，不过建议手动new)
@@ -6,8 +51,8 @@ UnityEngine.Events.UnityEvent<>，编辑器可以添加public的参数或最多�
 编辑器的UnityEvent会自己创建，在物体销毁后，只有函数无关物体才会调用！
 子物体的析构函数在GameObject.Destroy时不会马上调用！ 
 
---核心
-Application{	
+# Application #
+{	
 	isPlaying
 	Quit()、OpenURL、installerName
 	dataPath(..Assets)、streamingAssetsPath(..Assets/StreamingAssets)、
@@ -15,7 +60,8 @@ Application{
 	event:  logMessageReceived		//关于Scene的不要用，异步时会漏掉的
 }
 
-Mathf{
+# Mathf # 
+{
 	float Clamp(value, min, max)	--返回[min,max]之间的值
 	float Lerp(a, b, time)		-- time[0~1]，按time插值	return a*(1-t) + b*t
 	--在Update中Lerp平滑，  value = Mathf.Lerp(value, target, Time.deltaTime * speed)
@@ -27,7 +73,8 @@ Mathf{
 	MoveTowards (current, target, maxDelta);   maxDelta正近，负离。  不会越过target
 }
 
-GameObject{
+# GameObject #
+{
 	static FindGameObjectWithTag(tag)	
 	static Find(name)
 
@@ -42,11 +89,14 @@ GameObject{
 	BroadcastMessage(methodname[, parameter])	//逐级递推，未激阻断   未激活对象调用BroadcastMessage直接阻断
 }
 
-UnityEngine.Assertions.Assert{
+# UnityEngine #
+## UnityEngine.Assertions.Assert ##
+{
 	IsNull、AreEqual、IsTrue
 }
 
-UnityEngine.Random{
+## UnityEngine.Random ## 
+{
 static:
 	rotation、rotationUniform、value[0f,1f]、
 	insideUnitCircle、insideUnitSphere、onUnitSphere
@@ -54,18 +104,21 @@ static:
 	InitState(seed)
 }
 
-UnityEngine.SceneManagement{
+## UnityEngine.SceneManagement ##
+{
 	SceneManager{
 		LoadScene(index,type)   --从0开始编号，bulid Settings最上面改
 	}
 }
 
-Animator{
+# Animator #
+{
 	IK、SetValue、GetValue、Play
 }
 UnityEditor.Animation{...}
 
-Transform{
+# Transform #
+{
 	LookAt(Transform target, Vector3 worldUp)
 	Vector3 TransformDirection(Vector3 direction)  //局转世，返长度一样，不受缩放或位置影响
 	Vector3 InverseTransformDirection(direction)  //世转局，不受缩放影响
@@ -76,7 +129,8 @@ Transform{
 	Find("sub/subb"), GetChild(index), SetParent()
 }
 
-Vector3{
+# Vector3 #
+{
 	Normalize()、normalized、magnitude、sqrMagnitude、x、y、z、Set()、ToString()	
 static:
 	+-Vector3、 float*float、/float、== !=、Equal()、Max()、Min()
@@ -87,7 +141,8 @@ static:
 	Lerp()、LerpUnclamped、Slerp()、SlerpUnclamped()、SmoothDamp()
 }
 
-Quaternion{
+# Quaternion #
+{	
 	eulerAngles、normalized、Set()、SetFromToRotation、SetLookRotation()、ToAngleAxis()、ToEulerAngles()
 static:
 	identity
@@ -99,12 +154,13 @@ static:
         	Quaternion operator *(Quaternion a, Quaternion b);	//∠a + ∠b
 }
 
---音/视频
+# 音/视频 #
 AudioPlayer、AudioSource、VideoPlayer
 UnityEngine.Audio{ 
 	AudioMixer、AudioMixerGroup、AudioMixerPlayable
 }
---截屏
+
+# 截屏 #
 ScreenCapture{
 	CaptureScreenshot(filename)
 	Texture2D CaptureScreenshotAsTexture()
@@ -112,8 +168,9 @@ ScreenCapture{
 	SDK ->  LoadImage(...) -> Texture
 }
 
---物理
-Physics{		
+# 物理 #
+## Physics ##
+{		
 	public const int IgnoreRaycastLayer = 4;
         	public const int DefaultRaycastLayers = -5;	//除IgnoreRaycastLayer外的所有图层
         	public const int AllLayers = -1;
@@ -128,7 +185,8 @@ ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 XXCollider.Raycast(Ray ray, out RaycastHit hitInfo, float maxDistance);
 
 
-Rigidbody{	//relative 物体坐标系，否则全局坐标系
+## Rigidbody ##
+{	//relative 物体坐标系，否则全局坐标系
 	SetDensity(float density)	--设置密度
 	AddForce(Vector3 force, mode = ForceMode.Force)	--添加力
 	AddTorque(Vector3 torque, mode = ForceMode.Force)	--添加力(转/扭)矩
@@ -137,7 +195,8 @@ Rigidbody{	//relative 物体坐标系，否则全局坐标系
 	
 }
 
-XXX Constraint{
+## XXX Constraint ##
+{
 	Aim	//旋转
 	Look At	//简化的旋转，对于摄像机，镜头始终指向forward，即它的Z轴
 	Parent	//位移和旋转，有惯性？不灵活！
@@ -152,7 +211,8 @@ XXX Constraint{
 
 效果 = 刚度 * (drivePosition - targetPosition) - 阻尼 * (driveVelocity - targetVelocity)  Stiffness：刚度	Damping：阻尼
 
-Articulation Body{	接连体，用于Transform，模拟机械臂
+## Articulation Body ##
+{	接连体，用于Transform，模拟机械臂
    Joint{
 固定	Fixed：固定关节，无附加属性
 棱形	Prismatic：阻止除了沿特定轴滑动之外的所有运动
@@ -160,7 +220,8 @@ Articulation Body{	接连体，用于Transform，模拟机械臂
 球形	Spherical：允许两次摆动和一次扭转。
 }}
 
-Joint{	*表示有电机
+## Joint ##
+{	*表示有电机
 角色	Character：模拟球窝关节，例如臀部或肩膀。沿所有线性自由度约束刚体移动，并实现所有角度自由度。GameObject -> 3D ->Ragdoll(布娃娃)
 *任意	Configurable：模拟任何骨骼关节，例如布娃娃中的关节。您可以配置此关节以任何自由度驱动和限制刚体的移动。
 固定	Fixed：	限制刚体的移动以跟随所连接到的刚体的移动。无需Transform父级化
@@ -169,7 +230,8 @@ Joint{	*表示有电机
 }
 Constant Force 恒定力
 
-Joint 2D{	关节
+## Joint 2D ##
+{	关节
 距离	Distance：保持该刚体和另一个刚体或位置(None)的固定或最大距离
 摩擦力	Friction：摩擦关节将对象之间的线速度和角速度降低到零
 *铰链	Hinge：物体可绕某点旋转，门，电机
@@ -180,7 +242,9 @@ Joint 2D{	关节
 目标	Target：尝试把物体移动到某点
 *车轮	Wheel：弹簧让锚点沿Angle线重合，Motor让Connected Rigidbody转起来。挂车身上，车身把旋转关了避免翻车，车身用多边形碰撞器
 }
-Effector2D{  效应器，同一物体无法添加多个效应器
+
+## Effector2D ##
+{   //效应器，同一物体无法添加多个效应器
 	Platform：控制碰撞图层、单向碰撞、消除侧向摩擦/弹性等
 	Surface：传送带，通过可随机speed来控制的，和人物移动冲突
 	Point：引力/斥力点，可加随机力，反线性或反平方比例力
@@ -188,6 +252,7 @@ Effector2D{  效应器，同一物体无法添加多个效应器
 	Area：定向可加随机力
 }
 
+## Other ##
 Bounds{
 	bool IntersectRay(Ray ray, out float distance)  -->  Ray.GetPoint(Math.Abs(distance))
 }
@@ -205,7 +270,7 @@ Wheel Collider
 Mesh Collider
 Cloth：布料，与蒙皮网格渲染器一起使用。添加碰撞体（球/胶囊）体后只能响应力，不能施力。Obi Cloth
 
---2D显示排序
+# 2D显示排序 #
 SortGroup：对子物体按父物体来设置渲染
 Sprite Render{
 	DrawMode: Simple(非9切片、全缩放)，Sliced(拉伸不重复) and Tiled(可限制的重复)，用Full Rect，改Size，仅支持Box/Polygon Collider2D    
@@ -215,7 +280,7 @@ SpriteAtlas{ 图集，压缩存储的图片，可通过脚本进行加载。但�
 }
 Sprite Shape Render、Sprite Controller(package: Sprite Shape)	https://www.jianshu.com/p/100597b24f02
 
---输入/控制
+# 输入/控制 # 
 Input{
 	默认：下上全过程多次调用	Down：按下，一次	Up：弹起，一次
 	bool GetButton(string)		bool GetKey(KeyCode)		bool GetMouseButton()	0 左键 1 右键 2 中键
@@ -239,21 +304,26 @@ CharacterController{		不是很好用……
 	velocity、slopeLimit、stepOffset(将影响刚体的下落速度！)
 	、radius、height、center
 }
---文件、保存、加载、资源管理	
+ # 文件、资源管理 #
 PlayerPrefs：通过key来保存数据，简单
 ScriptObject：单独存数据，Reset,    Awake->OnEnable->OnDisable->OnDestroy  
 	OnValidate，Editor only，当脚本被加载或值在Inspector中改变时调用
 	配合[CreateAssetMenu(menuName="Settings",fileName="Settings")]
-System.IO{
-	FileInfo  => 
-		if (!info.Directory.Exists) { info.Directory.Create(); 
-		bool isDir = (info.Attributes & FileAttributes.Directory) != 0
+## System.IO ##
+{
+	FileInfo{
+		if (!info.Directory.Exists) { info.Directory.Create(); }	//判断或创建路径
+
+		bool isDir = (info.Attributes & FileAttributes.Directory) != 0   //是否是文件夹
+	}
 	File
 	TextReader/Writer
 	BinaryReader/Writer
 	Path
 }
-UnityEngine{
+
+## UnityEngine ##
+{
 	[System.Serializable] class Data{}
 	ScriptableObject{
 		public List<Data> values= new();
@@ -302,7 +372,8 @@ UnityEngine{
 	string[] dependencies = manifest.GetAllDependencies(“assetBundle");
 	foreach(string dependency in dependencies){ AssetBundle.LoadFromFile(Path.Combine(assetBundlePath, dependency)); }
 }
-UnityEditor{
+## UnityEditor ##
+{
 	--path = "Assets/XXX";
 	AssetDatabase{  -- 导入-> 加载	要保留meta，推荐用这个类而不是System.IO
 		ImportAsset("Assets/Textures/texture.jpg", ImportAssetOptions.Default);
@@ -327,7 +398,8 @@ Time{
 	fixedDeltaTime
 }
 
---设置（默认在UnityEngine）
+# 设置 #
+（默认在UnityEngine）
 UnityEngine{
 	AudioSettings	--只能得到一些参数
 	QualitySettings
@@ -341,9 +413,8 @@ UnityEditor{
 	PlayerSettings
 }
 
-
---绘制/GUI
-GUI{	--坐标系采用屏幕坐标系（左上角）  	(0,0) ↓y →x	--写在 OnGUI，每帧至少执行2次（一绘制，二响应）
+# GUI #
+{	--坐标系采用屏幕坐标系（左上角）  	(0,0) ↓y →x	--写在 OnGUI，每帧至少执行2次（一绘制，二响应）
 --有些时候要保存数据要建个类成员
 --Screen.xxx	直接用
 --可以在组件上加属性 [ExecuteInEditMode]，来“预览”，交互print不怎么样
@@ -364,7 +435,7 @@ Gizmos：{	--写在 OnDrawGizmos	OnDrawGizmoSelected
 }
 Handles{ --自定义Editor时，绘画用	}
 
---UI
+# UGUI #
 Resolution.width/height
 Screen{
 	width/height 
@@ -395,6 +466,7 @@ UnityEngine.EventSystems{	管理点击等事件的触发，包含自定义UI接�
 }
 坐标系转换：WorldToLocal、LocalToWorld、ChangeCoordinatesTo 本地Vector2/Rect与Panel坐标空间转换
 
+# 渲染 #
 --渲染，摄像机
 UnityEngine.Rendering{
 	RenderPipelineAsset 
@@ -405,6 +477,48 @@ UnityEngine.Rendering{
 var planes = GeometryUtility.CalculateFrustumPlanes(mainCamera);
 GeometryUtility.TestPlanesAABB(planes, GetComponent<Collider2D>().bounds)
 
+# Job System #
+仅能使用的类型
+NativeArray<T>  引用，多读，单写   [ReadOnly]属性标志只读来优化
+byte(255), sbyte(127), [u]int16, [u]int32, [u]int64, [U]IntPtr, float, double, Vector3
+
+不能使用 class, T[], interface, object 等托管类型
+不安全 static 静态数据，会绕开安全系统，可能导致崩溃
+
+通过struct继承下列接口，并实现Execute接口，只能在*主线程*内传入NativeArray等参数后，Job.Schedule、JobHandle.Complete、NativeArray.Dispose()
+
+注：Schedule只是加入了执行队列，要立刻运行JobHandle.Complete，不过会有一定性能开销
+## NativeArray ##
+{ 
+	<T>  T是值类型，不能是托管类型
+	Allocator{
+		Persistent(长期存在)、TempJob(4帧内dispose)、Temp(return前dispose)
+	}
+    new NativeArray<Vector3>(arrSize, Allocator.TempJob);
+	void Dispose()
+}
+## IJob ##
+{
+   public void Execute() {}
+
+   public JobHandle Schedule(JobHandle depend = null);
+}
+## IJobParallelFor ##
+{
+	public void Execute(int i) { arr[i]; }
+
+	//对应大规模计算loopSize为1，轻量级可以是32或64，本质是在循环中调用Execute(i)的无开销内循环。
+	public JobHandle Schedule(arr.Length, loopSize, JobHandle depend = null);  
+}
+## IJobFor ##
+{
+
+}
+
+## ParallelForTransform ##
+专门为并行处理Transform准备的
+
+# 优化 #
 --对象池	 2021以上
 UnityEngine.Pool{
 	ObjectPool<_Ty>

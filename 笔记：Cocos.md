@@ -1,0 +1,54 @@
+<!-- TOC -->
+
+- [属性](#属性)
+    - [类](#类)
+    - [属性](#属性-1)
+- [版本控制](#版本控制)
+- [快捷操作](#快捷操作)
+
+<!-- /TOC -->
+
+# 属性 #
+import { _decorator } from 'cc';
+const { ccclass, property, ...其他装饰器 } = _decorator;
+
+## 类 ##
+@ccclass("test")   //或 @ccclass
+export class test extends Component{ }
+
+@menu("MyCmp/Test")     //添加到组件菜单
+
+@executeInEditMode(true)    //让其在编辑器下运行，配合update用
+
+@requireComponent(Sprite)   //没有组件时，自动添加组件
+
+@executionOrder(order:number)  //同节点小于0先执行，不同节点按树结构. 只对onLoad,onEnable,start,update,lateUpdate有效，对onDisable和onDestroy无效
+
+@disallowMultiple(true)     //同一节点上只允许添加一个同类型（含子类）的组件，
+
+@help('https://docs.cocos.com/creator/3.5/manual/zh/scripting/decorator.html')
+
+
+## 属性 ##
+CCInteger、CCFloat、CCBoolean、CCString、
+其他@ccclass(name)并继承CCObject的数据
+只有@property({type: tp})的属性才能被识别并序列化
+
+
+@property({type: CCInteger})
+value: number = 0;
+
+@property({type: [CCInteger]})
+arr: number[] = [];
+
+
+# 版本控制 #
+Cocos Creator在新建项目时会生成 .gitignore 文件
+只需要提交：
+assets、extensions、settings、package.json和其他手动添加的关联文件
+
+不需要提交：
+build(构建生成)、library(导入生成)、local(本地配置)、profiles(编辑器信息)、temp(临时文件)
+
+# 快捷操作 #
+- 顶点吸附：v，表面吸附：Ctrl+Shift
