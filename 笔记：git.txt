@@ -58,6 +58,15 @@ git config --global user.email "sunriver_kun@qq.com"
 name = SunRiver-NEU
 email = sunriver_kun@qq.com
 
+# 同一电脑多git #
+git config --global  unset user.name
+git config --global unset user.email
+用fork登录多个账号，并对每个账号
+git config user.name "Name"
+git config user.email "email"
+
+
+
 上传：
 cd ./Desktop/xxx
 git init
