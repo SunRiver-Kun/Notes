@@ -1,11 +1,13 @@
 <!-- TOC -->
 
 - [简介](#简介)
+    - [VS插件](#vs插件)
 - [类型](#类型)
     - [类型别名](#类型别名)
     - [类型判断](#类型判断)
     - [类型转换](#类型转换)
     - [类型提取](#类型提取)
+- [字符串](#字符串)
 - [接口](#接口)
 - [类](#类)
 - [元组](#元组)
@@ -23,6 +25,11 @@ TypeScript是JavaScript的超集，支持ECMAScript6标准。
 添加了类型推断、擦除、接口、枚举、泛型、命名空间、元组、Await、Mixin。
 
 npm install -g typescript
+
+## VS插件 ##
+TypeScript Importer：自动导入
+ESLint：格式化
+
 
 # 类型 #
 string、number、boolean、undefined(未初始化)、object(null)
@@ -46,13 +53,19 @@ T? 的类型是 T | undefined,  function fn(a:number, b?:string)
 keyof Type ==> "key1" | "key2" | ...
 
 ## 类型判断 ##
-typeof x === "string"
+typeof x === "string"   -->  无法区分Array和Object
 if( value instanceof ClassName )
+Object.prototype.tostring.call(v) --> "[object Array]"，可以区分Array和Object
+
 obj?.xxx  --> obj存在时才继续运行 
 value ?? defaultValue   --> value是null or undefined时，返回defaultGValue
 
 if(v) 中 false, undefined, null 为false
 Boolean(value)的false是上面的加上，0, ""
+
+null, undefined == null, undefined  --> true ， 在==其他时都是false
+null, undefined > 0 或 < 0   -->  false,  null和undefined会转换为0再比较
+* null, undefined <= 0 或 >= 0 -->  true， !(null, undefined <> 0)
 
 ## 类型转换 ##
 value as T
@@ -64,6 +77,9 @@ Parameters<Fn> --> Fn的参数类型tuple
 keyof MyObject  --> MyObject的key数组
 valuesof object --> object的值数组
 
+# 字符串 #
+使用string，而不是String(object)
+`${表达式}${表达式二}`  -->  (表达式)+(表达式二)
 
 # 接口 #
 注：接口无法转成JavaScript
@@ -88,9 +104,19 @@ export class ClassName [extends SuperClass] [implements Interface] {
     value:T = _;
     constructor(arg: any) {}
 
-    fn(){ this.value = xxx;  super.fn(); }
+    //属性
+    private _length:number;
+    public get length(): number { return this._length; }
+    public set lenght(len) { this._length = len; }
+
+    fn(){ super.fn(); this.length = 0;   }
+
+    public abstract fn2():void
 }
 
+export class ClassName{
+    constructor(public value:T) {}   -->  相当于自动声明和赋值给value了
+}
 
 # 元组 #
 let point: [number, number] = [10, 1];
@@ -116,8 +142,8 @@ tuple.forEach( v => console.log(v) )
 
 # 容器 #
 注：
-for of: 有序，不会遍历prop里的，推荐使用，使用可迭代对象，遍历值
-for in: 无序，会遍历prop里的，配合 hasOwnProperty 用，适用对象，遍历键名
+for of: 有序，不会遍历prop里的，推荐使用，使用可迭代对象，遍历值        for v of arr        arr.forEach( (v)=>{} )
+for in: 无序，会遍历prop里的，配合 hasOwnProperty 用，适用对象，遍历*键名*.   for index in arr
 
 -- get(), set(), size, for of
 new Map<K, V>()
