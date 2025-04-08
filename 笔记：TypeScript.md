@@ -60,8 +60,7 @@ Object.prototype.tostring.call(v) --> "[object Array]"，可以区分Array和Obj
 obj?.xxx  --> obj存在时才继续运行 
 value ?? defaultValue   --> value是null or undefined时，返回defaultGValue
 
-if(v) 中 false, undefined, null 为false
-Boolean(value)的false是上面的加上，0, ""
+if(v) 中 false, undefined, null, 0, "" 为false
 
 null, undefined == null, undefined  --> true ， 在==其他时都是false
 null, undefined > 0 或 < 0   -->  false,  null和undefined会转换为0再比较
