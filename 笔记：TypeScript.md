@@ -72,9 +72,23 @@ value as T
 !!value  === Boolean(value)
 
 ## 类型提取 ##
-Parameters<Fn> --> Fn的参数类型tuple
 keyof MyObject  --> MyObject的key数组
 valuesof object --> object的值数组
+
+type Partial<T> = { [P in keyof T]?: T[P]; };   //让T中的属性都是可选的
+type Required<T> = { [P in keyof T]-?: T[P]; }; //让T中的属性都是必选的
+type Readonly<T> = { readonly [P in keyof T]: T[P]; };  //让T中的属性都是只读的
+type Pick<T, K extends keyof T> = { [P in K]: T[P]; };  //从T中挑选key是K的属性，注意：K应该是T的子集
+type Record<K extends keyof any, T> = { [P in K]: T; }; //用K中的key，但类型都是T
+type Exclude<T, U> = T extends U ? never : T;   //T不能继承U
+type Extract<T, U> = T extends U ? T : never;   //T必须继承U
+type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;   //排除T中key的类型是K的
+type NonNullable<T> = T & {};   //排除T中所有的null和undefined
+type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never; //Tuple = [函数的参数]
+type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any;   //函数返回值类型
+type ConstructorParameters<T extends abstract new (...args: any) => any> = T extends abstract new (...args: infer P) => any ? P : never;  //Tuple = [构造函数的参数]
+type InstanceType<T extends abstract new (...args: any) => any> = T extends abstract new (...args: any) => infer R ? R : any;  //构造函数返回值类型
+
 
 # 字符串 #
 使用string，而不是String(object)

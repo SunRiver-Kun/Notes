@@ -4,6 +4,13 @@
     - [类](#类)
     - [属性](#属性)
 - [场景](#场景)
+- [UI](#ui)
+    - [Label](#label)
+    - [Toggle](#toggle)
+    - [UIMeshRenderer](#uimeshrenderer)
+    - [UICoordinateTracker](#uicoordinatetracker)
+    - [View](#view)
+    - [Control](#control)
 - [版本控制](#版本控制)
 - [快捷操作](#快捷操作)
 
@@ -51,6 +58,28 @@ Scene的检查窗口里的 AutoReleaseAssets 记得勾上，不然卸载场景�
 2. assetManager.releaseAsset() 来手动释放资源
 3. isValid() 来判断是否有效
 4. 脚本动态加载的只能由脚本动态释放
+
+# UI #
+
+## Label ##
+Label、LabelOutline、LabelShadow
+
+## Toggle ##
+ToggleContainer、Toggle
+
+## UIMeshRenderer ##
+如果不显示，看看缩放
+给有MeshRender的组件添加，让3D模型切换到2D管线渲染
+给粒子节点添加
+
+## UICoordinateTracker  ## 
+模拟3D世界的近大远小，适用于3D世界的血条和名字等 
+
+## View ##
+PageView、PageViewIndicator、WebView、VideoPlayer、Canvas
+
+## Control ##
+UIOpacity、BlockInputEvents、SafeArea、Widget、UITransform、Layout、、、
 
 # 版本控制 #
 Cocos Creator在新建项目时会生成 .gitignore 文件
