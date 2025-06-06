@@ -1,5 +1,6 @@
 <!-- TOC -->
 
+- [注意](#注意)
 - [装饰器](#装饰器)
     - [类](#类)
     - [属性](#属性)
@@ -15,6 +16,9 @@
 - [快捷操作](#快捷操作)
 
 <!-- /TOC -->
+
+# 注意 #
+1. getPosition() 等函数返回的是引用，在setPosition() 时值会变！ 这个返回的是局部坐标
 
 # 装饰器 #
 import { _decorator } from 'cc';
@@ -58,6 +62,7 @@ Scene的检查窗口里的 AutoReleaseAssets 记得勾上，不然卸载场景�
 2. assetManager.releaseAsset() 来手动释放资源
 3. isValid() 来判断是否有效
 4. 脚本动态加载的只能由脚本动态释放
+5. 右手坐标系， x→   y↑   z↓←
 
 # UI #
 

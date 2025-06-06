@@ -12,9 +12,11 @@
 - [类](#类)
 - [元组](#元组)
 - [容器](#容器)
+- [随机](#随机)
 - [函数](#函数)
 - [泛型](#泛型)
 - [枚举和常量](#枚举和常量)
+    - [遍历枚举](#遍历枚举)
 - [模块](#模块)
 - [命名空间](#命名空间)
 - [异步](#异步)
@@ -105,7 +107,7 @@ export interface Name extends Other1, Other2{
     fn( arg:any )[: void];
     --fn2: (arg: any) => void ;
 
-    --限制 list:Name的list[index]的类型为T。
+    --限制 list:Name的list[index]的类型为T。    如果[index]不存在，会返回undefined。数组的也是
     [index:number]:T;  --> let list:Name = ["", ""];  限制继承接口的是字符串数组
     [index:string]:T;  --> let map:Name;   map[name] = T;
 }
@@ -166,6 +168,11 @@ new ReadOnlySet<T>( [v1, v2] )
 
 new Array<T>( v1, v2, ... ) || T[]   -->  push(), pop(), length, for in|for of
 
+# 随机 #
+Math.random()   --> [0, 1)
+
+arr[Math.floor(Math.random() * arr.length)]
+
 # 函数 #
 function fn(name:string, age:number): void { ... }
 
@@ -173,6 +180,9 @@ function fn(name:string, age:number): void { ... }
 function(arg:string) : number { return 0; }
 
 (function() {})();   --直接运行
+
+this.fn.call(this, ...)
+this.fn.apply(this, [...])
 
 # 泛型 #
 function fn<T = any>(value:T):T { return value; }
@@ -187,6 +197,17 @@ export const getProperty = <T, K extends keyof T>(obj: T, key: K) => { return ob
 const value = 值类型  --> 常量
 const obj = 对象    --> 对象不能赋值（obj=xxx），但可以改变其属性（obj.value=xxx）等
 const enum DIrection { Up, Down, ... }    -->  比单独的enum性能好
+
+## 遍历枚举 ##
+for(cosnt v of Object.values(NumericEnum)){
+    if(typeof v === "number"){
+        
+    }
+}
+
+for(cosnt v of Object.values(StringEnum)){
+    console.log("XXX", v);
+}
 
 # 模块 #
 export function fn() { ... }
