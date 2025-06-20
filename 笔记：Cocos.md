@@ -7,6 +7,7 @@
 - [场景](#场景)
 - [UI](#ui)
     - [Label](#label)
+    - [Button](#button)
     - [Toggle](#toggle)
     - [UIMeshRenderer](#uimeshrenderer)
     - [UICoordinateTracker](#uicoordinatetracker)
@@ -68,6 +69,9 @@ Scene的检查窗口里的 AutoReleaseAssets 记得勾上，不然卸载场景�
 
 ## Label ##
 Label、LabelOutline、LabelShadow
+
+## Button ##
+this.node.on(NodeEventType.TOUCH_END, this.close, this);    //TOUCH_END在鼠标松手时在该位置触发   
 
 ## Toggle ##
 ToggleContainer、Toggle
