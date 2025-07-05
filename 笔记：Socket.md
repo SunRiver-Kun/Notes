@@ -1,9 +1,27 @@
-﻿查询ip：ping 域名     本机ip：ipconfig
+﻿<!-- TOC -->
+
+- [CMD](#cmd)
+- [Qt](#qt)
+    - [QTcp](#qtcp)
+    - [QUdp](#qudp)
+    - [Qtll](#qtll)
+- [Window](#window)
+    - [地址](#地址)
+
+<!-- /TOC -->
+
+# CMD #
+
+查询ip：ping 域名     本机ip：ipconfig
 查询dns：https://www.ping.cn/
 刷新host、dns：ipconfig /flushdns
 
+# Qt #
+
 注意：Qt中提供的所有的Socket类都是非阻塞的。
 设置+Web Sockets
+
+## QTcp ##
 
 TCP/IP   面向连接、基于流、可靠、传输效率低、不能广播
 QTcpServer：  SIGNAL：newConnection()    METHOD:  QTcpSocket* nextPendingConnection()
@@ -35,6 +53,7 @@ client->connect( client,&QTcpSocket::readyRead, [client]{
 	client->write("The message had been received by client!");
 })
 
+## QUdp ##
 
 UDP：嵌套字均为 QUdpSocket，无连接、基于数据报、不可靠、传输效率高、可广播
 1.创建套接字
@@ -61,8 +80,10 @@ qint64 writeDatagram(const QByteArray & datagram, const QHostAddress & host, qui
 内网地址：ip地址，或域名(无http(s))。 cmd -> ipconfig
 内网端口：不用0~1024，基本都可以。也可以 cmd -> netstat -ano
 
+## Qtll ##
+
 相关类：
-#include <QtNetwork/QtNetwork>    pro += network;
+<QtNetwork/QtNetwork>    pro += network;
 QAuthenticator：认证对象
 QDnsLookup：DNS查找    SIGNAL: finished()     METHOD: lookup()、setTyoe()
 QDns DomainName/HostAddress/MailExchange/Service/Text Record
@@ -108,18 +129,72 @@ QUdpSocket：UDP套接字
 QUrl：至此通过URL运行的接口    METHOD：  ::fromLocalFile
 
 -------------------------------------------------
+# Window #
+通常平台无关的函数都是全小写的，平台相关的会加前缀（如 WSA）
+函数正常返回0，否则返回其他值（大部分-1， SOCKET_ERROR(WINDOW)）
+    <Windows.h> 中有早期的socket版本，要避免包含，或在前定义 WIN32_LEAN_AND_MEAN 的宏
+
+            socket启动状态        socket清理                获取具体错误（立刻调用）            头文件
+Window：    需要WSAStartup       同等次数的WSACleanup      WSAGetLastError                   <WinSock2.h>
+POSIX：     默认激活                                           errno                    <sys/socket.h> <netinet/in.h>(IPv4) <arpa/inet.h>(地址转换) <netdb.h>(DNS)
+
+```
 #include <WinSock2.h>
 #pragma comment(lib,"ws2_32")
+
 TCP					UDP
 Server：		Client：			Both：
 WSAStartup()	WSAStartup()		WSAStartup()
 socket()		socket()			socket()
-bind()		--------			bind()	//bind for other know our ip information
-listen()		--------			recv()/send()
-accept()		--------			closesocket()
-阻塞、等待   <---->  connect()			WSACleanup()
-recv()/send()	send()/recv()
-closesocket()	closesocket()
-WSACleanup()	WSACleanup()
+bind()		    [bind()]			bind()	//绑定IP和端口，不绑定则在send时自动绑定个
+listen()		--------			
+accept()		--------			
+阻塞等待  <-->   connect()			 
+recv()/send()	send()/recv()		recv()/send()
+closesocket()	closesocket()		closesocket()
+WSACleanup()	WSACleanup()		WSACleanup()
+```
+
+definde SOCKET int（POSIX系列，Mac, Linux, PS） || UINT_PTR（Window） 
+
+int WSAStartup(WORD versionRequest, LPWSADATA out_data)     --> versionRequest=MAKEWORD(2（主版本号）,2（次版本号）)      out_data是WSADATA的指针， 输出版本、socket信息等   
+
+/*
+    af(agreement family, 协议族): AF_UNSPEC（未指定）, AF_INET（IPv4）, AF_INET6（IPv6）,     AF_IPX（分组交换，早期）, AF_APPLETALK（苹果网络，早期）
+    type: SOCK_STREAM（有序可靠）, SOCK_DGRAM（无序离散）, SOCK_RAW（自定义头部）, SOCK_SEQPACKET（TCP，但数据整体读取） 
+    protocol: IPPROTO_UDP, IPPROTO_TCP, IPPROTO_IP(0, 根据type来STEAM->TCP, DGRAM->UDP)
+*/
+SOCKET socket(int af, int type, int protocol)
+int closesocket(SOCKET sock)
+int shutdown(SOCKET sock, int how)  //how: SD_SEND（产生FIN），SD_RECEIVE，SD_BOTH
+
+## 地址 ##
+struct sockaddr{            // 不常用，仅在给函数传参时转换而已
+    uint16_t sa_family;     // AF_UNSPEC（未指定）AF_INET（IPv4）AF_INET6（IPv6）
+    cha sa_data[14];        // 数据
+}
+
+struct sockaddr_in{
+    short sin_family;       // AF_UNSPEC（未指定）AF_INET（IPv4）AF_INET6（IPv6）
+    unit16_t sin_port;      // 端口号
+    struct in_addr sin_addr;
+    char sin_zero[8];   //要设置为0。  memset(&addr, 0, sizeof(addr)) 。
+}
+struct in_addr{
+    union {
+        struct { uint8_t s_b1, s_b2, s_b3, s_b4; } S_un_b;
+        struct { uint16_t s_w1, s_w2; } S_un_w;
+        uint32_t S_addr;
+    } S_un;
+}
+
+//设置IP地址（IPv4）
+addr.sin_addr.s_addr = inet_addr("192.168.0.1");
+inet_pton(AF_INET, "192.168.0.1", &addr.sin_addr)   //字符串转入Ip地址
+// inet_ntop(AF_INET, &clientAddr.sin_addr, clientIP:char[], sizeof(clientIP))  IP地址转字符串
+addr.sin_addr.s_addr = INADDR_ANY;   //0.0.0.0  监听所有本地IP
 
 
+TCP/IP协议族 和 主机在多字节数的字节序上可能有差异，所以要转换。
+htons()，htonl()，  host to net short/long.  传入 sockadd_in 时
+ntohs(), ntohl(),   net to host short/long.  解析 sockadd_in 时
