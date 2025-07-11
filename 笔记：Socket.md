@@ -7,6 +7,9 @@
     - [Qtll](#qtll)
 - [Window](#window)
     - [地址](#地址)
+    - [TCP](#tcp)
+    - [UDP](#udp)
+    - [Flags](#flags)
 
 <!-- /TOC -->
 
@@ -142,15 +145,15 @@ POSIX：     默认激活                                           errno       
 #include <WinSock2.h>
 #pragma comment(lib,"ws2_32")
 
-TCP					UDP
+TCP					                   UDP
 Server：		Client：			Both：
 WSAStartup()	WSAStartup()		WSAStartup()
 socket()		socket()			socket()
-bind()		    [bind()]			bind()	//绑定IP和端口，不绑定则在send时自动绑定个
+bind()		    [bind()]			bind()	//绑定IP和端口，不绑定则在send/recv时自动绑定个（客户端）
 listen()		--------			
 accept()		--------			
 阻塞等待  <-->   connect()			 
-recv()/send()	send()/recv()		recv()/send()
+recv()/send()	send()/recv()		recvfrom()/sendto()   // 0连接中，>0数据量，<0错误
 closesocket()	closesocket()		closesocket()
 WSACleanup()	WSACleanup()		WSACleanup()
 ```
@@ -176,8 +179,8 @@ struct sockaddr{            // 不常用，仅在给函数传参时转换而已
 
 struct sockaddr_in{
     short sin_family;       // AF_UNSPEC（未指定）AF_INET（IPv4）AF_INET6（IPv6）
-    unit16_t sin_port;      // 端口号
-    struct in_addr sin_addr;
+    unit16_t sin_port;      // 端口号， 设置为0则随机找一个
+    struct in_addr sin_addr;    //INADDR_ANY（任意地址）
     char sin_zero[8];   //要设置为0。  memset(&addr, 0, sizeof(addr)) 。
 }
 struct in_addr{
@@ -190,11 +193,70 @@ struct in_addr{
 
 //设置IP地址（IPv4）
 addr.sin_addr.s_addr = inet_addr("192.168.0.1");
-inet_pton(AF_INET, "192.168.0.1", &addr.sin_addr)   //字符串转入Ip地址
+inet_pton(AF_INET, "192.168.0.1", &addr.sin_addr)   //字符串转入Ip地址，*成功返回1，源字符串错误返回0，其他错误返回-1*
 // inet_ntop(AF_INET, &clientAddr.sin_addr, clientIP:char[], sizeof(clientIP))  IP地址转字符串
 addr.sin_addr.s_addr = INADDR_ANY;   //0.0.0.0  监听所有本地IP
 
+//DNS查询
+/*
+    hostname: 域名， "baidu.com"
+    servname: 端口号或对应服务名，"80" or "http"
+    hints: 用来进行提示，ai_flags（AI_CANONNAME），ai_protocol，ai_socktype，ai_family（AF_INET, AF_INET6）
+    result: 传入接受数据的指针的地址，  addrinfo* result,  &result
+
+    return：0正常，其他使用 gai_strerror(result) 来获取错误（EAI_NONAME主机不存在，EAI_AGAIN临时错误）
+*/
+int getaddrinfo(const char* hostname, const char* servname, const addrinfo* hints, addrinfo** result)
+void freeaddrinfo(addrinfo* result);     //释放result链表的内存
+
+注意：getaddrinfo是阻塞的，可能要若干秒才返回。 Window上可以用GetAddrInfoEx来异步获取
+
+struct addrinfo{
+    int ai_flags;    //AI_CANONNAME（客户端请求标准名字，第一个ai_canonname）, AI_PASSIVE（服务器绑定）
+    
+    int ai_family;  //AF_INET, AF_INET6
+    int ai_socktype;    //SOCK_STREAM（有序可靠）, SOCK_DGRAM（无序离散）, SOCK_RAW（自定义头部）, SOCK_SEQPACKET（TCP，但数据整体读取）
+    int ai_protocol;    //IPPROTO_UDP, IPPROTO_TCP, IPPROTO_IP(0, 根据type来STEAM->TCP, DGRAM->UDP)
+
+    size_t ai_addrlen;  //返回的地址数组长度
+    sockaddr* ai_addr;  //返回的地址数组
+
+    char* ai_canonname; //当ai_flags设置AI_CANONNAME时，返回标志名字
+
+    addrinfo* ai_next;
+}
 
 TCP/IP协议族 和 主机在多字节数的字节序上可能有差异，所以要转换。
-htons()，htonl()，  host to net short/long.  传入 sockadd_in 时
-ntohs(), ntohl(),   net to host short/long.  解析 sockadd_in 时
+htons(), htonl(), host to net short/long.  传入 sockadd_in 时
+ntohs(), ntohl(), net to host short/long.  解析 sockadd_in 时
+
+## TCP ##
+需要给每个连接创建一个socket
+
+服务器：
+int bind(SOCKET sock, sockaddr* self_addr, int addrlen);    //绑定本机的IP地址和端口，不绑定发送或接受时会自动绑定个
+int listen(SOCKET sock, int backlog)    //把socket变成被动的接受，并设置缓存的连接队列长度，等待accept处理。 
+SOCKET accept(SOCKET sock, sockaddr* out_addr, int* out_arrlen)  //返回和客户端连接的socket，端口和监听端口相同，out_addr需要使用inet_ntop, ntohs来转换成显示的IP和端口
+
+客户端:
+int connect(SOCKET sock, const sockaddr* server_addr, int addrlen)  //给服务器发送SYN，来启动三次握手，服务器通过accept回应
+
+三次握手后：
+int send(SOCKET sock, const char* buf, int len, int flags)  //>0实际发送的字节数，0对面关闭连接 ，<0错误
+int recv(SOCKET sock, char* buf, int len, int flags)    //从socket缓存区输出数据到buf，并删除socket缓冲区的内容。 >0 接收数据的量，0接受到FIN ，<0错误
+
+## UDP ##
+UDP是不可靠的，只需要一个socket即可来给发送和接受数据
+
+int sendto(SOCKET sock, const char* buf, int len, int flags, const sockaddr* to, int tolen) //向某地址发送数据，>=0加入发送队列，<0错误
+int recvfrom(SOCKET sock, const char* buf, int len, int flags, const sockaddr* out_from, int fromlen)   //接受来着任意地址的数据
+
+## Flags ##
+send，recv，sendto，recvfrom的falgs设置。
+
+send的flags
+0	默认行为（阻塞）
+MSG_OOB	发送带外数据（紧急数据）
+MSG_DONTWAIT	非阻塞发送
+MSG_NOSIGNAL	连接断开时不发送SIGPIPE信号
+
