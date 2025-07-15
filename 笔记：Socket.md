@@ -10,6 +10,8 @@
     - [TCP](#tcp)
     - [UDP](#udp)
     - [Flags](#flags)
+    - [非阻塞](#非阻塞)
+    - [设置](#设置)
 
 <!-- /TOC -->
 
@@ -158,7 +160,7 @@ closesocket()	closesocket()		closesocket()
 WSACleanup()	WSACleanup()		WSACleanup()
 ```
 
-definde SOCKET int（POSIX系列，Mac, Linux, PS） || UINT_PTR（Window） 
+definde SOCKET int（POSIX系列，Mac, Linux, PS） || UINT_PTR（Window，指针） 
 
 int WSAStartup(WORD versionRequest, LPWSADATA out_data)     --> versionRequest=MAKEWORD(2（主版本号）,2（次版本号）)      out_data是WSADATA的指针， 输出版本、socket信息等   
 
@@ -260,3 +262,50 @@ MSG_OOB	发送带外数据（紧急数据）
 MSG_DONTWAIT	非阻塞发送
 MSG_NOSIGNAL	连接断开时不发送SIGPIPE信号
 
+## 非阻塞 ##
+1. 设置非阻塞后，写个循环，每次都直接调用recv看是否>0，然后处理数据
+
+int ioctlsocket(SOCKET sock, long cmd, ulong *argp)
+``` 
+    //Window
+    ulong arg = isBlock ? 1 : 0;
+    int resutl = ioctlsocket(sock, FIONBIO, &arg);
+```
+
+fcntl(int sock, int cmd, ...)
+```
+    //通用
+    int flags = fcntl(sock, F_GETFL, 0);        //FL, flags
+    flags = isBlock ? (flags | O_NON_BLOCK) : (flags & ~O_NON_BLOCK);
+    int result = fcntl(sock, F_SETFL, flags);
+```
+
+2. 使用 select 来阻塞监听多个socket的读，写，异常，超时。 传 nullptr 来跳过对应检测
+
+//nfds：待检测编号最大的sock（POSIX），无用（0，Windows）
+//readfds：recv，accept
+//writefds：send
+//errorfds：errno （POSIX），WSAGetLastError（Window）
+int select(int nfds, fd_set* readfds, fd_set* writefds, fd_set* errorfds, const timeval* timeout) ，超时返回0，修改fd_set里的值保障不阻塞线程 
+
+
+```
+    fd_set readfds;
+    FD_ZERO(&readfds);  //重置为0
+    FD_SET(sock, &readfds);
+    FD_ISSET(sock, &readfds);   //某个sock是否在fds里，select返回时fds里都是不阻塞的了
+```
+
+3. IO完成端口
+
+## 设置 ##
+int setsockopt(SOCKET sock, int level, int optname, const void* opval, int oplen)
+
+level	          optname		   opval           备注
+SOL_SOCKET	    SO_REUSEADDR	int (布尔值)    允许重用本地地址
+SOL_SOCKET	    SO_RCVTIMEO		struct timeval  接收数据超时时间
+SOL_SOCKET	    SO_SNDTIMEO		struct timeval  发送数据超时时间
+SOL_SOCKET	    SO_RCVBUF		int             接收缓冲区大小
+SOL_SOCKET	    SO_SNDBUF		int             发送缓冲区大小
+SOL_SOCKET	    SO_KEEPALIVE	int (布尔值)     TCP定时发送连接数据包
+IPPROTO_TCP	    TCP_NODELAY		int (布尔值)    禁用Nagle算法（减少延迟）
