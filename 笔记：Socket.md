@@ -1,10 +1,6 @@
 ﻿<!-- TOC -->
 
 - [CMD](#cmd)
-- [Qt](#qt)
-    - [QTcp](#qtcp)
-    - [QUdp](#qudp)
-    - [Qtll](#qtll)
 - [Window](#window)
     - [地址](#地址)
     - [TCP](#tcp)
@@ -12,6 +8,10 @@
     - [Flags](#flags)
     - [非阻塞](#非阻塞)
     - [设置](#设置)
+- [Qt](#qt)
+    - [QTcp](#qtcp)
+    - [QUdp](#qudp)
+    - [Qtll](#qtll)
 
 <!-- /TOC -->
 
@@ -21,119 +21,6 @@
 查询dns：https://www.ping.cn/
 刷新host、dns：ipconfig /flushdns
 
-# Qt #
-
-注意：Qt中提供的所有的Socket类都是非阻塞的。
-设置+Web Sockets
-
-## QTcp ##
-
-TCP/IP   面向连接、基于流、可靠、传输效率低、不能广播
-QTcpServer：  SIGNAL：newConnection()    METHOD:  QTcpSocket* nextPendingConnection()
-QTcpSocket： SIGNAL：readyRead()、error   METHOD：QByteArray readall()、read、write、
-connectToHost()、disconnectFromHost()、waitForConnected(阻塞)、waitForReadyRead(阻塞)、waitForDisconnected(阻塞)
-
--服务端，嵌套字 QTcpServer负责监听、QTcpSocket负责通信
-1.创建套接字	QTcpServer* server = new QTcpServer;          
-2.将套接字设置为监听模式     server->listen(QHostAddress::Any, SERVERPORT);   //SERVERPORT 为内网端口
-​3.连接，等待 ,读写
-server->connect( server, &QTcpServer::newConnection, [=]{
-        QTcpSocket* client =  server->nextPendingConnection();   //用于通信
-        client->write("Hello client!");
-        client->connect( client,&QTcpSocket::readyRead, [client]{
-	qDebug(  client->readall() );
-	})
-} )
-
-
--客户端，嵌套字 QTcpSocket
-1.创建套接字   	QTcpSocket*  client = new QTcpSocket;
-1.2  解析域名	const auto& host = QHostInfo::fromName(ADDRESS);   //ADDRESS为 服务器域名(无http(s))
-		const auto& addresses = host.addresses();
-		if( addresses.isEmpty() ) {...}
-2.连接服务器    connectToHost(QHostAddress(IP),port)  	  client->connectToHost(addresses.first(),PORT);   //PORT 为服务器(临时)端口
-3.和服务端一样的读写操作	
-client->connect( client,&QTcpSocket::readyRead, [client]{
-	qDebug(  client->readall() );
-	client->write("The message had been received by client!");
-})
-
-## QUdp ##
-
-UDP：嵌套字均为 QUdpSocket，无连接、基于数据报、不可靠、传输效率高、可广播
-1.创建套接字
-2.绑定套接字后接受，或者不绑定只发送数据
-QUdpSocket：
-METHOD：hasPendingDatagrams()、joinMulticastGroup()、leaveMulticastGroup、connectToHost()、disconnectToHost()、waitForConnected(阻塞)、waitForReadyRead(阻塞)、waitForDisconnected(阻塞)
-bind(QHostAddress::LocalHost,port)
-qint64 readDatagram(char * data, qint64 maxSize, QHostAddress * address = 0, quint16 * port = 0)
-qint64 writeDatagram(const QByteArray & datagram, const QHostAddress & host, quint16 port)
-
-广播：若 host==QHostAddress::Broadcast，QHostAddress("255.255.255.255")，则局域网的其他UDP用户都接到广播的信息，只能在局域网使用
-组播：接收方注册到组播地址才收信息，可在Internet中使用。  
-组播的host可选：Ipv4 32位   Ipv6 48位
-224.0.0.0～224.0.0.255为预留的组播地址（永久组地址），地址224.0.0.0保留不做分配，其它地址供路由协议使用；
-224.0.1.0～224.0.1.255是公用组播地址，可以用于Internet；
-224.0.2.0～238.255.255.255为用户可用的组播地址（临时组地址），全网范围内有效；
-239.0.0.0～239.255.255.255为本地管理组播地址，仅在特定的本地范围内有效。
-
-注：
-局部网内的电脑，直接socket就可以连接了。不同局部网的电脑，需要服务器进行转发。
-可以使用utools的内网穿透：
-访问地址：域名无http(s)，用于客户端连接
-临时端口：用于客户端连接，每连接成功一次，就会变！！！
-内网地址：ip地址，或域名(无http(s))。 cmd -> ipconfig
-内网端口：不用0~1024，基本都可以。也可以 cmd -> netstat -ano
-
-## Qtll ##
-
-相关类：
-<QtNetwork/QtNetwork>    pro += network;
-QAuthenticator：认证对象
-QDnsLookup：DNS查找    SIGNAL: finished()     METHOD: lookup()、setTyoe()
-QDns DomainName/HostAddress/MailExchange/Service/Text Record
-QHostAddress：host的ip地址(别名)  METHOD: ::LocalHost()、::Broadcast()、::lookupHost()    
-QHostInfo：获取host信息，   METHOD:  ::fromName()、::localHostName()、::lookupHost
-
-QHttpMultiPart：与HTTP上传输的MIEM multipart类相似的类
-QHttpPart：包含报头和正文，header：General/Request/Reponse/Entity
-
-QLocalServer：基于服务器的本地套接字
-QLoaclSocket：支持本地套接字的类
-
-QNetworkAccessManager：收发网络信息(http)       SIGNAL: finished(QNetworkReply*)、  METHOD: get(QNetworkRequest)、sendCustomRequest
-QNetworkRequest：请求，包含头信息和加密头信息
-QNetworkReply：回应
-
-QNetworkAddressEntry：存储IP、网络掩码等网络消息的类
-QNetworkCacheMetaData：缓存消息
-QNetworkConfiguration：设置网络接口点，启动/停止网络接口连接
-QNetworkConfigurationManager：管理网络设备
-QNetworkCookie：设置网络cookie的类
-QNetworkCookieJar：实现QNetworkCookie对象的单一Jar的类
-QNetworkDiskCache：基本的磁盘缓存
-QNetworkInterface：主机网络IP和网络接口列表   METHOD:  :: allAddresses()
-QNetworkProxy：网络层代理
-QNetworkProxyFactory：网络层代理的扩展类
-QNetworkProxyQuery：在套接字查询代理设置的类
-QNetworkSession：管理网络可访问的接入点和平台的接入点的类。网络会话
-
-QSocketNotifier：监控网络公告消息的类
-
-QSslCertificate：X509认证API
-QSslCertificateExtension：提供X509证书的扩展API
-QSslCipher：支持SSL加密认证的类
-QSslConfiguration：指定SSL连接状态和设置的类
-QSslError：处理SSL错误
-QSslkey：私有密钥和公共密钥接口
-QSslSocket：SSL加密套接字
-
-QTcpServer：TCP服务器专用套接字
-QTcpSocket：TCP套接字，用于服务端中处理客户端信息或客户端连接
-QUdpSocket：UDP套接字
-QUrl：至此通过URL运行的接口    METHOD：  ::fromLocalFile
-
--------------------------------------------------
 # Window #
 通常平台无关的函数都是全小写的，平台相关的会加前缀（如 WSA）
 函数正常返回0，否则返回其他值（大部分-1， SOCKET_ERROR(WINDOW)）
@@ -309,3 +196,119 @@ SOL_SOCKET	    SO_RCVBUF		int             接收缓冲区大小
 SOL_SOCKET	    SO_SNDBUF		int             发送缓冲区大小
 SOL_SOCKET	    SO_KEEPALIVE	int (布尔值)     TCP定时发送连接数据包
 IPPROTO_TCP	    TCP_NODELAY		int (布尔值)    禁用Nagle算法（减少延迟）
+
+-------------------------------------------------
+
+# Qt #
+
+注意：Qt中提供的所有的Socket类都是非阻塞的。
+设置+Web Sockets
+
+## QTcp ##
+
+TCP/IP   面向连接、基于流、可靠、传输效率低、不能广播
+QTcpServer：  SIGNAL：newConnection()    METHOD:  QTcpSocket* nextPendingConnection()
+QTcpSocket： SIGNAL：readyRead()、error   METHOD：QByteArray readall()、read、write、
+connectToHost()、disconnectFromHost()、waitForConnected(阻塞)、waitForReadyRead(阻塞)、waitForDisconnected(阻塞)
+
+-服务端，嵌套字 QTcpServer负责监听、QTcpSocket负责通信
+1.创建套接字	QTcpServer* server = new QTcpServer;          
+2.将套接字设置为监听模式     server->listen(QHostAddress::Any, SERVERPORT);   //SERVERPORT 为内网端口
+​3.连接，等待 ,读写
+server->connect( server, &QTcpServer::newConnection, [=]{
+        QTcpSocket* client =  server->nextPendingConnection();   //用于通信
+        client->write("Hello client!");
+        client->connect( client,&QTcpSocket::readyRead, [client]{
+	qDebug(  client->readall() );
+	})
+} )
+
+
+-客户端，嵌套字 QTcpSocket
+1.创建套接字   	QTcpSocket*  client = new QTcpSocket;
+1.2  解析域名	const auto& host = QHostInfo::fromName(ADDRESS);   //ADDRESS为 服务器域名(无http(s))
+		const auto& addresses = host.addresses();
+		if( addresses.isEmpty() ) {...}
+2.连接服务器    connectToHost(QHostAddress(IP),port)  	  client->connectToHost(addresses.first(),PORT);   //PORT 为服务器(临时)端口
+3.和服务端一样的读写操作	
+client->connect( client,&QTcpSocket::readyRead, [client]{
+	qDebug(  client->readall() );
+	client->write("The message had been received by client!");
+})
+
+## QUdp ##
+
+UDP：嵌套字均为 QUdpSocket，无连接、基于数据报、不可靠、传输效率高、可广播
+1.创建套接字
+2.绑定套接字后接受，或者不绑定只发送数据
+QUdpSocket：
+METHOD：hasPendingDatagrams()、joinMulticastGroup()、leaveMulticastGroup、connectToHost()、disconnectToHost()、waitForConnected(阻塞)、waitForReadyRead(阻塞)、waitForDisconnected(阻塞)
+bind(QHostAddress::LocalHost,port)
+qint64 readDatagram(char * data, qint64 maxSize, QHostAddress * address = 0, quint16 * port = 0)
+qint64 writeDatagram(const QByteArray & datagram, const QHostAddress & host, quint16 port)
+
+广播：若 host==QHostAddress::Broadcast，QHostAddress("255.255.255.255")，则局域网的其他UDP用户都接到广播的信息，只能在局域网使用
+组播：接收方注册到组播地址才收信息，可在Internet中使用。  
+组播的host可选：Ipv4 32位   Ipv6 48位
+224.0.0.0～224.0.0.255为预留的组播地址（永久组地址），地址224.0.0.0保留不做分配，其它地址供路由协议使用；
+224.0.1.0～224.0.1.255是公用组播地址，可以用于Internet；
+224.0.2.0～238.255.255.255为用户可用的组播地址（临时组地址），全网范围内有效；
+239.0.0.0～239.255.255.255为本地管理组播地址，仅在特定的本地范围内有效。
+
+注：
+局部网内的电脑，直接socket就可以连接了。不同局部网的电脑，需要服务器进行转发。
+可以使用utools的内网穿透：
+访问地址：域名无http(s)，用于客户端连接
+临时端口：用于客户端连接，每连接成功一次，就会变！！！
+内网地址：ip地址，或域名(无http(s))。 cmd -> ipconfig
+内网端口：不用0~1024，基本都可以。也可以 cmd -> netstat -ano
+
+## Qtll ##
+
+相关类：
+<QtNetwork/QtNetwork>    pro += network;
+QAuthenticator：认证对象
+QDnsLookup：DNS查找    SIGNAL: finished()     METHOD: lookup()、setTyoe()
+QDns DomainName/HostAddress/MailExchange/Service/Text Record
+QHostAddress：host的ip地址(别名)  METHOD: ::LocalHost()、::Broadcast()、::lookupHost()    
+QHostInfo：获取host信息，   METHOD:  ::fromName()、::localHostName()、::lookupHost
+
+QHttpMultiPart：与HTTP上传输的MIEM multipart类相似的类
+QHttpPart：包含报头和正文，header：General/Request/Reponse/Entity
+
+QLocalServer：基于服务器的本地套接字
+QLoaclSocket：支持本地套接字的类
+
+QNetworkAccessManager：收发网络信息(http)       SIGNAL: finished(QNetworkReply*)、  METHOD: get(QNetworkRequest)、sendCustomRequest
+QNetworkRequest：请求，包含头信息和加密头信息
+QNetworkReply：回应
+
+QNetworkAddressEntry：存储IP、网络掩码等网络消息的类
+QNetworkCacheMetaData：缓存消息
+QNetworkConfiguration：设置网络接口点，启动/停止网络接口连接
+QNetworkConfigurationManager：管理网络设备
+QNetworkCookie：设置网络cookie的类
+QNetworkCookieJar：实现QNetworkCookie对象的单一Jar的类
+QNetworkDiskCache：基本的磁盘缓存
+QNetworkInterface：主机网络IP和网络接口列表   METHOD:  :: allAddresses()
+QNetworkProxy：网络层代理
+QNetworkProxyFactory：网络层代理的扩展类
+QNetworkProxyQuery：在套接字查询代理设置的类
+QNetworkSession：管理网络可访问的接入点和平台的接入点的类。网络会话
+
+QSocketNotifier：监控网络公告消息的类
+
+QSslCertificate：X509认证API
+QSslCertificateExtension：提供X509证书的扩展API
+QSslCipher：支持SSL加密认证的类
+QSslConfiguration：指定SSL连接状态和设置的类
+QSslError：处理SSL错误
+QSslkey：私有密钥和公共密钥接口
+QSslSocket：SSL加密套接字
+
+QTcpServer：TCP服务器专用套接字
+QTcpSocket：TCP套接字，用于服务端中处理客户端信息或客户端连接
+QUdpSocket：UDP套接字
+QUrl：至此通过URL运行的接口    METHOD：  ::fromLocalFile
+
+-------------------------------------------------
