@@ -1,5 +1,6 @@
 <!-- TOC -->
 
+- [常用函数](#常用函数)
 - [简介](#简介)
     - [VS插件](#vs插件)
 - [类型](#类型)
@@ -22,6 +23,12 @@
 - [异步](#异步)
 
 <!-- /TOC -->
+
+# 常用函数 #
+Math.random()   //返回值在[0, 1) 
+Math.floor(Math.random() * MaxNum)  //返回值是 [0, MaxNum-1] 的整数
+Math.floor(Math.random() * MaxNum) + 1 //返回值是 [1, MaxNum] 的整数
+
 # 简介 #
 TypeScript是JavaScript的超集，支持ECMAScript6标准。
 添加了类型推断、擦除、接口、枚举、泛型、命名空间、元组、Await、Mixin。
@@ -30,7 +37,7 @@ npm install -g typescript
 
 ## VS插件 ##
 TypeScript Importer：自动导入
-ESLint：格式化
+ESLint：格式化，无用数据诊断等
 
 
 # 类型 #
@@ -247,6 +254,9 @@ import { _decorator, Component, math, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
 # 异步 #
+只能在 async function 里使用await，并返回Promise<T>。
+在同步函数里调用异步方法，是不会等待且会继续运行的。
+
 async function getData(url:string): Promise<string> {
     try{
         const response = await fetch(url);
