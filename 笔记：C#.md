@@ -5,6 +5,10 @@
 - [枚举](#枚举)
 - [事件](#事件)
 - [元组](#元组)
+- [序列化](#序列化)
+    - [IO](#io)
+    - [XML](#xml)
+    - [JSON](#json)
 - [格式](#格式)
 - [其他](#其他)
     - [启动外部程序](#启动外部程序)
@@ -14,6 +18,8 @@
 
 # 环境 #
 dotnet --info
+
+donet build -c Release
 
 # 字符串 #
 C#的字符串是只读的、线程安全的，修改、拼接字符串会生成新的字符串。在拼接字符串多的情况下要用 StringBuilder
@@ -37,7 +43,55 @@ var x = new ("sss",1,0f)  --> x.Item1  x.Item2
 var (_,_,n) = fn();	//_表示弃用
 public (string,int,int) fn() { return ("",1,0); }
 
+# 序列化 #
 
+## IO ##
+System.IO{
+	File -> Read|Write|Exists
+	File.OpenRead()	File.OpenWrite并不会自动清空，要情况请用 Open(path, FileMode.Write)
+
+	StreamReader/Writer
+	BinaryReader/Writer	PeekChar()==-1
+	Path{ HasExtension()、IsPathRooted()、GetFullPath()、GetTempPath()、GetTempFileName()、GetDirectoryName()、GetExtension }
+	FileInfo -> Directory.GetFiles(目录) -> Create
+	Directory.Exists/ GetFiles / Delete(path, true)
+}
+
+using System.Runtime.Serialization.Formatters.Binary;
+BinaryFormatter{
+	Serialize(FileStream, object data);
+	object Deserialize(FileStream file);
+}
+
+unity   Application.persistentDataPath 
+
+## XML ##
+XML读写
+using System.Xml;
+XmlDocument doc = new XmlDocument();       
+doc.Load(path);	//doc.LoadXml("<root>...</root>");
+root = doc.FirstChild or doc.DocumentElement;
+XmlElement.GetAttribute()
+XmlElement["nodename"]
+
+root = doc.CreateElement();
+doc.CreatAttribute()  -> root.Attributes.Append()
+doc.CreateElement() -> element.InnerText ->root.AppendChild(element)
+doc.Save(path);
+
+foreach(XmlElement v in folder.ChildNodes)  //XmlNode
+
+## JSON ##
+
+
+Json
+using System.Text.Json;
+
+string jsonString = JsonSerializer.Serialize(weatherForecast);
+
+		string fileName = "WeatherForecast.json";
+		string jsonString = File.ReadAllText(fileName);
+WeatherForecast? weatherForecast = JsonSerializer.Deserialize<WeatherForecast>(jsonString);
 
 # 格式 #
 Class{
@@ -99,40 +153,7 @@ string fn(string v) =>
 delegate(args...){ ... }
 (args...)=>{...}
 
-9. 文件、序列化、Xml、Json
-System.IO{
-	File -> Read|Write|Exists
-	File.OpenRead()	File.OpenWrite并不会自动清空，要情况请用 Open(path, FileMode.Write)
-
-	StreamReader/Writer
-	BinaryReader/Writer	PeekChar()==-1
-	Path{ HasExtension()、IsPathRooted()、GetFullPath()、GetTempPath()、GetTempFileName()、GetDirectoryName()、GetExtension }
-	FileInfo -> Directory.GetFiles(目录) -> Create
-	Directory.Exists/ GetFiles / Delete(path, true)
-}
-using System.Runtime.Serialization.Formatters.Binary;
-BinaryFormatter{
-	Serialize(FileStream, object data);
-	object Deserialize(FileStream file);
-}
-
-unity   Application.persistentDataPath 
-
-XML读写
-using System.Xml;
-XmlDocument doc = new XmlDocument();       
-doc.Load(path);	//doc.LoadXml("<root>...</root>");
-root = doc.FirstChild or doc.DocumentElement;
-XmlElement.GetAttribute()
-XmlElement["nodename"]
-
-root = doc.CreateElement();
-doc.CreatAttribute()  -> root.Attributes.Append()
-doc.CreateElement() -> element.InnerText ->root.AppendChild(element)
-doc.Save(path);
-
-foreach(XmlElement v in folder.ChildNodes)  //XmlNode
-
+9. 
 10. 属性
 public bool x
 {
