@@ -1,6 +1,7 @@
 ﻿<!-- TOC -->
 
 - [环境](#环境)
+- [csproject](#csproject)
 - [字符串](#字符串)
 - [枚举](#枚举)
 - [事件](#事件)
@@ -20,6 +21,11 @@
 dotnet --info
 
 donet build -c Release
+
+# csproject #
+<PropertyGroup>
+	<LangVersion>10.0</LangVersion>
+</PropertyGroup>
 
 # 字符串 #
 C#的字符串是只读的、线程安全的，修改、拼接字符串会生成新的字符串。在拼接字符串多的情况下要用 StringBuilder
