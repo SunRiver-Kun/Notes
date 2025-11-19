@@ -5,6 +5,8 @@
     - [类](#类)
     - [属性](#属性)
 - [场景](#场景)
+    - [相机](#相机)
+    - [合批](#合批)
 - [UI](#ui)
     - [Label](#label)
     - [Button](#button)
@@ -64,6 +66,13 @@ Scene的检查窗口里的 AutoReleaseAssets 记得勾上，不然卸载场景�
 3. isValid() 来判断是否有效
 4. 脚本动态加载的只能由脚本动态释放
 5. 右手坐标系， x→   y↑   z↓←
+
+## 相机 ##
+ClearFlag：SKYBOX（颜色、深度、天空填充），SOLID_COLOR（颜色、深度、纯色填充），DEPTH_ONLY（深度），NONE（无）
+至少有一个相机的ClearFlag是SKYBOX或者SOLID_COLOR，通常背景是SOLID_COLOR，其他都是DEPTH_ONLY
+
+## 合批 ##
+
 
 # UI #
 
